@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 using System.Data;
 using System.IdentityModel.Tokens.Jwt;
 using System.Numerics;
@@ -33,31 +34,16 @@ namespace CodeBattleArena.Server.Controllers
         }
 
         [HttpGet("info-player")]
-        public async Task<IActionResult> PlayerPage(string id, CancellationToken cancellationToken)
+        public async Task<IActionResult> GetPlayer(string id, CancellationToken cancellationToken)
         {
-            var identityUser = await _userManager.FindByIdAsync(id);
-            if (identityUser == null)
-            {
-                return NotFound(new ErrorResponse { Error = "Player not found." });
-            }
+            var authUserId = _userManager.GetUserId(User);
 
-            var currentUserId = _userManager.GetUserId(User);
+            var resultInfo = await _playerService.GetPlayerInfoAsync(id, authUserId);
 
-            PlayerDto playerDto = new PlayerDto();
-            _mapper.Map(identityUser, playerDto);
+            if(!resultInfo.IsSuccess)
+                return UnprocessableEntity(resultInfo.Failure);
 
-            bool isAuth = false;
-
-            if (currentUserId == playerDto.Id)
-            {
-                isAuth = true;
-
-                var role = await _playerService.GetRolesAsync(currentUserId);
-
-                playerDto.Role = role;
-            }
-
-            return Ok(new { player = playerDto, isAuth = isAuth });
+            return Ok(new { player = resultInfo.Success.Player, isEdit = resultInfo.Success.IsEdit });
         }
 
         [HttpGet("player-sessions")]

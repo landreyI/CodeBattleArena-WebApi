@@ -17,7 +17,7 @@ interface Props {
 export function AuthorizationModal({ open, onClose }: Props) {
     return (
         <Dialog open={open} onOpenChange={(val) => !val && onClose()}>
-            <DialogContent className="sm:max-w-[425px] bg-zinc-900 text-white border border-zinc-700">
+            <DialogContent className="w-full sm:max-w-md max-h-[90vh] overflow-y-auto bg-zinc-900 text-white border border-zinc-700">
                 <DialogHeader>
                     <DialogTitle className="text-white text-center">Authorization</DialogTitle>
                 </DialogHeader>
@@ -38,7 +38,7 @@ export function AuthorizationModal({ open, onClose }: Props) {
 
                 </div>
 
-                <DialogFooter className="mt-4 text-center">
+                <DialogFooter className="mt-4">
                     <p className="text-sm text-zinc-400">
                         By signing in, you agree to our <span className="underline cursor-pointer">Terms</span>.
                     </p>

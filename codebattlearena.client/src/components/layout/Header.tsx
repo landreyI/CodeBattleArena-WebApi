@@ -16,7 +16,6 @@ const dropdownItemsSession: DropdownItemData[] = [
 ];
 
 const dropdownItemsAdmin: DropdownItemData[] = [
-    { label: "Add Avatar", href: "/admin/add-photo-avatar" },
     { label: "Add Task", href: "/admin/add-task" },
     { label: "Task List", href: "/session/list-task" },
 ];

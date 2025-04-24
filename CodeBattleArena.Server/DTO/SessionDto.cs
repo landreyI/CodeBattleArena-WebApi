@@ -20,11 +20,8 @@ namespace CodeBattleArena.Server.DTO
 
         [Range(1, 10, ErrorMessage = "MaxPeople must be between 1 and 10.")]
         public int MaxPeople { get; set; }
-
-        [Required(ErrorMessage = "Difficulty is required.")]
-        public Difficulty Difficulty { get; set; }
         public int? TaskId { get; set; }
-        public TaskProgramming? TaskProgramming { get; set; }
+        public TaskProgrammingDto? TaskProgramming { get; set; }
         public string? WinnerId { get; set; }
         public string CreatorId { get; set; }
         public string? Password { get; set; }

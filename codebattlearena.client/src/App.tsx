@@ -4,12 +4,12 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import HomePage from './pages/HomePage';
 import InfoPage from './pages/InfoPage';
 import GoogleOauthSuccess from './pages/GoogleOauthSuccess';
-import PlayerPage from './pages/PlayerPage';
-import SessionInfo from './pages/SessionInfo';
+import PlayerPage from '@/pages/player/PlayerPage';
+import SessionInfo from '@/pages/session/SessionInfo';
 import LoginError from './pages/LoginError';
 import Header from './components/layout/Header';
 import Footer from './components/layout/Footer';
-import CreateSession from './pages/CreateSession';
+import CreateSession from '@/pages/session/CreateSession';
 
 const App = () => {
     return (

@@ -5,6 +5,7 @@ import { processError, StandardError } from "@/untils/errorHandler";
 
 export function useSession(sessionId: number | undefined) {
     const [session, setSession] = useState<Session | null>(null);
+    const [isEdit, setIsEdit] = useState<boolean>();
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<StandardError | null>(null);
 
@@ -18,8 +19,8 @@ export function useSession(sessionId: number | undefined) {
         const fetchSession = async () => {
             try {
                 const data = await fetchGetSession(sessionId);
-
-                setSession(data);
+                setIsEdit(data.isEdit);
+                setSession(data.session);
             } catch (err: unknown) {
                 const standardError = processError(err);
                 setError(standardError);
@@ -31,5 +32,5 @@ export function useSession(sessionId: number | undefined) {
         fetchSession();
     }, [sessionId]);
 
-    return { session, setSession, loading, error };
+    return { session, setSession, isEdit, loading, error };
 }

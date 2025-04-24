@@ -2,13 +2,13 @@
 import { useParams } from "react-router-dom";
 
 import { DropdownMenu, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuContent } from "@/components/ui/dropdown-menu";
-import { usePlayer } from "@/hooks/usePlayer";
+import { usePlayer } from "@/hooks/player/usePlayer";
 import { useState } from "react";
 import { Player, Session } from "@/models/dbModels";
 import PlayerCard from "@/components/cards/PlayerCard";
 import EditPlayerModal from "@/components/modals/EditPlayerModal";
 import SessionList from "@/components/lists/SessionsList";
-import { Separator } from "../components/ui/separator";
+import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { fetchGetPlayerSessions } from "@/services/player";
@@ -28,7 +28,7 @@ const PlayerPage: React.FC = () => {
     ];
 
     const { playerId } = useParams<{ playerId: string }>();
-    const { player, setPlayer, isAuth, loading, error } = usePlayer(playerId);
+    const { player, setPlayer, isEdit, loading, error } = usePlayer(playerId);
     const [showEditPlayer, setShowEditPlayer] = useState(false);
 
     const [sessions, setSessions] = useState<Session[]>([]);
@@ -39,7 +39,7 @@ const PlayerPage: React.FC = () => {
     };
 
     useEffect(() => {
-        if (!player?.id || (!isAuth && !isEditRole(player?.role))) return;
+        if (!player?.id || !isEdit) return;
 
         const loadSessions = async () => {
             try {
@@ -51,7 +51,7 @@ const PlayerPage: React.FC = () => {
         };
 
         loadSessions();
-    }, [player?.id, isAuth, player?.role]);
+    }, [player?.id, isEdit]);
 
     if (loading) return <LoadingScreen />
     if (error) return <ErrorMessage error={error} />;
@@ -66,7 +66,7 @@ const PlayerPage: React.FC = () => {
                         <h1 className="text-4xl font-bold text-green-400 font-mono">
                             Player Profile
                         </h1>
-                        {isAuth && (
+                        {isEdit && (
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
                                     <button className="text-zinc-400 hover:text-green-400 transition-colors" aria-label="Settings">
@@ -88,9 +88,9 @@ const PlayerPage: React.FC = () => {
                     </div>
 
                     {/* Карточка профиля */}
-                    <PlayerCard player={player} isAuth={isAuth}></PlayerCard>
+                    <PlayerCard player={player} isEdit={isEdit}></PlayerCard>
 
-                    {(isAuth || isEditRole(player?.role)) &&(
+                    {(isEdit) &&(
                         <div
                             className="space-y-4 bg-zinc-800 border border-zinc-700 rounded-2xl px-4 py-3 
                                        shadow-sm hover:shadow-md transition-all mt-3"

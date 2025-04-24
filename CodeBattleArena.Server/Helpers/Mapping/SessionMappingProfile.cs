@@ -8,7 +8,10 @@ namespace CodeBattleArena.Server.Helpers.Mapping
     {
         public SessionMappingProfile()
         {
-            CreateMap<SessionDto, Session>();
+            CreateMap<SessionDto, Session>()
+                .ForMember(dest => dest.LangProgramming, opt => opt.Ignore())
+                .ForMember(dest => dest.Password, opt => opt.Ignore())
+                .ForMember(dest => dest.TaskProgramming, opt => opt.Ignore());
 
             CreateMap<Session, SessionDto>()
                 .ForMember(dest => dest.IdSession, opt => opt.MapFrom(src => src.IdSession))

@@ -1,4 +1,4 @@
-import CreateSessionForm from "../components/forms/CreateSessionForm";
+import SessionForm from "@/components/forms/SessionForm";
 
 
 const CreateSession: React.FC = () => {
@@ -10,7 +10,7 @@ const CreateSession: React.FC = () => {
                       Create Session
                   </h1>
               </div>
-              <CreateSessionForm onClose: null></CreateSessionForm>
+              <SessionForm submitLabel="Created"></SessionForm>
           </div>
       </div>
   );

@@ -1,7 +1,7 @@
 import axios, { api } from "../api/axios";
 import { Player, Session } from "@/models/dbModels";
 
-export const fetchGetPlayer = async (id: string): Promise<{ player: Player; isAuth: boolean }> => {
+export const fetchGetPlayer = async (id: string): Promise<{ player: Player; isEdit: boolean }> => {
     try {
         let response = await api.get(`/Player/info-player`, {
             params: { id: id }

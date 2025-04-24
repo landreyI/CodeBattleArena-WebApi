@@ -1,4 +1,5 @@
-﻿using CodeBattleArena.Server.DTO;
+﻿using AutoMapper;
+using CodeBattleArena.Server.DTO;
 using CodeBattleArena.Server.Enums;
 using CodeBattleArena.Server.Helpers;
 using CodeBattleArena.Server.IRepositories;
@@ -16,21 +17,56 @@ namespace CodeBattleArena.Server.Services.DBServices
         private readonly IUnitOfWork _unitOfWork;
         private readonly ILogger<SessionService> _logger;
         private readonly UserManager<Player> _userManager;
+        private readonly IMapper _mapper;
         public PlayerService(IUnitOfWork unitOfWork, ILogger<SessionService> logger, 
-            UserManager<Player> userManager)
+            UserManager<Player> userManager, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _logger = logger;
             _userManager = userManager;
+            _mapper = mapper;
+        }
+
+        public async Task<Result<(PlayerDto Player, bool IsEdit), ErrorResponse>> GetPlayerInfoAsync
+            (string targetId, string requesterId)
+        {
+            var player = await _userManager.FindByIdAsync(targetId);
+            if (player == null)
+            {
+                return Result.Failure<(PlayerDto, bool), ErrorResponse>(new ErrorResponse
+                {
+                    Error = "Player not found."
+                });
+            }
+
+            var playerDto = _mapper.Map<PlayerDto>(player);
+
+            bool isEdit = false;
+
+            bool isAuth = requesterId == playerDto.Id;
+
+            if (isAuth)
+                isEdit = true;
+
+            else if (!isAuth && !string.IsNullOrEmpty(requesterId))
+            {
+                var requesterRoles = await GetRolesAsync(requesterId);
+                isEdit = BusinessRules.IsEditRole(requesterRoles);
+            }
+
+            if (isEdit) 
+            {
+                var targetRoles = await GetRolesAsync(targetId);
+                playerDto.Role = targetRoles;
+                playerDto.Email = player.Email;
+            }
+
+            return Result.Success<(PlayerDto, bool), ErrorResponse>((playerDto, isEdit));
         }
 
         public async Task<Result<Unit, ErrorResponse>> UpdatePlayerAsync
             (string authUserId, PlayerDto dto, CancellationToken cancellationToken)
         {
-            var checkResult = ValidationHelper.CheckUserId<Unit>(authUserId);
-            if (!checkResult.IsSuccess)
-                return checkResult;
-
             var user = await _userManager.FindByIdAsync(authUserId);
             if (user == null)
             {
@@ -41,7 +77,7 @@ namespace CodeBattleArena.Server.Services.DBServices
             }
 
             var role = await GetRolesAsync(user);
-            bool isEdit = Helpers.BusinessRules.isEditRole(role);
+            bool isEdit = Helpers.BusinessRules.IsEditRole(role);
 
             if (authUserId != dto.Id && !isEdit)
                 return Result.Failure<Unit, ErrorResponse>(new ErrorResponse 
@@ -95,12 +131,15 @@ namespace CodeBattleArena.Server.Services.DBServices
             var roles = await _userManager.GetRolesAsync(user);
             return roles.FirstOrDefault();
         }
+
+
+
         public async Task<Player> GetPlayerAsync(string id, CancellationToken cancellationToken)
         {
             if (string.IsNullOrEmpty(id)) return null;
             return await _unitOfWork.PlayerRepository.GetPlayerAsync(id, cancellationToken);
         }
-        public async Task<bool> AddVictoryPlayerAsync(string id, CancellationToken cancellationToken)
+        public async Task<bool> AddVictoryPlayerInDbAsync(string id, CancellationToken cancellationToken)
         {
             if (string.IsNullOrEmpty(id)) return false;
             try

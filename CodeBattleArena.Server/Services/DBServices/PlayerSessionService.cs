@@ -22,10 +22,6 @@ namespace CodeBattleArena.Server.Services.DBServices
         public async Task<Result<PlayerSession, ErrorResponse>> CreatPlayerSession
             (string idUser, Session session, CancellationToken ct)
         {
-            var checkResult = ValidationHelper.CheckUserId<PlayerSession>(idUser);
-            if (!checkResult.IsSuccess)
-                return checkResult;
-
             PlayerSession playerSession = new PlayerSession
             {
                 IdPlayer = idUser,
@@ -34,7 +30,7 @@ namespace CodeBattleArena.Server.Services.DBServices
 
             try
             {
-                var addResult = await AddPlayerSessionAsync(playerSession, ct);
+                var addResult = await AddPlayerSessionInDbAsync(playerSession, ct);
                 if(!addResult.IsSuccess)
                     return Result.Failure<PlayerSession, ErrorResponse>(addResult.Failure);
             }
@@ -49,7 +45,7 @@ namespace CodeBattleArena.Server.Services.DBServices
 
             return Result.Success<PlayerSession, ErrorResponse>(playerSession);
         }
-        public async Task<Result<Unit, ErrorResponse>> AddPlayerSessionAsync
+        public async Task<Result<Unit, ErrorResponse>> AddPlayerSessionInDbAsync
             (PlayerSession playerSession, CancellationToken ct)
         {
             try
@@ -77,7 +73,7 @@ namespace CodeBattleArena.Server.Services.DBServices
         {
             return await _unitOfWork.PlayerSessionRepository.GetPlayerSessionByIdSession(idSession, ct);
         }
-        public async Task<bool> UpdatePlayerSession(PlayerSession playerSession, CancellationToken ct)
+        public async Task<bool> UpdatePlayerInDbSession(PlayerSession playerSession, CancellationToken ct)
         {
             try
             {
@@ -91,7 +87,7 @@ namespace CodeBattleArena.Server.Services.DBServices
                 return false;
             }
         }
-        public async Task FinishTaskAsync(int idSession, string idPlayer, CancellationToken ct)
+        public async Task FinishTaskInDbAsync(int idSession, string idPlayer, CancellationToken ct)
         {
             try
             {
@@ -103,7 +99,7 @@ namespace CodeBattleArena.Server.Services.DBServices
                 _logger.LogError(ex, "Error FinishTask");
             }
         }
-        public async Task DelPlayerSessionAsync(int idSession, string idPlayer, CancellationToken ct)
+        public async Task DelPlayerSessionInDbAsync(int idSession, string idPlayer, CancellationToken ct)
         {
             try
             {

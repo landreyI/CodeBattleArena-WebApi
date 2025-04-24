@@ -13,15 +13,16 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { SessionState, Difficulty, LangProgramming } from "@/models/dbModels";
-import { useCreateSession } from "@/hooks/useCreateSession";
+import { SessionState, Session } from "@/models/dbModels";
 import { useNavigate } from "react-router-dom";
 import { useLangsProgramming } from "@/hooks/useLangsProgramming";
 import LoadingScreen from "../common/LoadingScreen";
 import ErrorMessage from "../common/ErrorMessage";
 import EmptyState from "../common/EmptyState";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import InputPassword from "../common/InputPassword";
+import { useCreateSession } from "@/hooks/session/useCreateSession";
+import { useUpdateSession } from "@/hooks/session/useUpdateSession";
 
 // Определяем схему валидации формы
 export const formSchema = z
@@ -31,9 +32,6 @@ export const formSchema = z
         idLangProgramming: z.number().min(0, { message: "Select language" }),
         state: z.nativeEnum(SessionState, {
             errorMap: () => ({ message: "Invalid session state" }),
-        }),
-        difficulty: z.nativeEnum(Difficulty, {
-            errorMap: () => ({ message: "Invalid difficulty" }),
         }),
         password: z.string().nullable(),
         taskId: z.coerce.number().nullable(),
@@ -48,13 +46,23 @@ export const formSchema = z
         }
     });
 
-interface CreateSessionProps {
+interface Props {
+    session?: Session,
     onClose?: () => void;
+    onUpdate?: (updatedSession: Session) => void;
+    submitLabel?: string;
 }
 
-export function CreateSessionForm({ onClose }: CreateSessionProps) {
-    const { createSession, isLoading, error: createError } = useCreateSession();
+export function SessionForm({ session, onClose, onUpdate, submitLabel }: Props) {
     const { langsProgramming, loading, error: langsError } = useLangsProgramming();
+    const { createSession, isLoading: createIsLoad, error: createError } = useCreateSession();
+    const { updateSession, isLoading: updateIsLoad, error: updateError } = useUpdateSession();
+    // Подменяем в зависимости от контекста (создание или редактирование)
+    const isEditing = !!session;
+
+    const isLoading = isEditing ? updateIsLoad : createIsLoad;
+    const error = isEditing ? updateError : createError;
+
     const [ state, setState ] = useState(SessionState.Public);
 
     const navigate = useNavigate();
@@ -62,13 +70,12 @@ export function CreateSessionForm({ onClose }: CreateSessionProps) {
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            name: "",
-            maxPeople: 1,
-            idLangProgramming: -1,
-            state: SessionState.Public,
-            difficulty: Difficulty.Easy,
-            password: null,
-            taskId: null,
+            name: session?.name || "",
+            maxPeople: session?.maxPeople || 1,
+            idLangProgramming: session?.langProgrammingId || -1,
+            state: session?.state || SessionState.Public,
+            password: session?.password || null,
+            taskId: session?.taskId || null,
         },
     });
 
@@ -76,18 +83,47 @@ export function CreateSessionForm({ onClose }: CreateSessionProps) {
     if (langsError) return <ErrorMessage error={langsError} />;
     if (!langsProgramming) return <EmptyState message="Langs programming not found" />;
 
+    function buildSessionData(values: z.infer<typeof formSchema>, session?: Session): Session {
+        return {
+            idSession: session?.idSession ?? null,
+            winnerId: session?.winnerId ?? null,
+            creatorId: session?.creatorId ?? "",
+            dateCreating: session?.dateCreating ?? new Date(),
+            dateStart: session?.dateStart ?? null,
+            isFinish: session?.isFinish ?? false,
+            amountPeople: session?.amountPeople ?? null,
+            langProgramming: langsProgramming?.find(lang => lang.idLang === values.idLangProgramming) ?? null,
+            taskProgramming: session?.taskProgramming ?? null,
+
+            name: values.name,
+            maxPeople: values.maxPeople,
+            langProgrammingId: values.idLangProgramming,
+            state: values.state,
+            password: values.password,
+            taskId: values.taskId,
+        };
+    }
+
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         try {
-            const idSession = await createSession(values);
+            let result = null;
+
+            const sessionData = buildSessionData(values, session);
+            result = await (session ? updateSession(sessionData) : createSession(sessionData));
+
+            if (onUpdate && session)
+                onUpdate(sessionData);
 
             if (onClose != null)
                 onClose();
 
-            navigate(`/session/info-session/${idSession}`);
+            if (typeof result === "number") {
+                navigate(`/session/info-session/${result}`);
+            }
         } catch (err) {
             console.error(err);
 
-            const standardError = createError;
+            const standardError = error;
 
             form.setError("root", {
                 type: "manual",
@@ -98,7 +134,7 @@ export function CreateSessionForm({ onClose }: CreateSessionProps) {
 
     return (
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 p-6">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                 {form.formState.errors.root && (
                     <div className="bg-red-50 text-red-600 border border-red-200 p-3 rounded">
                         {form.formState.errors.root.message}
@@ -199,31 +235,6 @@ export function CreateSessionForm({ onClose }: CreateSessionProps) {
                     )}
                 />
 
-                <FormField
-                    control={form.control}
-                    name="difficulty"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Difficulty</FormLabel>
-                            <FormControl>
-                                <Select onValueChange={field.onChange} value={field.value}>
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Select difficulty" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {Object.values(Difficulty).map((diff) => (
-                                            <SelectItem key={diff} value={diff}>
-                                                {diff}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-
                 {state === SessionState.Private && (
                     <FormField
                         control={form.control}
@@ -255,11 +266,11 @@ export function CreateSessionForm({ onClose }: CreateSessionProps) {
                 />
 
                 <Button type="submit" disabled={isLoading} className="w-full btn-green btn-animation">
-                    {isLoading ? "Saving..." : "Create Session"}
+                    {isLoading ? "Saving..." : submitLabel}
                 </Button>
             </form>
         </Form>
     );
 }
 
-export default CreateSessionForm;
+export default SessionForm;

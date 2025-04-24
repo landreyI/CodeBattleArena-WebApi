@@ -27,10 +27,6 @@ namespace CodeBattleArena.Server.Data
                 .Property(g => g.State)
                 .HasConversion<string>(); // enum => string
 
-            modelBuilder.Entity<Session>()
-                .Property(g => g.Difficulty)
-                .HasConversion<string>(); // enum => string
-
             modelBuilder.Entity<TaskProgramming>()
                 .Property(g => g.Difficulty)
                 .HasConversion<string>(); // enum => string

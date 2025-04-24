@@ -1,8 +1,6 @@
 import { useState } from "react";
-import { z } from "zod";
 import { Player, Session } from "@/models/dbModels";
 import { fetchCreateSession } from "@/services/session";
-import { formSchema } from "@/components/forms/CreateSessionForm";
 import { StandardError, processError } from "@/untils/errorHandler";
 
 export function useCreateSession() {
@@ -11,37 +9,18 @@ export function useCreateSession() {
 
     /**
     * Creates a new session and returns its ID.
-    * @param values - The form values for creating a session, validated against the formSchema.
+    * @param values - The form values for creating a session.
     * @returns The ID of the created session.
     * @throws StandardError if the session creation fails.
     */
     const createSession = async (
-        values: z.infer<typeof formSchema>
+        session: Session
     ): Promise<Session> => {
         setIsLoading(true);
         setError(null);
 
         try {
-            const createSession: Session = {
-                name: values.name,
-                maxPeople: values.maxPeople,
-                langProgrammingId: values.idLangProgramming,
-                state: values.state,
-                difficulty: values.difficulty,
-                password: values.password,
-                taskId: values.taskId,
-
-                idSession: null,
-                winnerId: null,
-                creatorId: "",
-                dateCreating: new Date(),
-                dateStart: null,
-                isFinish: false,
-                amountPeople: null,
-                langProgramming: null,
-            };
-
-            const idSession = await fetchCreateSession(createSession);
+            const idSession = await fetchCreateSession(session);
             return idSession;
         } catch (err: unknown) {
             const standardError: StandardError = processError(err);

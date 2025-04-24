@@ -15,9 +15,9 @@ import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { useEffect } from "react"
 import { Player } from "@/models/dbModels"
-import { useEditPlayer } from "@/hooks/useEditPlayer"
+import { useEditPlayer } from "@/hooks/player/useEditPlayer"
 
-interface EditPlayerProps {
+interface Props {
     player: Player,
     onUpdate: (updatedPlayer: Player) => void;
     onClose?: () => void;
@@ -34,7 +34,7 @@ export const formSchema = z.object({
         .nullable(),
 });
 
-export function EditPlayerForm({ player, onUpdate, onClose }: EditPlayerProps) {
+export function EditPlayerForm({ player, onUpdate, onClose }: Props) {
     const { editPlayer, isLoading, error } = useEditPlayer();
 
     const form = useForm<z.infer<typeof formSchema>>({

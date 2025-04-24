@@ -6,7 +6,7 @@ namespace CodeBattleArena.Server.Helpers
 {
     public static class BusinessRules
     {
-        public static bool isEditRole(string role)
+        public static bool IsEditRole(string? role)
         {
             if (Enum.TryParse<Role>(role, true, out var parsedRole))
             {

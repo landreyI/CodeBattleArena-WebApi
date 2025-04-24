@@ -1,9 +1,9 @@
 export interface Player {
     id: string;
     username: string;
-    email: string;
+    email: string | null;
     photoUrl: string | null;
-    role: string;
+    role: string | null;
     victories: number;
     additionalInformation: string | null;
     createdAt: Date;
@@ -18,8 +18,10 @@ export interface Session {
 
     state: SessionState;
     maxPeople: number;
-    difficulty: Difficulty;
+
     taskId: number | null;
+    taskProgramming: TaskProgramming | null;
+
     winnerId: string | null;
     creatorId: string;
     password: string | null;
@@ -39,6 +41,35 @@ export interface PlayerSession {
     memory: number | null;
     state: boolean;
 }
+
+export interface TaskProgramming {
+    idTaskProgramming: number | null;
+    name: string;
+
+    langProgrammingId: number;
+    langProgramming: LangProgramming | null;
+
+    difficulty: Difficulty;
+    textTask: string;
+    preparation: string;
+    verificationCode: string;
+}
+
+export interface TaskInputData {
+    idTaskProgramming: number;
+    taskProgramming: TaskProgramming | null;
+
+    answer: string;
+
+    idInputDataTask: number;
+    inputData: InputData | null;
+}
+
+export interface InputData {
+    idInputData: number;
+    data: string;
+}
+
 export interface LangProgramming {
     idLang: number;
     codeNameLang: string;

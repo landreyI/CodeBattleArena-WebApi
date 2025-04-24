@@ -1,7 +1,7 @@
 import axios, { api } from "../api/axios";
 import { Player, Session } from "@/models/dbModels";
 
-export const fetchGetSession = async (id: number): Promise<Session> => {
+export const fetchGetSession = async (id: number): Promise<{ session: Session, isEdit: boolean }> => {
     try {
         let response = await api.get(`Session/info-session`, {
             params: {id: id}
@@ -37,3 +37,13 @@ export const fetchCreateSession = async (session: Session) => {
         throw error;
     }
 }
+
+export const fetchUpdateSession = async (seession: Session) => {
+    try {
+        const response = await api.post(`/Session/edit-session`, seession);
+        return response.data;
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+};

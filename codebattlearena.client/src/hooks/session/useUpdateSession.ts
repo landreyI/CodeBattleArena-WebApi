@@ -14,7 +14,7 @@ export function useUpdateSession() {
     */
     const updateSession = async (
         session: Session,
-    ): Promise<Session> => {
+    ): Promise<boolean> => {
         setIsLoading(true);
         setError(null);
 

@@ -14,7 +14,7 @@ namespace CodeBattleArena.Server.Filters
                 query = query.Where(x => x.Difficulty == Difficulty.Value);
 
             if (!string.IsNullOrWhiteSpace(Lang))
-                query = query.Where(x => x.LangProgramming.NameLang == Lang);
+                query = query.Where(x => x.LangProgramming.CodeNameLang == Lang);
 
             return query;
         }

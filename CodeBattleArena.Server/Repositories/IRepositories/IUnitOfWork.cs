@@ -1,4 +1,6 @@
-﻿namespace CodeBattleArena.Server.IRepositories
+﻿using CodeBattleArena.Server.Data;
+
+namespace CodeBattleArena.Server.IRepositories
 {
     public interface IUnitOfWork
     {

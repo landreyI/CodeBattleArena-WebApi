@@ -28,7 +28,7 @@ namespace CodeBattleArena.Server.Controllers
                 {
                     id = user.Id,
                     userName = user.UserName,
-                    role = roles.FirstOrDefault(),
+                    roles = roles,
                     photoUrl = user.PhotoUrl
                 });
             }

@@ -7,7 +7,6 @@ import {
     DialogDescription,
 } from "@/components/ui/dialog";
 
-import { Button } from "@/components/ui/button"
 import { Player } from "@/models/dbModels";
 import { EditPlayerForm } from "../forms/EditPlayerForm";
 
@@ -22,7 +21,7 @@ export function EditPlayerModal({ open, player, onUpdate, onClose }: Props) {
 
   return (
       <Dialog open={open} onOpenChange={(val) => !val && onClose()}>
-          <DialogContent className="w-full sm:max-w-md max-h-[90vh] overflow-y-auto bg-zinc-900 text-white border border-zinc-700">
+          <DialogContent className="w-full sm:max-w-md max-h-[90vh] overflow-y-auto border">
               <DialogHeader>
                   <DialogTitle className="text-white text-center">Edit Player</DialogTitle>
               </DialogHeader>

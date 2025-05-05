@@ -51,13 +51,13 @@ namespace CodeBattleArena.Server.Services.DBServices
             else if (!isAuth && !string.IsNullOrEmpty(requesterId))
             {
                 var requesterRoles = await GetRolesAsync(requesterId);
-                isEdit = BusinessRules.IsEditRole(requesterRoles);
+                isEdit = BusinessRules.IsModerationRole(requesterRoles);
             }
 
             if (isEdit) 
             {
                 var targetRoles = await GetRolesAsync(targetId);
-                playerDto.Role = targetRoles;
+                playerDto.Roles = targetRoles;
                 playerDto.Email = player.Email;
             }
 
@@ -65,7 +65,7 @@ namespace CodeBattleArena.Server.Services.DBServices
         }
 
         public async Task<Result<Unit, ErrorResponse>> UpdatePlayerAsync
-            (string authUserId, PlayerDto dto, CancellationToken cancellationToken)
+            (string authUserId, PlayerDto dto, CancellationToken ct)
         {
             var user = await _userManager.FindByIdAsync(authUserId);
             if (user == null)
@@ -77,7 +77,7 @@ namespace CodeBattleArena.Server.Services.DBServices
             }
 
             var role = await GetRolesAsync(user);
-            bool isEdit = Helpers.BusinessRules.IsEditRole(role);
+            bool isEdit = Helpers.BusinessRules.IsModerationRole(role);
 
             if (authUserId != dto.Id && !isEdit)
                 return Result.Failure<Unit, ErrorResponse>(new ErrorResponse 
@@ -120,32 +120,37 @@ namespace CodeBattleArena.Server.Services.DBServices
 
             return true;
         }
-        public async Task<string> GetRolesAsync(string userId)
+        public async Task<IList<string>> GetRolesAsync(string userId)
         {
             var user = await _userManager.FindByIdAsync(userId);
             var roles = await _userManager.GetRolesAsync(user);
-            return roles.FirstOrDefault();
+            return roles;
         }
-        public async Task<string> GetRolesAsync(Player user)
+        public async Task<IList<string>> GetRolesAsync(Player user)
         {
             var roles = await _userManager.GetRolesAsync(user);
-            return roles.FirstOrDefault();
+            return roles;
         }
 
 
 
-        public async Task<Player> GetPlayerAsync(string id, CancellationToken cancellationToken)
+        public async Task<Player> GetPlayerAsync(string id, CancellationToken ct)
         {
             if (string.IsNullOrEmpty(id)) return null;
-            return await _unitOfWork.PlayerRepository.GetPlayerAsync(id, cancellationToken);
+            return await _unitOfWork.PlayerRepository.GetPlayerAsync(id, ct);
         }
-        public async Task<bool> AddVictoryPlayerInDbAsync(string id, CancellationToken cancellationToken)
+
+        public async Task<List<Player>> GetPlayersAsync(CancellationToken ct)
+        {
+            return await _unitOfWork.PlayerRepository.GetPlayersAsync(ct);
+        }
+        public async Task<bool> AddVictoryPlayerInDbAsync(string id, CancellationToken ct)
         {
             if (string.IsNullOrEmpty(id)) return false;
             try
             {
-                await _unitOfWork.PlayerRepository.AddVictoryPlayerAsync(id, cancellationToken);
-                await _unitOfWork.CommitAsync(cancellationToken); // Сохранение изменений
+                await _unitOfWork.PlayerRepository.AddVictoryPlayerAsync(id, ct);
+                await _unitOfWork.CommitAsync(ct); // Сохранение изменений
                 return true;
             }
             catch (Exception ex)
@@ -154,10 +159,10 @@ namespace CodeBattleArena.Server.Services.DBServices
                 return false;
             }
         }
-        public async Task<List<Session>> MyGamesListAsync(string id, CancellationToken cancellationToken)
+        public async Task<List<Session>> MyGamesListAsync(string id, CancellationToken ct)
         {
             if (string.IsNullOrEmpty(id)) return null;
-            return await _unitOfWork.PlayerRepository.MyGamesListAsync(id, cancellationToken);
+            return await _unitOfWork.PlayerRepository.MyGamesListAsync(id, ct);
         }
     }
 }

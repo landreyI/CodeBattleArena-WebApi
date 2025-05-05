@@ -12,7 +12,7 @@ interface Props {
 }
 
 export function DropdownItem({ dropdownItem }: Props) {
-    const className = "text-white hover:bg-zinc-700 px-4 py-2 rounded-md transition-colors";
+    const className = "px-4 py-2 rounded-md transition-colors";
 
     if (dropdownItem.href) {
         return (

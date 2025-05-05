@@ -1,19 +1,22 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Difficulty, TaskProgramming } from "@/models/dbModels"; // Предполагаю, что интерфейс определён здесь
-import { Code2, BarChart, FileText, Terminal } from "lucide-react";
+import { TaskProgramming } from "@/models/dbModels";
+import { Code2, FileText, Terminal } from "lucide-react";
 import { getDifficultyColor } from "@/untils/helpers";
+import InputDatasList from "../lists/InputDatasList";
+import CodeViewer from "../common/CodeViewer";
 
 interface Props {
     task: TaskProgramming;
+    isEditRole?: boolean;
 }
 
-export const TaskProgrammingCard: React.FC<Props> = ({ task }) => {
+export function TaskProgrammingCard({ task, isEditRole }: Props) {
     return (
-        <Card className="bg-zinc-800 border-zinc-700 rounded-2xl">
+        <Card className="border rounded-2xl w-full">
             <CardContent className="p-6">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-4">
-                    <div className="text-xl font-bold text-white font-mono">
+                    <div className="text-xl font-bold font-mono break-words">
                         {task.name || "Unnamed Task"}
                     </div>
                     <div className="flex items-center gap-2">
@@ -23,44 +26,57 @@ export const TaskProgrammingCard: React.FC<Props> = ({ task }) => {
                     </div>
                 </div>
 
-                <hr className="border-zinc-700 mb-4" />
+                <hr className="mb-4" />
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
-                    <div className="flex flex-col gap-2 text-zinc-400">
+                <div className="flex flex-col gap-4 text-sm w-full">
+                    <div className="flex items-start gap-3 w-full">
+                        <Code2 size={16} className="mt-1 shrink-0" />
                         <div className="flex items-center gap-2">
-                            <Code2 size={16} />
-                            <span className="font-mono">Language:</span>
-                            <span className="text-white">
-                                {task.langProgramming?.nameLang || "Unknown"}
-                            </span>
+                            <div className="font-mono text-muted-foreground">Language:</div>
+                            <div className="break-words">{task.langProgramming?.nameLang || "Unknown"}</div>
                         </div>
-                        <div className="flex items-center gap-2">
-                            <FileText size={16} />
-                            <span className="font-mono">Description:</span>
-                            <span className="text-white line-clamp-1">
+                    </div>
+
+                    <div className="flex items-start gap-3 w-full">
+                        <FileText size={16} className="mt-1 shrink-0" />
+                        <div className="flex flex-col w-full">
+                            <div className="font-mono text-muted-foreground">Description:</div>
+                            <div className="break-words whitespace-pre-wrap">
                                 {task.textTask || "No description"}
-                            </span>
+                            </div>
                         </div>
                     </div>
+                    {isEditRole && (
+                        <>
+                            <div className="flex items-start gap-3 w-full">
+                                <Terminal size={16} className="mt-1 shrink-0" />
+                                <div className="flex flex-col w-full">
+                                    <div className="font-mono text-muted-foreground">Preparation:</div>
+                                    <CodeViewer code={task.preparation} language={task.langProgramming?.codeNameLang || "javascript"} />
+                                </div>
+                            </div>
 
-                    <div className="flex flex-col items-start sm:items-end gap-2 text-zinc-400">
-                        <div className="flex items-center gap-2">
-                            <BarChart size={16} />
-                            <span className="font-mono">Difficulty:</span>
-                            <span className="text-white">{task.difficulty}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                            <Terminal size={16} />
-                            <span className="font-mono">Preparation:</span>
-                            <span className="text-white line-clamp-1">
-                                {task.preparation || "No preparation"}
-                            </span>
-                        </div>
-                    </div>
+                            <div className="flex items-start gap-3 w-full">
+                                <Terminal size={16} className="mt-1 shrink-0" />
+                                <div className="flex flex-col w-full">
+                                    <div className="font-mono text-muted-foreground">Verification Code:</div>
+                                    <CodeViewer code={task.verificationCode} language={task.langProgramming?.codeNameLang || "javascript"} />
+                                </div>
+                            </div>
+                        </>
+                    )}
+
+
+                    { /* СДЕЛАТЬ ВХОДНЫЕ ДАННЫЕ */}
+                    {task.taskInputData && (
+                        <InputDatasList inputDatas={task.taskInputData}></InputDatasList>
+                    )}
+
                 </div>
+
             </CardContent>
         </Card>
     );
-};
+}
 
 export default TaskProgrammingCard;

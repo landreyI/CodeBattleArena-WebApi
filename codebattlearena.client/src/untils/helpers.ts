@@ -1,4 +1,5 @@
 import { Difficulty, Role, SessionState } from "../models/dbModels";
+import { StandardError } from "./errorHandler";
 
 export const getArray = (input: any): any[] => {
     if (Array.isArray(input)) return input;
@@ -17,17 +18,20 @@ export const getStateColor = (state: string) => {
     }
 };
 
-export const getRoleColor = (role: string) => {
+export const getRoleColor = (role: string): string => {
     switch (role) {
         case Role.Admin:
-            return "bg-yellow-500 text-dark";
+            return "bg-yellow-400";
         case Role.Manager:
-            return "bg-blue-500 text-dark";
+            return "bg-blue-500";
+        case Role.Moderator:
+            return "bg-violet-400";
         case Role.Banned:
-            return "bg-red-500 text-dark";
+            return "bg-red-400";
         case Role.User:
+            return "bg-green-500";
         default:
-            return "bg-green-500 text-dark";
+            return "bg-gray-400"; // дефолтный стиль для неизвестных ролей
     }
 };
 

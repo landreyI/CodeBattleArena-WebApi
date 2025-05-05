@@ -15,7 +15,8 @@ namespace CodeBattleArena.Server.Helpers.Mapping
             CreateMap<TaskInputData, TaskInputDataDto>();
 
             CreateMap<TaskProgrammingDto, TaskProgramming>()
-                .ForMember(dest => dest.LangProgramming, opt => opt.Ignore());
+                .ForMember(dest => dest.LangProgramming, opt => opt.Ignore())
+                .ForMember(dest => dest.TaskInputData, opt => opt.Ignore());
 
             CreateMap<TaskProgramming, TaskProgrammingDto>();
         }

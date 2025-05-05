@@ -27,7 +27,7 @@ export function useSession(sessionId: number | undefined) {
             } finally {
                 setLoading(false);
             }
-        };
+        }
 
         fetchSession();
     }, [sessionId]);

@@ -1,31 +1,48 @@
-import React from "react";
-import { useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 
 import { useSession } from "@/hooks/session/useSession";
 import { useState } from "react";
-import { Player, Session } from "@/models/dbModels";
+import { Difficulty, Session, SessionState } from "@/models/dbModels";
 import { SessionCard } from "@/components/cards/SessionCard";
 import PlayersList from "@/components/lists/PlayersList";
-import { fetchGetSessionPlayers } from "@/services/session";
-import { useEffect } from "react";
 import LoadingScreen from "@/components/common/LoadingScreen";
 import ErrorMessage from "@/components/common/ErrorMessage";
 import EmptyState from "@/components/common/EmptyState";
-import { DropdownMenu, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuContent } from "@/components/ui/dropdown-menu";
-import DropdownItem, { DropdownItemData } from "@/components/common/DropdownItem";
 import EditSessionModal from "@/components/modals/EditSessionModal";
-import TaskProgrammingCard from "@/components/cards/TaskProgrammingCard";
+import { useSessionPlayers } from "@/hooks/session/useSessionPlayers";
+import SettingSessionMenu from "@/components/menu/SettingSessionMenu";
+import TaskProgrammingMiniCard from "@/components/cards/TaskProgrammingMiniCard";
+import InlineNotification from "@/components/common/InlineErrorNotification";
+import { useDeleteSession } from "@/hooks/session/useDeleteSession";
+import { Button } from "@/components/ui/button";
+import { TaskProgrammingFilters } from "@/models/filters";
+import { useSessionJoin } from "@/hooks/session/useSessionJoin";
+import { useActiveSession } from "@/contexts/SessionContext";
+import InputPassword from "@/components/common/InputPassword";
+import { Users } from "lucide-react";
+import { useSessionEventsHub } from "@/hooks/hubs/session/useSessionEventsHub";
 
-const SessionInfo: React.FC = () => {
-    const dropdownItemsSettings: DropdownItemData[] = [
-        { label: "Edit session", action: () => setShowEditSession(true) },
-        { label: "Exclude all palyers", action: () => {/* TODO */ } }
-    ];
-
+export function SessionInfo() {
     const { sessionId } = useParams<{ sessionId: string }>();
-    const { session, setSession, isEdit, loading, error } = useSession(Number(sessionId));
-    const [players, setPlayers] = useState<Player[]>([]);
+    const { session, setSession, isEdit, loading: sessionLoad, error: sessionError } = useSession(Number(sessionId));
+    const { players, setPlayers, loading: playersLoad, reloadPlayers } = useSessionPlayers(Number(sessionId), true);
+    const { deleteSession, error: deleteError } = useDeleteSession();
+    const [notification, setNotification] = useState<string | null>(null);
+    const navigate = useNavigate();
     const [showEditSession, setShowEditSession] = useState(false);
+    const { isCompleted, loading: joinLoad, error: joinError, joinSession } = useSessionJoin();
+    const { activeSession, setActiveSession, leaveSession } = useActiveSession();
+    const [password, setPassword] = useState<string>("");
+
+    useSessionEventsHub(Number(sessionId), {
+        onDelete: () => navigate("/home"),
+        onUpdate: (session) => {
+            setSession(session);
+            reloadPlayers();
+        },
+        onJoin: () => reloadPlayers(),
+        onLeave: () => reloadPlayers(),
+    });
 
     const handleUpdateSession = (updatedSession: Session) => {
         setSession(updatedSession);
@@ -34,37 +51,56 @@ const SessionInfo: React.FC = () => {
     const handleDeletPlayer = (playerId: string) => {
         const newPlayers = players.filter((player) => player.id !== playerId);
         setPlayers(newPlayers);
-        //Õ”∆ÕŒ Œ¡ÕŒ¬»“‹
-        if (session) {
-            setSession({
-                ...session,
-                amountPeople: newPlayers.length,
-            });
+    };
+
+    const handleDeletAllPlayers = () => {
+
+    }
+
+    const handleDeletSession = async () => {
+        const success = await deleteSession(Number(sessionId));
+        await handleLeaveSession();
+    }
+
+    const handleJoinSession = async () => {
+        if (session && session.idSession) {
+            const success = await joinSession(session.idSession, password);
+            if (success) {
+                setActiveSession(session);
+            }
         }
     };
 
-    useEffect(() => {
-        if (!session?.idSession) return;
+    const handleLeaveSession = async () => {
+        leaveSession();
+    }
 
-        const loadSessions = async () => {
-            try {
-                const data = await fetchGetSessionPlayers(session.idSession);
-                setPlayers(data);
-            } catch (err) {
-                console.error("Failed to fetch sessions:", err);
-            }
+    const goToTaskList = (session: Session) => {
+        const filter: TaskProgrammingFilters = {
+            lang: session.langProgramming?.codeNameLang ?? '',
+            difficulty: Difficulty.Easy,
         };
 
-        loadSessions();
-    }, [session?.idSession]);
+        const query = new URLSearchParams(filter as any).toString();
 
-    if (loading) return <LoadingScreen/>
-    if (error) return <ErrorMessage error={error} />;
+        navigate(`/task/list-task?${query}`);
+    };
+
+    if (sessionLoad) return <LoadingScreen/>
+    if (sessionError) return <ErrorMessage error={sessionError} />;
     if (!session) return <EmptyState message="Session not found" />;
+
+    const error = deleteError || joinError;
 
   return (
       <>
-          <div className="glow-box bg-zinc-900 text-white p-6">
+          {error && <InlineNotification message={error.message} position="top" className="bg-red-700" />}
+
+          {notification && (
+              <InlineNotification message={notification} position="top" className="bg-sky-600" />
+          )}
+
+          <div className="glow-box">
               <div className="max-w-3xl mx-auto">
                   {/* «‡„ÓÎÓ‚ÓÍ ÒÚ‡ÌËˆ˚ */}
                   <div className="flex items-center justify-between mb-6">
@@ -72,23 +108,11 @@ const SessionInfo: React.FC = () => {
                           Session - details
                       </h1>
                       {isEdit && (
-                          <DropdownMenu>
-                              <DropdownMenuTrigger asChild>
-                                  <button className="text-zinc-400 hover:text-green-400 transition-colors" aria-label="Settings">
-                                      <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" className="bi bi-gear" viewBox="0 0 16 16">
-                                          <path d="M8 4.754a3.246 3.246 0 1 0 0 6.492 3.246 3.246 0 0 0 0-6.492M5.754 8a2.246 2.246 0 1 1 4.492 0 2.246 2.246 0 0 1-4.492 0" />
-                                          <path d="M9.796 1.343c-.527-1.79-3.065-1.79-3.592 0l-.094.319a.873.873 0 0 1-1.255.52l-.292-.16c-1.64-.892-3.433.902-2.54 2.541l.159.292a.873.873 0 0 1-.52 1.255l-.319.094c-1.79.527-1.79 3.065 0 3.592l.319.094a.873.873 0 0 1 .52 1.255l-.16.292c-.892 1.64.901 3.434 2.541 2.54l.292-.159a.873.873 0 0 1 1.255.52l.094.319c.527 1.79 3.065 1.79 3.592 0l.094-.319a.873.873 0 0 1 1.255-.52l.292.16c1.64.893 3.434-.902 2.54-2.541l-.159-.292a.873.873 0 0 1 .52-1.255l.319-.094c1.79-.527 1.79-3.065 0-3.592l-.319-.094a.873.873 0 0 1-.52-1.255l.16-.292c.893-1.64-.902-3.433-2.541-2.54l-.292.159a.873.873 0 0 1-1.255-.52zm-2.633.283c.246-.835 1.428-.835 1.674 0l.094.319a1.873 1.873 0 0 0 2.693 1.115l.291-.16c.764-.415 1.6.42 1.184 1.185l-.159.292a1.873 1.873 0 0 0 1.116 2.692l.318.094c.835.246.835 1.428 0 1.674l-.319.094a1.873 1.873 0 0 0-1.115 2.693l.16.291c.415.764-.42 1.6-1.185 1.184l-.291-.159a1.873 1.873 0 0 0-2.693 1.116l-.094.318c-.246.835-1.428.835-1.674 0l-.094-.319a1.873 1.873 0 0 0-2.692-1.115l-.292.16c-.764.415-1.6-.42-1.184-1.185l.159-.291A1.873 1.873 0 0 0 1.945 8.93l-.319-.094c-.835-.246-.835-1.428 0-1.674l.319-.094A1.873 1.873 0 0 0 3.06 4.377l-.16-.292c-.415-.764.42-1.6 1.185-1.184l.292.159a1.873 1.873 0 0 0 2.692-1.115z" />
-                                      </svg>
-                                  </button>
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent align="end" className="bg-zinc-900 border border-zinc-700 rounded-lg shadow-lg flex flex-col p-1">
-                                  {dropdownItemsSettings.map((dropdown, index) => (
-                                      <DropdownMenuItem key={index} asChild>
-                                          <DropdownItem dropdownItem={dropdown} />
-                                      </DropdownMenuItem>
-                                  ))}
-                              </DropdownMenuContent>
-                          </DropdownMenu>
+                          <SettingSessionMenu
+                              setShowEditSession={setShowEditSession}
+                              handleDeletAllPlayers={handleDeletAllPlayers}
+                              handleDeletSession={handleDeletSession}
+                          />
                       )}
                   </div>
 
@@ -98,23 +122,66 @@ const SessionInfo: React.FC = () => {
                   <div className="mb-3"></div>
 
                   {session.taskProgramming && (
-                      <TaskProgrammingCard task={session.taskProgramming} />
+                      <Link to={`/task/info-task/${session.taskProgramming.idTaskProgramming}`} title="View Task">
+                          <TaskProgrammingMiniCard
+                              className="hover:scale-[1.02] transition"
+                              task={session.taskProgramming}>
+                          </TaskProgrammingMiniCard>
+                      </Link>
                   )}
 
-                  {players.length !== 0 && (
-                      <div
-                          className="space-y-4 bg-zinc-800 border border-zinc-700 rounded-2xl px-4 py-3 
-                      shadow-sm hover:shadow-md transition-all mt-3"
-                      >
+                  <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-3 gap-3 mt-3">
+                      {isEdit && (
+                          <Button className="btn-green btn-animation flex items-center justify-center"
+                              onClick={() => goToTaskList(session)}
+                          >
+                              {session.taskProgramming ? "Change task" : "Select task"}
+                          </Button>
+                      )}
+                      {!activeSession ? (
+                          <>
+                              {session.state === SessionState.Private && (
+                                  <InputPassword onChange={(e) => setPassword(e.target.value)} placeholder="Enter password" />
+                              )}
+                              <Button
+                                  disabled={joinLoad}
+                                  className="btn-green btn-animation flex items-center justify-center"
+                                  onClick={handleJoinSession}
+                              >
+                                  Join
+                              </Button>
+                          </>
 
+                      ) : activeSession?.idSession === session.idSession && (
+                          <Button
+                              disabled={joinLoad}
+                              className="btn-red btn-animation flex items-center justify-center"
+                              onClick={handleLeaveSession}
+                          >
+                              Leave
+                          </Button>
+                      )}
+
+                      <Button className="btn-green btn-animation flex items-center justify-center">
+                          Invite friend
+                      </Button>
+                  </div>
+
+                  <div className="space-y-4 rounded-2xl px-4 py-3 border shadow-sm mt-3">
+                      <div className="text-sm flex items-center gap-1">
+                          <Users size={16} />
+                          <span>
+                              {players.length}/{session.maxPeople}
+                          </span>
+                      </div>
+                      {players.length !== 0 && (
                           <PlayersList
                               players={players}
                               cardWrapperClassName="hover:scale-[1.02] transition"
                               onDelete={handleDeletPlayer}
                           />
-
-                      </div>
-                  )}
+                      )}
+                  </div>
               </div>
           </div>
           {showEditSession && session && (

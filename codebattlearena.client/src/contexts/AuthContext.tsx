@@ -1,9 +1,9 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useState, ReactNode } from "react";
 import axios, { api } from "../api/axios";
 
-type UserAuth = {
+export type UserAuth = {
     id: string;
-    role: string;
+    roles: string[];
     userName: string;
     photoUrl: string;
 };
@@ -15,7 +15,7 @@ type AuthContextType = {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export function AuthProvider({ children }: { children: ReactNode }) {
     const [user, setUser] = useState<UserAuth | null>(null);
 
     useEffect(() => {
@@ -23,7 +23,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             .then(response => {
                 setUser({
                     id: response.data.id,
-                    role: response.data.role,
+                    roles: response.data.roles,
                     userName: response.data.userName,
                     photoUrl: response.data.photoUrl
                 });

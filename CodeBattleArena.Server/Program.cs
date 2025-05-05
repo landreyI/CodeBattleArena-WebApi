@@ -15,14 +15,22 @@ using Travel_Agency.Service;
 using System.Text.Json.Serialization;
 using System.Text.Json;
 using CodeBattleArena.Server.Enums;
+using CodeBattleArena.Server.Hubs;
+using CodeBattleArena.Server.Services.Notifications;
+using CodeBattleArena.Server.Services.Notifications.INotifications;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
-        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()); //ENUM Сериализация
+    });
+
+builder.Services.AddSignalR()
+    .AddJsonProtocol(options =>
+    {
+        options.PayloadSerializerOptions.Converters.Add(new JsonStringEnumConverter());
     });
 
 builder.Services.AddHttpClient();
@@ -39,7 +47,6 @@ builder.Services.AddCors(options =>
               .AllowCredentials();
     });
 });
-
 
 builder.Services.AddAuthentication(options =>
 {
@@ -60,6 +67,7 @@ builder.Services.AddScoped<GoogleAuthService>();
 builder.Services.AddSignalR();
 
 builder.Services.AddEndpointsApiExplorer();
+
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo
@@ -73,16 +81,22 @@ builder.Services.AddSwaggerGen(c =>
     c.CustomSchemaIds(type => type.FullName);
 });
 
+//------ DATABASE ------
 var connectionStringBD = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<AppDBContext>(options => {
     options.LogTo(Console.WriteLine);
     options.UseSqlServer(connectionStringBD);
 });
 
+builder.Services.Configure<IdentityOptions>(options =>
+{
+    options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
+    options.User.RequireUniqueEmail = true;
+});
+
 builder.Services.AddIdentity<Player, IdentityRole>()
     .AddEntityFrameworkStores<AppDBContext>()
     .AddDefaultTokenProviders();
-
 
 builder.Services.AddScoped<PlayerService>();
 builder.Services.AddScoped<ChatService>();
@@ -94,11 +108,10 @@ builder.Services.AddScoped<LangProgrammingService>();
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-builder.Services.Configure<IdentityOptions>(options =>
-{
-    options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
-    options.User.RequireUniqueEmail = true;
-});
+//------ SIGNALR ------
+builder.Services.AddScoped<ISessionNotificationService, SessionNotificationService>();
+builder.Services.AddScoped<ITaskNotificationService, TaskNotificationService>();
+
 
 var app = builder.Build();
 
@@ -133,6 +146,9 @@ app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.MapHub<SessionHub>("/hubs/session");
+app.MapHub<TaskHub>("/hubs/task");
 
 app.MapControllers();
 

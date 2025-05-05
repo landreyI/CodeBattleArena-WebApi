@@ -46,6 +46,15 @@ namespace CodeBattleArena.Server.Controllers
             return Ok(new { player = resultInfo.Success.Player, isEdit = resultInfo.Success.IsEdit });
         }
 
+        [HttpGet("list-players")]
+        public async Task<IActionResult> GetPlayers(CancellationToken cancellationToken)
+        {
+            var players = await _playerService.GetPlayersAsync(cancellationToken);
+            var dtosPlayer = _mapper.Map<List<PlayerDto>>(players);
+
+            return Ok(dtosPlayer);
+        }
+
         [HttpGet("player-sessions")]
         public async Task<IActionResult> GetPlayerSessions(string id, CancellationToken cancellationToken)
         {
@@ -57,7 +66,7 @@ namespace CodeBattleArena.Server.Controllers
         }
 
         [Authorize]
-        [HttpPost("edit-player")]
+        [HttpPut("edit-player")]
         public async Task<IActionResult> EditPlayer([FromBody] PlayerDto playerDto, CancellationToken cancellationToken)
         {
             if (!ModelState.IsValid)
@@ -78,7 +87,7 @@ namespace CodeBattleArena.Server.Controllers
             if(!result.IsSuccess)
                 return UnprocessableEntity(result.Failure);
 
-            return Ok();
+            return Ok(true);
         }
     }
 }

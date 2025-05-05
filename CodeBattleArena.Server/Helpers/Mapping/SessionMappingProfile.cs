@@ -10,11 +10,11 @@ namespace CodeBattleArena.Server.Helpers.Mapping
         {
             CreateMap<SessionDto, Session>()
                 .ForMember(dest => dest.LangProgramming, opt => opt.Ignore())
-                .ForMember(dest => dest.Password, opt => opt.Ignore())
                 .ForMember(dest => dest.TaskProgramming, opt => opt.Ignore());
 
             CreateMap<Session, SessionDto>()
                 .ForMember(dest => dest.IdSession, opt => opt.MapFrom(src => src.IdSession))
+                .ForMember(dest => dest.Password, opt => opt.Ignore())
                 .ForMember(dest => dest.AmountPeople, opt => opt.MapFrom(src => src.PlayerSessions.Count));
         }
     }

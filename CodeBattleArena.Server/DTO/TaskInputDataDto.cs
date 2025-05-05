@@ -5,12 +5,10 @@ namespace CodeBattleArena.Server.DTO
 {
     public class TaskInputDataDto
     {
-        public int IdTaskProgramming { get; set; }
-        public TaskProgrammingDto? TaskProgramming { get; set; }
-
+        public int? IdTaskProgramming { get; set; }
         public string Answer { get; set; }
 
-        public int IdInputDataTask { get; set; }
+        public int? IdInputDataTask { get; set; }
         public InputDataDto? InputData { get; set; }
     }
 }

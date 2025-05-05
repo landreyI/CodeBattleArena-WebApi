@@ -8,7 +8,7 @@ namespace CodeBattleArena.Server.DTO
     {
         public int? IdSession { get; set; }
         [Required(ErrorMessage = "Session Name is required.")]
-        [MinLength(2, ErrorMessage = "Name must be at least 2 characters long.")]
+        [MinLength(3, ErrorMessage = "Name must be at least 3 characters long.")]
         public string Name { get; set; }
 
         [Required(ErrorMessage = "Lang programming is required.")]

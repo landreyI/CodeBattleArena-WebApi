@@ -1,5 +1,6 @@
 ﻿using CodeBattleArena.Server.Data;
 using CodeBattleArena.Server.Enums;
+using CodeBattleArena.Server.Filters;
 using CodeBattleArena.Server.IRepositories;
 using CodeBattleArena.Server.Models;
 using Microsoft.AspNetCore.Http;
@@ -51,6 +52,15 @@ namespace CodeBattleArena.Server.Repositories
             var session = await _context.Sessions.FindAsync(id, cancellationToken);
             if (session != null) _context.Sessions.Remove(session);
         }
+        public async Task DelTaskToSession(int idSession, CancellationToken cancellationToken)
+        {
+            var session = await _context.Sessions.FindAsync(idSession, cancellationToken);
+            if (session != null)
+            {
+                session.TaskProgramming = null;
+                session.TaskId = null;
+            }
+        }
         public async Task<List<Player>> GetListPlayerFromSessionAsync(int idSession, CancellationToken cancellationToken)
         {
             return await _context.PlayersSession
@@ -69,9 +79,19 @@ namespace CodeBattleArena.Server.Repositories
 
             return session != null && !string.IsNullOrEmpty(session.WinnerId);
         }
-        public async Task<List<Session>> GetListSessionAsync(SessionState state, CancellationToken cancellationToken)
+        public async Task<List<Session>> GetListSessionAsync(IFilter<Session>? filter, CancellationToken cancellationToken)
         {
-            return await _context.Sessions.Where(s => s.State == state).ToListAsync(cancellationToken);
+            var query = _context.Sessions
+                .Include(t => t.TaskProgramming)
+                .AsQueryable();
+
+            if (filter != null)
+                query = filter.ApplyTo(query);
+
+            return await query
+                .Include(s => s.LangProgramming)
+                .Include(t => t.PlayerSessions)
+                .ToListAsync(cancellationToken);
         }
         public async Task DeleteExpiredSessionsAsync(DateTime dateTime, CancellationToken cancellationToken)
         {

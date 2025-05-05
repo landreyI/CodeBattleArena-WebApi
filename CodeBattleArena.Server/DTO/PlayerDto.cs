@@ -13,7 +13,7 @@ namespace CodeBattleArena.Server.DTO
         public string Username { get; set; }
         public string? Email { get; set; }
         public string? PhotoUrl { get; set; }
-        public string? Role { get; set; }
+        public IList<string?>? Roles { get; set; }
         public int Victories { get; set; }
         public string? AdditionalInformation { get; set; }
         public DateTime CreatedAt { get; set; }

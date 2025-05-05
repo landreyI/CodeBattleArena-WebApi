@@ -13,7 +13,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Difficulty, TaskProgramming } from "@/models/dbModels";
+import { Difficulty, TaskInputData, TaskProgramming, InputData } from "@/models/dbModels";
 import { useLangsProgramming } from "@/hooks/useLangsProgramming";
 import LoadingScreen from "../common/LoadingScreen";
 import ErrorMessage from "../common/ErrorMessage";
@@ -21,6 +21,11 @@ import EmptyState from "../common/EmptyState";
 import { Textarea } from "../ui/textarea";
 import { useCreateTask } from "@/hooks/task/useCreateTask";
 import { useUpdateTask } from "@/hooks/task/useUpdateTask";
+import { useFieldArray } from "react-hook-form";
+import { useInputDatas } from "../../hooks/task/useInputDatas";
+import { useState } from "react";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTrigger } from "../ui/dialog";
+import { Checkbox } from "../ui/checkbox";
 
 // Определяем схему валидации формы
 export const formSchema = z
@@ -33,6 +38,17 @@ export const formSchema = z
         textTask: z.string().min(10, { message: "Description must be at least 10 characters." }),
         preparation: z.string().nonempty("Preparation is required"),
         verificationCode: z.string().nonempty("Verification code is required"),
+        taskInputData: z.array(
+            z.object({
+                idTaskProgramming: z.number().nullable(),
+                idInputDataTask: z.number().nullable(),
+                inputData: z.object({
+                    idInputData: z.number().nullable(),
+                    data: z.string().min(1),
+                }).nullable(),
+                answer: z.string().min(1),
+            })
+        ).optional(),
     })
 
 interface Props {
@@ -43,9 +59,33 @@ interface Props {
 }
 
 export function TaskForm({ task, onClose, onUpdate, submitLabel }: Props) {
-    const { langsProgramming, loading, error: langsError } = useLangsProgramming();
+    const { langsProgramming, loading: langsLoad, error: langsError } = useLangsProgramming();
+    const { inputDatas, setInputDatas, loading: datasLoad, error: datasError, reloadInputDatas } = useInputDatas();
     const { createTask, isLoading: createIsLoad, error: createError } = useCreateTask();
     const { updateTask, isLoading: updateIsLoad, error: updateError } = useUpdateTask();
+
+    const [openModal, setOpenModal] = useState(false);
+    const [selectedInputDatas, setSelectedInputDatas] = useState<InputData[]>([]);
+
+    // Открытие и закрытие модального окна
+    const openInputDataModal = () => setOpenModal(true);
+    const closeInputDataModal = () => setOpenModal(false);
+
+    const handleSaveSelected = () => {
+        // Добавляем выбранные данные в форму
+        selectedInputDatas.forEach(inputData => {
+            append({
+                idTaskProgramming: null,
+                idInputDataTask: inputData.idInputData,
+                inputData: { idInputData: inputData.idInputData, data: inputData.data },
+                answer: "", // Будет пустым, как указано в задаче
+            });
+        });
+
+        closeInputDataModal();
+    };
+
+
     // Подменяем в зависимости от контекста (создание или редактирование)
     const isEditing = !!task;
 
@@ -61,17 +101,33 @@ export function TaskForm({ task, onClose, onUpdate, submitLabel }: Props) {
             textTask: task?.textTask || "",
             preparation: task?.preparation || "",
             verificationCode: task?.verificationCode || "",
+            taskInputData: task?.taskInputData?.map(data => ({
+                idTaskProgramming: data.idTaskProgramming ?? null,
+                idInputDataTask: data.idInputDataTask ?? null,
+                inputData: data.inputData ? {
+                    idInputData: data.inputData.idInputData ?? null,
+                    data: data.inputData.data,
+                } : null,
+                answer: data.answer,
+            })) || [],
         },
     });
 
-    if (loading) return <LoadingScreen />
+    const { fields, append, remove } = useFieldArray({
+        control: form.control,
+        name: "taskInputData",
+    });
+
+    if (langsLoad || datasLoad) return <LoadingScreen />
     if (langsError) return <ErrorMessage error={langsError} />;
+    if (datasError) return <ErrorMessage error={datasError} />;
     if (!langsProgramming) return <EmptyState message="Langs programming not found" />;
 
     function buildTaskData(values: z.infer<typeof formSchema>, task?: TaskProgramming): TaskProgramming {
         return {
             idTaskProgramming: task?.idTaskProgramming ?? null,
             langProgramming: langsProgramming?.find(lang => lang.idLang === values.idLangProgramming) ?? null,
+            taskInputData: values.taskInputData ?? [],
 
             name: values.name,
             langProgrammingId: values.idLangProgramming,
@@ -123,7 +179,7 @@ export function TaskForm({ task, onClose, onUpdate, submitLabel }: Props) {
                         <FormItem>
                             <FormLabel>Session Name</FormLabel>
                             <FormControl>
-                                <Input placeholder="Enter session name" {...field} />
+                                <Input placeholder="Enter task name" {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -231,6 +287,128 @@ export function TaskForm({ task, onClose, onUpdate, submitLabel }: Props) {
                         </FormItem>
                     )}
                 />
+
+                <div>
+                    <h3 className="text-lg font-semibold mb-2">Test Cases</h3>
+
+                    {/* Модальное окно для выбора входных данных */}
+                    <Dialog open={openModal} onOpenChange={setOpenModal}>
+                        <DialogTrigger>Open Modal</DialogTrigger>
+                        <DialogContent>
+                            <DialogHeader>
+                                <h3>Select Input Data</h3>
+                            </DialogHeader>
+                            <div className="space-y-2">
+                                {inputDatas.map((inputData) => (
+                                    <div key={inputData.idInputData} className="flex items-center gap-2">
+                                        <Checkbox
+                                            checked={selectedInputDatas.includes(inputData)}
+                                            onCheckedChange={(checked) => {
+                                                if (checked) {
+                                                    setSelectedInputDatas((prev) => [...prev, inputData]);
+                                                } else {
+                                                    setSelectedInputDatas((prev) =>
+                                                        prev.filter((item) => item.idInputData !== inputData.idInputData)
+                                                    );
+                                                }
+                                            }}
+                                        />
+                                        <span>{inputData.data}</span>
+                                    </div>
+                                ))}
+                            </div>
+                            <DialogFooter>
+                                <Button variant="outline" onClick={closeInputDataModal}>
+                                    Cancel
+                                </Button>
+                                <Button onClick={handleSaveSelected}>Save</Button>
+                            </DialogFooter>
+                        </DialogContent>
+                    </Dialog>
+
+                    {fields.map((field, index) => (
+                        <div key={field.id} className="mb-4 border rounded p-3 space-y-2">
+                            <div className="flex gap-2 items-start">
+                                <FormField
+                                    control={form.control}
+                                    name={`taskInputData.${index}.inputData.data`}
+                                    render={({ field }) => (
+                                        <FormItem className="flex-1">
+                                            <FormControl>
+                                                <Textarea
+                                                    placeholder="Input"
+                                                    className="resize-none min-h-[40px]"
+                                                    {...field}
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
+                                <FormField
+                                    control={form.control}
+                                    name={`taskInputData.${index}.answer`}
+                                    render={({ field }) => (
+                                        <FormItem className="flex-1">
+                                            <FormControl>
+                                                <Textarea
+                                                    placeholder="Expected output"
+                                                    className="resize-none min-h-[40px]"
+                                                    {...field}
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
+                                <Button
+                                    type="button"
+                                    variant="destructive"
+                                    size="sm"
+                                    className="ml-auto mt-1"
+                                    onClick={() => remove(index)}
+                                >
+                                    Remove
+                                </Button>
+                            </div>
+                        </div>
+                    ))}
+                    <div className="flex justify-between space-x-4">
+                        <Button
+                            type="button"
+                            onClick={() =>
+                                append({
+                                    idTaskProgramming: null,
+                                    idInputDataTask: null,
+                                    inputData: { idInputData: null, data: "" },
+                                    answer: "",
+                                })
+                            }
+                            className="btn-outline btn-animation"
+                        >
+                            Add Test Case
+                        </Button>
+                        <Button
+                            type="button"
+                            onClick={reloadInputDatas}
+                            className="btn-outline btn-animation"
+                        >
+                            Reload input data
+                        </Button>
+
+                        <Button
+                            type="button"
+                            onClick={openInputDataModal}
+                            className="btn-outline btn-animation"
+                        >
+                            Add by Ready
+                        </Button>
+                    </div>
+                </div>
+
+
 
                 <Button type="submit" disabled={isLoading} className="w-full btn-green btn-animation">
                     {isLoading ? "Saving..." : submitLabel}

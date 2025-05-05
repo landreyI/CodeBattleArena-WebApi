@@ -1,8 +1,8 @@
 import React from 'react';
 
-function InfoPage() {
+export function InfoPage() {
     return (
-        <div className="glow-box py-12 px-6">
+        <div className="glow-box">
             <div className="max-w-4xl mx-auto text-center">
                 <h1 className="text-5xl font-bold text-green-400 mb-8 transform transition duration-300 hover:scale-105">
                     Welcome to Code Battle Arena!
@@ -44,7 +44,7 @@ function InfoPage() {
                     Join now and start coding with friends or compete with other talented coders around the world!
                 </p>
 
-                <a href="/signup" className="inline-block mt-8 px-6 py-3 btn-green btn-animation">
+                <a href="/session/create-session" className="inline-block mt-8 px-6 py-3 btn-green btn-animation">
                     Get Started
                 </a>
             </div>

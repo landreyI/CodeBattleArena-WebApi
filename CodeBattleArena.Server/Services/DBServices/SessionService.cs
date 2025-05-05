@@ -1,12 +1,14 @@
 ﻿using AutoMapper;
 using CodeBattleArena.Server.DTO;
 using CodeBattleArena.Server.Enums;
+using CodeBattleArena.Server.Filters;
 using CodeBattleArena.Server.Helpers;
 using CodeBattleArena.Server.IRepositories;
 using CodeBattleArena.Server.Models;
 using CodeBattleArena.Server.Untils;
 using Microsoft.AspNetCore.Identity;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace CodeBattleArena.Server.Services.DBServices
 {
@@ -17,14 +19,16 @@ namespace CodeBattleArena.Server.Services.DBServices
         private readonly IMapper _mapper;
         private readonly UserManager<Player> _userManager;
         private readonly PlayerService _playerService;
+        private readonly TaskService _taskService;
         public SessionService(IUnitOfWork unitOfWork, ILogger<SessionService> logger, IMapper mapper, 
-            UserManager<Player> userManager, PlayerService playerService)
+            UserManager<Player> userManager, PlayerService playerService, TaskService taskService)
         {
             _unitOfWork = unitOfWork;
             _logger = logger;
             _mapper = mapper;
             _userManager = userManager;
             _playerService = playerService;
+            _taskService = taskService;
         }
 
         public async Task<Result<bool, ErrorResponse>> CanAccessSessionPlayersAsync
@@ -41,15 +45,14 @@ namespace CodeBattleArena.Server.Services.DBServices
                 return Result.Success<bool, ErrorResponse>(!isPrivate);
 
             bool isParticipant = session.PlayerSessions.Any(p => p.IdPlayer == userId);
-            var role = await _playerService.GetRolesAsync(userId);
-            bool isEdit = BusinessRules.IsEditRole(role);
+            var roles = await _playerService.GetRolesAsync(userId);
+            bool isEdit = BusinessRules.IsModerationRole(roles);
 
             if (isPrivate && !isParticipant && !isEdit)
                 return Result.Success<bool, ErrorResponse>(false);
 
             return Result.Success<bool, ErrorResponse>(true);
         }
-
         public async Task<Result<bool, ErrorResponse>> CanEditSessionAsync
             (int sessionId, string userId, CancellationToken ct)
         {
@@ -64,8 +67,8 @@ namespace CodeBattleArena.Server.Services.DBServices
                     Error = "Session not found." 
                 });
 
-            var role = await _playerService.GetRolesAsync(userId);
-            bool isEdit = userId == session.CreatorId || BusinessRules.IsEditRole(role);
+            var roles = await _playerService.GetRolesAsync(userId);
+            bool isEdit = userId == session.CreatorId || BusinessRules.IsModerationRole(roles);
 
             return Result.Success<bool, ErrorResponse>(isEdit);
         }
@@ -104,11 +107,88 @@ namespace CodeBattleArena.Server.Services.DBServices
 
             _mapper.Map(dto, session);
 
+            if(session.TaskId != null)
+            {
+                var task = await _unitOfWork.TaskRepository.GetTaskProgrammingAsync(session.TaskId.Value, ct);
+                if (task == null)
+                    return Result.Failure<Unit, ErrorResponse>(new ErrorResponse { Error = "Task not found." });
+
+                if (session.LangProgrammingId != task.LangProgrammingId || dto.TaskId != session.TaskId)
+                {
+                    var resultDeleting = await DeletingTaskToSessionInDbAsync(session.IdSession, ct);
+                    if (!resultDeleting.IsSuccess)
+                        return Result.Failure<Unit, ErrorResponse>(resultDeleting.Failure);
+                }
+            }
+
             var resultUpdate = await UpdateSessionInDbAsync(session, ct);
             if(!resultUpdate.IsSuccess)
                 return Result.Failure<Unit, ErrorResponse>(resultUpdate.Failure);
 
             return Result.Success<Unit, ErrorResponse>(Unit.Value);
+        }
+        public async Task<Result<SessionDto, ErrorResponse>> SelectTaskForSession
+            (string userId, int idSession, int idTask, CancellationToken ct)
+        {
+            var session = await GetSessionAsync(idSession, ct);
+            if (session == null)
+                return Result.Failure<SessionDto, ErrorResponse>(new ErrorResponse{ Error = "Session not found." });
+
+            var task = await _unitOfWork.TaskRepository.GetTaskProgrammingAsync(idTask, ct);
+            if (task == null)
+                return Result.Failure<SessionDto, ErrorResponse>(new ErrorResponse { Error = "Task not found." });
+
+            if(session.LangProgrammingId != task.LangProgrammingId)
+                return Result.Failure<SessionDto, ErrorResponse>(new ErrorResponse 
+                { 
+                    Error = "The programming language of the selected task does not match the session." 
+                });
+
+            var dto = _mapper.Map<SessionDto>(session);
+            dto.TaskId = idTask;
+
+            var resultUpdate = await UpdateSessionAsync(userId, dto, ct);
+            if (!resultUpdate.IsSuccess)
+                return Result.Failure<SessionDto, ErrorResponse>(resultUpdate.Failure);
+
+            return Result.Success<SessionDto, ErrorResponse>(dto);
+        }
+        public async Task<Result<Unit, ErrorResponse>> DeletingSessionAsync
+            (string userId, int idSession, CancellationToken ct)
+        {
+            var session = await GetSessionAsync(idSession, ct);
+            if(session == null)
+                return Result.Failure<Unit, ErrorResponse>(new ErrorResponse { Code = "Session not found."});
+
+            var dto = _mapper.Map<SessionDto>(session);
+
+            var resultIsEdit = await CanEditSessionAsync(dto.IdSession.Value, userId, ct);
+            if (!resultIsEdit.IsSuccess)
+                return Result.Failure<Unit, ErrorResponse>(resultIsEdit.Failure);
+
+            bool isEdit = resultIsEdit.Success;
+            if (!isEdit)
+                return Result.Failure<Unit, ErrorResponse>(new ErrorResponse
+                {
+                    Error = "You do not have sufficient permissions to edit this session."
+                });
+
+            var resultDeleting = await DelSessionInDbAsync(idSession, ct);
+            if (!resultDeleting.IsSuccess)
+                return Result.Failure<Unit, ErrorResponse>(resultDeleting.Failure);
+
+            return Result.Success<Unit, ErrorResponse>(Unit.Value);
+        }
+        public async Task<Result<bool, ErrorResponse>> CheckPassword
+            (string password, int idSession, CancellationToken ct)
+        {
+            var session = await GetSessionAsync (idSession, ct);
+            if (session == null)
+                return Result.Failure<bool, ErrorResponse>(new ErrorResponse { Error = "Session not found" });
+
+            return Result.Success<bool, ErrorResponse>(
+                session.State == SessionState.Public || session.Password == password
+            );
         }
 
         //DATABASE
@@ -134,6 +214,23 @@ namespace CodeBattleArena.Server.Services.DBServices
             await _unitOfWork.SessionRepository.AddTaskToSession(idSession, idTask, ct);
             await _unitOfWork.CommitAsync(ct);
         }
+        public async Task<Result<Unit, ErrorResponse>> DeletingTaskToSessionInDbAsync(int idSession, CancellationToken ct)
+        {
+            try
+            {
+                _unitOfWork.SessionRepository.DelTaskToSession(idSession, ct);
+                await _unitOfWork.CommitAsync(ct);
+                return Result.Success<Unit, ErrorResponse>(Unit.Value);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error when deleting task to Session");
+                return Result.Failure<Unit, ErrorResponse>(new ErrorResponse
+                {
+                    Error = "Database error when deleting task to Session."
+                });
+            }
+        }
         public async Task<Session> GetSessionAsync(int id, CancellationToken ct)
         {
             return await _unitOfWork.SessionRepository.GetSessionAsync(id, ct);
@@ -143,18 +240,21 @@ namespace CodeBattleArena.Server.Services.DBServices
             await _unitOfWork.SessionRepository.ChangePasswordSessionAsync(idSession, password, ct);
             await _unitOfWork.CommitAsync(ct);
         }
-        public async Task<bool> DelSessionInDbAsync(int id, CancellationToken ct)
+        public async Task<Result<Unit, ErrorResponse>> DelSessionInDbAsync(int id, CancellationToken ct)
         {
             try
             {
                 await _unitOfWork.SessionRepository.DelSessionAsync(id, ct);
                 await _unitOfWork.CommitAsync(ct);
-                return true;
+                return Result.Success<Unit, ErrorResponse>(Unit.Value);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error deleting Session");
-                return false;
+                return Result.Failure<Unit, ErrorResponse>(new ErrorResponse
+                {
+                    Error = "Database error when deleting session."
+                });
             }
         }
         public async Task<List<Player>> GetListPlayerFromSessionAsync(int idSession, CancellationToken ct)
@@ -169,9 +269,9 @@ namespace CodeBattleArena.Server.Services.DBServices
         {
             return await _unitOfWork.SessionRepository.GetVictorySessionAsync(id, ct);
         }
-        public async Task<List<Session>> GetListSessionAsync(SessionState state, CancellationToken ct)
+        public async Task<List<Session>> GetListSessionAsync(IFilter<Session>? filter, CancellationToken ct)
         {
-            return await _unitOfWork.SessionRepository.GetListSessionAsync(state, ct);
+            return await _unitOfWork.SessionRepository.GetListSessionAsync(filter, ct);
         }
         public async Task DeleteExpiredSessionsInDbAsync(DateTime dateTime, CancellationToken ct)
         {

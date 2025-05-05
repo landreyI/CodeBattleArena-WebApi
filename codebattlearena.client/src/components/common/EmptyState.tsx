@@ -6,7 +6,7 @@ interface Props {
 
 export function EmptyState({ message }: Props) {
     return (
-        <div className="flex items-center justify-center min-h-screen bg-zinc-900 text-red-400">
+        <div className="flex items-center justify-center min-h-screen text-red-400">
             <p className="text-xl font-mono">{message}</p>
         </div>
     );

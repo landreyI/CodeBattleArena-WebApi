@@ -10,12 +10,15 @@ interface Props {
 export function PlayersList({ players, onDelete, cardWrapperClassName }: Props) {
 
     return (
-        <div className="grid gap-4">
+        <div className="grid gap-2">
             {players.map((player) => (
                 <Link to={`/player/info-player/${player.id}`} title="View player" key={player.id}>
-                    <div className={cardWrapperClassName}>
-                        <PlayerMiniCard player={player} onDelete={onDelete}></PlayerMiniCard>
-                    </div>
+                    <PlayerMiniCard
+                        player={player}
+                        onDelete={onDelete}
+                        className={cardWrapperClassName}
+                    >
+                    </PlayerMiniCard>
                 </Link>
             ))}
         </div>

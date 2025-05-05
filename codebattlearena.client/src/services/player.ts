@@ -14,6 +14,18 @@ export const fetchGetPlayer = async (id: string): Promise<{ player: Player; isEd
     }
 }
 
+export const fetchGetPlayersList = async (): Promise<Player[]> => {
+    try {
+        let response = await api.get(`/Player/list-players`);
+        return response.data;
+    }
+    catch (error) {
+        console.error(error);
+        throw error;
+    }
+}
+
+
 export const fetchGetPlayerSessions = async (id: string): Promise<Session[]> => {
     try {
         let response = await api.get(`/Player/player-sessions`, {
@@ -27,9 +39,9 @@ export const fetchGetPlayerSessions = async (id: string): Promise<Session[]> => 
     }
 }
 
-export const fetchEditPlayer = async (player: Player) => {
+export const fetchEditPlayer = async (player: Player): Promise<boolean> => {
     try {
-        const response = await api.post(`/Player/edit-player`, player);
+        const response = await api.put(`/Player/edit-player`, player);
         return response.data;
     } catch (error) {
         console.error(error);

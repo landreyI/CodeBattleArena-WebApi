@@ -17,9 +17,12 @@ namespace CodeBattleArena.Server.Infrastructure.Attributes
                 return;
             }
 
-            var role = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
+            var roles = user.Claims
+                .Where(c => c.Type == ClaimTypes.Role)
+                .Select(c => c.Value)
+                .ToList();
 
-            if (!BusinessRules.IsEditRole(role))
+            if (!BusinessRules.IsEditRole(roles))
             {
                 context.Result = new ForbidResult();
             }

@@ -23,6 +23,8 @@ import { useState } from "react";
 import InputPassword from "../common/InputPassword";
 import { useCreateSession } from "@/hooks/session/useCreateSession";
 import { useUpdateSession } from "@/hooks/session/useUpdateSession";
+import { useActiveSession } from "@/contexts/SessionContext";
+
 
 // Определяем схему валидации формы
 export const formSchema = z
@@ -34,7 +36,6 @@ export const formSchema = z
             errorMap: () => ({ message: "Invalid session state" }),
         }),
         password: z.string().nullable(),
-        taskId: z.coerce.number().nullable(),
     })
     .superRefine((data, ctx) => {
         if (data.state === SessionState.Private && (!data.password || data.password.trim() === "")) {
@@ -57,13 +58,14 @@ export function SessionForm({ session, onClose, onUpdate, submitLabel }: Props) 
     const { langsProgramming, loading, error: langsError } = useLangsProgramming();
     const { createSession, isLoading: createIsLoad, error: createError } = useCreateSession();
     const { updateSession, isLoading: updateIsLoad, error: updateError } = useUpdateSession();
+    const { refreshSession } = useActiveSession();
     // Подменяем в зависимости от контекста (создание или редактирование)
     const isEditing = !!session;
 
     const isLoading = isEditing ? updateIsLoad : createIsLoad;
     const error = isEditing ? updateError : createError;
 
-    const [ state, setState ] = useState(SessionState.Public);
+    const [state, setState] = useState<SessionState>(session?.state || SessionState.Public);
 
     const navigate = useNavigate();
 
@@ -75,7 +77,6 @@ export function SessionForm({ session, onClose, onUpdate, submitLabel }: Props) 
             idLangProgramming: session?.langProgrammingId || -1,
             state: session?.state || SessionState.Public,
             password: session?.password || null,
-            taskId: session?.taskId || null,
         },
     });
 
@@ -93,6 +94,7 @@ export function SessionForm({ session, onClose, onUpdate, submitLabel }: Props) 
             isFinish: session?.isFinish ?? false,
             amountPeople: session?.amountPeople ?? null,
             langProgramming: langsProgramming?.find(lang => lang.idLang === values.idLangProgramming) ?? null,
+            taskId: session?.taskId ?? null,
             taskProgramming: session?.taskProgramming ?? null,
 
             name: values.name,
@@ -100,7 +102,6 @@ export function SessionForm({ session, onClose, onUpdate, submitLabel }: Props) 
             langProgrammingId: values.idLangProgramming,
             state: values.state,
             password: values.password,
-            taskId: values.taskId,
         };
     }
 
@@ -118,6 +119,7 @@ export function SessionForm({ session, onClose, onUpdate, submitLabel }: Props) 
                 onClose();
 
             if (typeof result === "number") {
+                refreshSession();
                 navigate(`/session/info-session/${result}`);
             }
         } catch (err) {
@@ -241,7 +243,7 @@ export function SessionForm({ session, onClose, onUpdate, submitLabel }: Props) 
                         name="password"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Password (Optional)</FormLabel>
+                                <FormLabel>Password</FormLabel>
                                 <FormControl>
                                     <InputPassword placeholder="Enter password" {...field} />
                                 </FormControl>
@@ -250,20 +252,6 @@ export function SessionForm({ session, onClose, onUpdate, submitLabel }: Props) 
                         )}
                     />
                 )}
-
-                <FormField
-                    control={form.control}
-                    name="taskId"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Task ID (Optional)</FormLabel>
-                            <FormControl>
-                                <Input type="number" placeholder="Enter task ID" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
 
                 <Button type="submit" disabled={isLoading} className="w-full btn-green btn-animation">
                     {isLoading ? "Saving..." : submitLabel}

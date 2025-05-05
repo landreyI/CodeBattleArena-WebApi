@@ -14,7 +14,7 @@ export function useUpdateTask() {
     */
     const updateTask = async (
         task: TaskProgramming,
-    ): Promise<TaskProgramming> => {
+    ): Promise<boolean> => {
         setIsLoading(true);
         setError(null);
 

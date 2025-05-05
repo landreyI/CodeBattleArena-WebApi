@@ -9,16 +9,14 @@ interface Props {
 
 export function SessionList({ sessions, cardWrapperClassName }: Props) {
     return (
-        <div className="grid gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
             {sessions.map((session) => (
                 <Link
                     key={session.idSession}
                     to={`/session/info-session/${session?.idSession}`}
                     title="View session"
                 >
-                    <div className={cardWrapperClassName}>
-                        <SessionMiniCard session={session} />
-                    </div>
+                    <SessionMiniCard session={session} className={cardWrapperClassName} />
                 </Link>
             ))}
         </div>

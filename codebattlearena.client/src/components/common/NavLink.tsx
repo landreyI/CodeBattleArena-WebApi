@@ -1,15 +1,17 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 interface Props {
     href: string;
-    label: string
+    label: string;
+    className?: string;
 }
 
-export function NavLink({ href, label }: Props) {
+export function NavLink({ href, label, className }: Props) {
     return (
-        <a href={href} className="nav-link text-green-400">
+        <Link to={href} className={`nav-link text-green-400 ${className}`}>
             {label}
-        </a>
+        </Link>
     );
 }
 

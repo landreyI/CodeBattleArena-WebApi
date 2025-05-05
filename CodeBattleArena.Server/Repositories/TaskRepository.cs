@@ -37,23 +37,43 @@ namespace CodeBattleArena.Server.Repositories
         {
             return await _context.TaskInputData
                 .Where(t => t.IdTaskProgramming == id)
+                .Include(t => t.TaskProgramming)
+                .Include(i => i.InputData)
                 .ToListAsync(cancellationToken);
         }
         public async Task<List<TaskProgramming>> GetTaskProgrammingListAsync(IFilter<TaskProgramming>? filter, CancellationToken cancellationToken)
         {
             var query = _context.TasksProgramming.AsQueryable();
-            query = filter.ApplyTo(query);
-            return await query.Include(s => s.LangProgramming).ToListAsync(cancellationToken);
+
+            if (filter != null)
+                query = filter.ApplyTo(query);
+
+            return await query.Include(s => s.LangProgramming)
+                .ToListAsync(cancellationToken);
         }
         public async Task<TaskProgramming> GetTaskProgrammingAsync(int id, CancellationToken cancellationToken)
         {
             return await _context.TasksProgramming
-                .Include(s => s.LangProgramming)
+                .Include(l => l.LangProgramming)
+                .Include(t => t.TaskInputData)
+                .ThenInclude(i => i.InputData)
                 .FirstOrDefaultAsync(t => t.IdTaskProgramming == id, cancellationToken);
+        }
+        public async Task<InputData> GetInputDataById(int id)
+        {
+            return await _context.InputData.FirstOrDefaultAsync(i => i.IdInputData == id);
         }
         public void UpdateTaskProgrammingAsync(TaskProgramming taskProgramming)
         {
             _context.TasksProgramming.Update(taskProgramming);
+        }
+        public void UpdateTaskInputDataAsync(TaskInputData taskInputData)
+        {
+            _context.TaskInputData.Update(taskInputData);
+        }
+        public void UpdateInputDataAsync(InputData inputData)
+        {
+            _context.InputData.Update(inputData);
         }
         public async Task DeleteTaskInputDataAsync(int idTaskProgramming, int idInputData, CancellationToken cancellationToken)
         {
@@ -67,6 +87,10 @@ namespace CodeBattleArena.Server.Repositories
             var taskProgramming = await _context.TasksProgramming
                 .FirstOrDefaultAsync(t => t.IdTaskProgramming == id, cancellationToken);
             if(taskProgramming != null) _context.TasksProgramming.Remove(taskProgramming);
+        }
+        public void DeleteListTaskInputDatas(List<TaskInputData> taskInputDatas)
+        {
+            _context.TaskInputData.RemoveRange(taskInputDatas);
         }
     }
 }

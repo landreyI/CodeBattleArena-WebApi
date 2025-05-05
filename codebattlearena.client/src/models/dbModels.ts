@@ -3,7 +3,7 @@ export interface Player {
     username: string;
     email: string | null;
     photoUrl: string | null;
-    role: string | null;
+    roles: string[] | null;
     victories: number;
     additionalInformation: string | null;
     createdAt: Date;
@@ -39,7 +39,7 @@ export interface PlayerSession {
     codeText: string | null;
     time: string | null;
     memory: number | null;
-    state: boolean;
+    isCompleted: boolean;
 }
 
 export interface TaskProgramming {
@@ -53,20 +53,21 @@ export interface TaskProgramming {
     textTask: string;
     preparation: string;
     verificationCode: string;
+
+    taskInputData: TaskInputData[] | null;
 }
 
 export interface TaskInputData {
-    idTaskProgramming: number;
-    taskProgramming: TaskProgramming | null;
+    idTaskProgramming: number | null;
 
     answer: string;
 
-    idInputDataTask: number;
+    idInputDataTask: number | null;
     inputData: InputData | null;
 }
 
 export interface InputData {
-    idInputData: number;
+    idInputData: number | null;
     data: string;
 }
 

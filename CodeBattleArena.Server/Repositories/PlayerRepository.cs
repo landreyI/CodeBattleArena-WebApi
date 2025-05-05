@@ -23,6 +23,11 @@ namespace CodeBattleArena.Server.Repositories
 
             return player;
         }
+
+        public async Task<List<Player>> GetPlayersAsync(CancellationToken cancellationToken)
+        {
+            return await _context.Users.ToListAsync(cancellationToken);
+        }
         public async Task AddVictoryPlayerAsync(string id, CancellationToken cancellationToken)
         {
             var player = await _context.Users.FirstOrDefaultAsync(u => u.Id == id, cancellationToken);

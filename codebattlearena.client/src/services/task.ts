@@ -1,5 +1,6 @@
 import { api } from "../api/axios";
-import { TaskProgramming } from "@/models/dbModels";
+import { InputData, TaskProgramming } from "@/models/dbModels";
+import { TaskProgrammingFilters } from "../models/filters";
 
 export const fetchGetTask = async (id: number): Promise<TaskProgramming> => {
     try {
@@ -14,11 +15,23 @@ export const fetchGetTask = async (id: number): Promise<TaskProgramming> => {
     }
 }
 
-export const fetchGetTasks = async (): Promise<TaskProgramming[]> => {
+export const fetchGetTasks = async (filter?: TaskProgrammingFilters): Promise<TaskProgramming[]> => {
     try {
         let response = await api.get(`Task/list-tasks-programming`, {
-            params: {  }
+            params: filter 
         });
+        return response.data;
+    }
+    catch (error) {
+        console.error(error);
+        throw error;
+    }
+}
+
+
+export const fetchGetInputDatas = async (): Promise<InputData[]> => {
+    try {
+        let response = await api.get(`Task/list-input-datas`);
         return response.data;
     }
     catch (error) {
@@ -38,9 +51,22 @@ export const fetchCreateTask = async (task: TaskProgramming) => {
     }
 }
 
-export const fetchUpdateTask = async (task: TaskProgramming) => {
+export const fetchDeleteTask = async (id: number): Promise<boolean> => {
     try {
-        const response = await api.post(`Task/edit-task-programming`, task);
+        let response = await api.delete(`Task/delete-task-programming`, {
+            params: { id: id }
+        });
+        return response.data;
+    }
+    catch (error) {
+        console.error(error);
+        throw error;
+    }
+}
+
+export const fetchUpdateTask = async (task: TaskProgramming): Promise<boolean> => {
+    try {
+        const response = await api.put(`Task/edit-task-programming`, task);
         return response.data;
     }
     catch (error) {

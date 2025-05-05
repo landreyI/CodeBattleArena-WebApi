@@ -15,6 +15,6 @@ namespace CodeBattleArena.Server.DTO
         [StringLength(50)]
         public string? Time { get; set; }
         public int? Memory { get; set; }
-        public bool State { get; set; }
+        public bool IsCompleted { get; set; }
     }
 }

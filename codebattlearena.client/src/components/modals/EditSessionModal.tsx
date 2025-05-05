@@ -22,7 +22,7 @@ export function EditSessionModal({ open, session, onUpdate, onClose }: Props) {
 
   return (
       <Dialog open={open} onOpenChange={(val) => !val && onClose()}>
-          <DialogContent className="w-full sm:max-w-md max-h-[90vh] overflow-y-auto bg-zinc-900 text-white border border-zinc-700">
+          <DialogContent className="w-full sm:max-w-md max-h-[90vh] overflow-y-auto border">
               <DialogHeader>
                   <DialogTitle className="text-white text-center">Edit Session</DialogTitle>
               </DialogHeader>
@@ -30,7 +30,7 @@ export function EditSessionModal({ open, session, onUpdate, onClose }: Props) {
               <SessionForm session={session} onClose={onClose} onUpdate={onUpdate} submitLabel="Save"></SessionForm>
 
               <DialogFooter>
-                  <DialogDescription className="text-zinc-400 font-mono">
+                  <DialogDescription className="font-mono">
                   </DialogDescription>
               </DialogFooter>
           </DialogContent>

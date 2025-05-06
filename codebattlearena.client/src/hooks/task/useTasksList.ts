@@ -1,27 +1,20 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { TaskProgramming } from "@/models/dbModels";
-import { processError, StandardError } from "@/untils/errorHandler";
 import { useCallback } from "react";
 import { fetchGetTasks } from "@/services/task";
 import { TaskProgrammingFilters } from "@/models/filters";
+import { useAsyncTask } from "../useAsyncTask";
 
 export function useTasksList(filter?: TaskProgrammingFilters) {
     const [tasks, setTasks] = useState<TaskProgramming[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<StandardError | null>(null);
+    const { run: load, loading, error } = useAsyncTask(fetchGetTasks);
 
     const loadTasks = useCallback(async () => {
-        setLoading(true);
-        try {
-            const response = await fetchGetTasks(filter);
-            setTasks(response);
-            setError(null);
-        } catch (err) {
-            setError(err as Error);
-        } finally {
-            setLoading(false);
+        const data = await load(filter);
+        if (data) {
+            setTasks(data);
         }
-    }, [filter]);
+    }, [filter, load]);
 
     useEffect(() => {
         loadTasks();

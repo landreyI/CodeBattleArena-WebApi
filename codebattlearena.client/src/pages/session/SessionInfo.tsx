@@ -65,6 +65,7 @@ export function SessionInfo() {
     const handleJoinSession = async () => {
         if (session && session.idSession) {
             const success = await joinSession(session.idSession, password);
+
             if (success) {
                 setActiveSession(session);
             }

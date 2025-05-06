@@ -28,7 +28,7 @@ namespace CodeBattleArena.Server.DTO
 
         [Required(ErrorMessage = "DateCreating is required.")]
         public DateTime DateCreating { get; set; }
-        public DateTime? DateStart { get; set; }
+        public bool IsStart { get; set; }
         public bool IsFinish { get; set; }
         public int? AmountPeople { get; set; }
     }

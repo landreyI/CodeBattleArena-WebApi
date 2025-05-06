@@ -25,6 +25,19 @@ export const fetchGetActiveSession = async (): Promise<Session | null> => {
     }
 }
 
+export const fetchStartGame = async (idSession: number): Promise<boolean> => {
+    try {
+        let response = await api.get(`Session/start-game`, {
+            params: { idSession: idSession }
+        });
+        return response.data;
+    }
+    catch (error) {
+        console.error(error);
+        throw error;
+    }
+}
+
 export const fetchLeaveSession = async (): Promise<boolean> => {
     try {
         let response = await api.get(`Session/leave-session`);
@@ -92,7 +105,7 @@ export const fetchsSelectTaskForSession = async (sessionId: number, taskId: numb
     }
 }
 
-export const fetchCreateSession = async (session: Session) => {
+export const fetchCreateSession = async (session: Session): Promise<{ idSession: number }> => {
     try {
         const response = await api.post(`Session/create-session`, session);
         return response.data;

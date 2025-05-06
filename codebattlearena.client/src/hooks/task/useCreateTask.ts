@@ -1,13 +1,9 @@
-import { useState } from "react";
-import { z } from "zod";
 import { TaskProgramming } from "@/models/dbModels";
 import { fetchCreateTask } from "@/services/task";
-import { StandardError, processError } from "@/untils/errorHandler";
+import { useAsyncTask } from "../useAsyncTask";
 
 export function useCreateTask() {
-    const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState<StandardError | null>(null);
-
+    const { run: create, loading, error } = useAsyncTask(fetchCreateTask);
     /**
     * Creates a new task and returns its ID.
     * @param values - The form values for creating a task.
@@ -16,21 +12,10 @@ export function useCreateTask() {
     */
     const createTask = async (
         task: TaskProgramming
-    ): Promise<TaskProgramming> => {
-        setIsLoading(true);
-        setError(null);
-
-        try {
-            const idTask = await fetchCreateTask(task);
-            return idTask;
-        } catch (err: unknown) {
-            const standardError: StandardError = processError(err);
-            setError(standardError);
-            throw standardError;
-        } finally {
-            setIsLoading(false);
-        }
+    ) => {
+        const idTask = await create(task);
+        return idTask;
     }
 
-    return { createTask, isLoading, error };
+    return { createTask, loading, error };
 }

@@ -26,7 +26,7 @@ namespace CodeBattleArena.Server.Models
 
         public string? Password { get; set; }
         public DateTime DateCreating { get; set; }
-        public DateTime? DateStart { get; set; }
+        public bool IsStart { get; set; }
         public bool IsFinish { get; set; }
 
         public virtual ICollection<PlayerSession>? PlayerSessions { get; set; }

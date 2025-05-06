@@ -42,6 +42,20 @@ namespace CodeBattleArena.Server.Controllers
         }
 
         [Authorize]
+        [HttpGet("start-game")]
+        public async Task<IActionResult> StartGame(int? idSession, CancellationToken cancellationToken)
+        {
+            if (idSession == null) return BadRequest(new ErrorResponse { Error = "Session ID not specified." });
+
+            var currentUserId = _userManager.GetUserId(User);
+            var resultStart = await _sessionService.StartGameAsync(idSession.Value, currentUserId, cancellationToken);
+            if (!resultStart.IsSuccess)
+                return UnprocessableEntity(resultStart.Failure);
+
+            return Ok(true);
+        }
+
+        [Authorize]
         [HttpGet("active-session")]
         public async Task<IActionResult> GetActiveSession(CancellationToken ct)
         {
@@ -160,6 +174,7 @@ namespace CodeBattleArena.Server.Controllers
             return Ok(playerSessionsDto.Select(S => S.Player));
         }
 
+        [Authorize]
         [HttpGet("select-task-for-session")]
         public async Task<IActionResult> SelectTaskForSession(int? sessionId, int? taskId, CancellationToken cancellationToken)
         {

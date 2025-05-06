@@ -1,26 +1,19 @@
-import React, { useEffect, useState } from "react";
+import { useState } from "react";
 import { InputData } from "@/models/dbModels";
-import { processError, StandardError } from "@/untils/errorHandler";
 import { useCallback } from "react";
 import { fetchGetInputDatas } from "@/services/task";
+import { useAsyncTask } from "../useAsyncTask";
 
 export function useInputDatas() {
     const [inputDatas, setInputDatas] = useState<InputData[]>([]);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<StandardError | null>(null);
+    const { run: load, loading, error } = useAsyncTask(fetchGetInputDatas);
 
     const loadInputDatas = useCallback(async () => {
-        try {
-            setLoading(true);
-            const data = await fetchGetInputDatas();
+        const data = await load();
+        if (data) {
             setInputDatas(data);
-        } catch (err: unknown) {
-            const standardError = processError(err);
-            setError(standardError);
-        } finally {
-            setLoading(false);
         }
-    }, []);
+    }, [load]);
 
     return { inputDatas, setInputDatas, loading, error, reloadInputDatas: loadInputDatas };
 }

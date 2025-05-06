@@ -56,8 +56,8 @@ interface Props {
 
 export function SessionForm({ session, onClose, onUpdate, submitLabel }: Props) {
     const { langsProgramming, loading, error: langsError } = useLangsProgramming();
-    const { createSession, isLoading: createIsLoad, error: createError } = useCreateSession();
-    const { updateSession, isLoading: updateIsLoad, error: updateError } = useUpdateSession();
+    const { createSession, loading: createIsLoad, error: createError } = useCreateSession();
+    const { updateSession, loading: updateIsLoad, error: updateError } = useUpdateSession();
     const { refreshSession } = useActiveSession();
     // Подменяем в зависимости от контекста (создание или редактирование)
     const isEditing = !!session;
@@ -90,7 +90,7 @@ export function SessionForm({ session, onClose, onUpdate, submitLabel }: Props) 
             winnerId: session?.winnerId ?? null,
             creatorId: session?.creatorId ?? "",
             dateCreating: session?.dateCreating ?? new Date(),
-            dateStart: session?.dateStart ?? null,
+            isStart: session?.isStart ?? false,
             isFinish: session?.isFinish ?? false,
             amountPeople: session?.amountPeople ?? null,
             langProgramming: langsProgramming?.find(lang => lang.idLang === values.idLangProgramming) ?? null,
@@ -118,7 +118,7 @@ export function SessionForm({ session, onClose, onUpdate, submitLabel }: Props) 
             if (onClose != null)
                 onClose();
 
-            if (typeof result === "number") {
+            if (typeof result === "number" && !isNaN(result)) {
                 refreshSession();
                 navigate(`/session/info-session/${result}`);
             }

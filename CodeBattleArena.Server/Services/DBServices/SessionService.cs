@@ -31,6 +31,25 @@ namespace CodeBattleArena.Server.Services.DBServices
             _taskService = taskService;
         }
 
+        public async Task<Result<Unit, ErrorResponse>> StartGameAsync(int sessionId, string userId, CancellationToken ct)
+        {
+            var resultIsEdit = await CanEditSessionAsync(sessionId, userId, ct);
+            if (!resultIsEdit.IsSuccess)
+                return Result.Failure<Unit, ErrorResponse>(resultIsEdit.Failure);
+
+            bool isEdit = resultIsEdit.Success;
+            if (!isEdit)
+                return Result.Failure<Unit, ErrorResponse>(new ErrorResponse
+                {
+                    Error = "You do not have sufficient permissions to edit this session."
+                });
+
+            var resultStart = await StartGameInDbAsync(sessionId, ct);
+            if(!resultStart.IsSuccess)
+                return resultStart;
+
+            return Result.Success<Unit, ErrorResponse>(Unit.Value);
+        }
         public async Task<Result<bool, ErrorResponse>> CanAccessSessionPlayersAsync
             (int sessionId, string userId, CancellationToken ct)
         {
@@ -75,6 +94,14 @@ namespace CodeBattleArena.Server.Services.DBServices
         public async Task<Result<Session, ErrorResponse>> CreateSession
             (string userId, SessionDto dto, CancellationToken ct)
         {
+            var sessions = await _unitOfWork.PlayerSessionRepository.GetPlayerSessionByIdPlayer(userId, ct);
+            bool isActive = sessions.Any(s => s.IsCompleted == false);
+            if (isActive)
+                return Result.Failure<Session, ErrorResponse>(new ErrorResponse
+                {
+                    Error = "You already have an active session."
+                });
+
             dto.CreatorId = userId;
             dto.DateCreating = DateTime.Now;
 
@@ -192,6 +219,23 @@ namespace CodeBattleArena.Server.Services.DBServices
         }
 
         //DATABASE
+        private async Task<Result<Unit, ErrorResponse>> StartGameInDbAsync(int idSession, CancellationToken ct)
+        {
+            try
+            {
+                await _unitOfWork.SessionRepository.StartGameAsync(idSession, ct);
+                await _unitOfWork.CommitAsync(ct);
+                return Result.Success<Unit, ErrorResponse>(Unit.Value);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error start game Session");
+                return Result.Failure<Unit, ErrorResponse>(new ErrorResponse
+                {
+                    Error = "Database error when start game session."
+                });
+            }
+        }
         public async Task<Result<Unit, ErrorResponse>> AddSessionInDbAsync(Session session, CancellationToken ct)
         {
             try
@@ -209,12 +253,24 @@ namespace CodeBattleArena.Server.Services.DBServices
                 });
             }
         }
-        public async Task AddTaskToSessionInDbAsync(int idSession, int idTask, CancellationToken ct)
+        private async Task<Result<Unit, ErrorResponse>> AddTaskToSessionInDbAsync(int idSession, int idTask, CancellationToken ct)
         {
-            await _unitOfWork.SessionRepository.AddTaskToSession(idSession, idTask, ct);
-            await _unitOfWork.CommitAsync(ct);
+            try
+            {
+                await _unitOfWork.SessionRepository.AddTaskToSession(idSession, idTask, ct);
+                await _unitOfWork.CommitAsync(ct);
+                return Result.Success<Unit, ErrorResponse>(Unit.Value);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error adding Task to Session");
+                return Result.Failure<Unit, ErrorResponse>(new ErrorResponse
+                {
+                    Error = "Database error when Task to Session."
+                });
+            }
         }
-        public async Task<Result<Unit, ErrorResponse>> DeletingTaskToSessionInDbAsync(int idSession, CancellationToken ct)
+        private async Task<Result<Unit, ErrorResponse>> DeletingTaskToSessionInDbAsync(int idSession, CancellationToken ct)
         {
             try
             {
@@ -235,12 +291,12 @@ namespace CodeBattleArena.Server.Services.DBServices
         {
             return await _unitOfWork.SessionRepository.GetSessionAsync(id, ct);
         }
-        public async Task ChangePasswordSessionInDbAsync(int idSession, string password, CancellationToken ct)
+        private async Task ChangePasswordSessionInDbAsync(int idSession, string password, CancellationToken ct)
         {
             await _unitOfWork.SessionRepository.ChangePasswordSessionAsync(idSession, password, ct);
             await _unitOfWork.CommitAsync(ct);
         }
-        public async Task<Result<Unit, ErrorResponse>> DelSessionInDbAsync(int id, CancellationToken ct)
+        private async Task<Result<Unit, ErrorResponse>> DelSessionInDbAsync(int id, CancellationToken ct)
         {
             try
             {
@@ -285,7 +341,7 @@ namespace CodeBattleArena.Server.Services.DBServices
                 _logger.LogError(ex, "Error when executing a method (DeleteExpiredSessionsAsync)");
             }
         }
-        public async Task<Result<Unit, ErrorResponse>> UpdateSessionInDbAsync(Session session, CancellationToken ct)
+        private async Task<Result<Unit, ErrorResponse>> UpdateSessionInDbAsync(Session session, CancellationToken ct)
         {
             try
             {

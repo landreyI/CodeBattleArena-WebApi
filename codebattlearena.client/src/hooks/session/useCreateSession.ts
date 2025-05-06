@@ -1,35 +1,19 @@
-import { useState } from "react";
-import { Player, Session } from "@/models/dbModels";
+import { Session } from "@/models/dbModels";
 import { fetchCreateSession } from "@/services/session";
-import { StandardError, processError } from "@/untils/errorHandler";
+import { useAsyncTask } from "../useAsyncTask";
 
 export function useCreateSession() {
-    const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState<StandardError | null>(null);
-
+    const { run: create, loading, error } = useAsyncTask(fetchCreateSession);
     /**
     * Creates a new session and returns its ID.
     * @param values - The form values for creating a session.
     * @returns The ID of the created session.
     * @throws StandardError if the session creation fails.
     */
-    const createSession = async (
-        session: Session
-    ): Promise<Session> => {
-        setIsLoading(true);
-        setError(null);
+    const createSession = async (session: Session) => {
+        const data = await create(session);
+        return data;
+    };
 
-        try {
-            const idSession = await fetchCreateSession(session);
-            return idSession;
-        } catch (err: unknown) {
-            const standardError: StandardError = processError(err);
-            setError(standardError);
-            throw standardError;
-        } finally {
-            setIsLoading(false);
-        }
-    }
-
-    return { createSession, isLoading, error };
+    return { createSession, loading, error };
 }

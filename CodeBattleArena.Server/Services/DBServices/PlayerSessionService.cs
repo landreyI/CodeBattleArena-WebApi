@@ -71,6 +71,10 @@ namespace CodeBattleArena.Server.Services.DBServices
 
         public async Task<Session> GetActiveSession(string idPlayer, CancellationToken ct)
         {
+            var checkResult = ValidationHelper.CheckUserId<bool>(idPlayer);
+            if (!checkResult.IsSuccess)
+                return null;
+
             var sessions = await GetPlayerSessionByIdPlayer(idPlayer, ct);
             var activeSessionId = sessions
                 .FirstOrDefault(s => s.IsCompleted == false)?.IdSession;

@@ -1,28 +1,13 @@
-import { useState } from "react";
-import { processError, StandardError } from "@/untils/errorHandler";
 import { fetchDeleteTask } from "@/services/task";
+import { useAsyncTask } from "../useAsyncTask";
 
 export function useDeleteTask() {
-    const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState<StandardError | null>(null);
+    const { run, loading, error } = useAsyncTask(fetchDeleteTask);
 
     const deleteTask = async (taskId: number): Promise<boolean> => {
-        setIsLoading(true);
-        setError(null);
-
-        try {
-            const data = await fetchDeleteTask(taskId);
-            return data;
-        }
-        catch (err: unknown) {
-            const standardError: StandardError = processError(err);
-            setError(standardError);
-            throw standardError;
-        }
-        finally {
-            setIsLoading(false);
-        }
+        const data = await run(taskId);
+        return data ?? false;
     };
 
-    return { deleteTask, error, isLoading };
+    return { deleteTask, error, loading };
 }

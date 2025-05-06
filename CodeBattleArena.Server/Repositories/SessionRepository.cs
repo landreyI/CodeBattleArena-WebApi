@@ -17,6 +17,15 @@ namespace CodeBattleArena.Server.Repositories
             _context = context;
         }
 
+        public async Task StartGameAsync(int idSession, CancellationToken cancellationToken)
+        {
+            var session = await _context.Sessions.FindAsync(idSession, cancellationToken);
+            if (session != null)
+            {
+                session.IsStart = true;
+                _context.Sessions.Update(session);
+            }
+        }
         public async Task AddSessionAsync(Session session, CancellationToken cancellationToken)
         {
             await _context.Sessions.AddAsync(session);

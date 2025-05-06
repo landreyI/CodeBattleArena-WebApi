@@ -6,6 +6,7 @@ namespace CodeBattleArena.Server.IRepositories
 {
     public interface ISessionRepository
     {
+        Task StartGameAsync(int idSession, CancellationToken cancellationToken);
         Task AddSessionAsync(Session session, CancellationToken cancellationToken);
         Task AddTaskToSession(int idSession, int idTask, CancellationToken cancellationToken);
         Task<Session> GetSessionAsync(int id, CancellationToken cancellationToken);

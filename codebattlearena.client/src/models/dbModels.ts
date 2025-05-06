@@ -26,7 +26,7 @@ export interface Session {
     creatorId: string;
     password: string | null;
     dateCreating: Date;
-    dateStart: Date | null;
+    isStart: boolean;
     isFinish: boolean;
     amountPeople: number | null;
 }

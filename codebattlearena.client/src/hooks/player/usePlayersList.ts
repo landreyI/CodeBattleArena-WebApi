@@ -1,32 +1,24 @@
 import { useEffect, useState } from "react";
 import { Player } from "@/models/dbModels";
-import { processError, StandardError } from "@/untils/errorHandler";
 import { fetchGetPlayersList } from "@/services/player";
 import { useCallback } from "react";
+import { useAsyncTask } from "../useAsyncTask";
 
-export function usePlayersList(playerId?: string) {
+export function usePlayersList() {
     const [players, setPlayers] = useState<Player[]>([]);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<StandardError | null>(null);
+    const { run: load, loading, error } = useAsyncTask(fetchGetPlayersList);
 
     const loadPlayers = useCallback(async () => {
-        try {
-            setLoading(true);
-            const data = await fetchGetPlayersList();
+        const data = await load();
+        if (data) {
             setPlayers(data);
         }
-        catch (err: unknown) {
-            const standardError = processError(err);
-            setError(standardError);
-        }
-        finally {
-            setLoading(false);
-        }
-    },[]);
+
+    }, [load]);
 
     useEffect(() => {
         loadPlayers();
-    }, []);
+    }, [loadPlayers]);
 
     return { players, setPlayers, loadPlayers, loading, error }
 }

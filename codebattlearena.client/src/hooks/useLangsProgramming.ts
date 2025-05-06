@@ -1,30 +1,17 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { LangProgramming } from "@/models/dbModels";
-import { processError, StandardError } from "@/untils/errorHandler";
 import { fetchGetListLangsProgramming } from "@/services/langProgramming";
+import { useAsyncTask } from "./useAsyncTask";
 export function useLangsProgramming() {
     const [langsProgramming, setLangsProgramming] = useState<LangProgramming[] | null>(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<StandardError | null>(null);
+    const { run: load, loading, error } = useAsyncTask(fetchGetListLangsProgramming);
 
     useEffect(() => {
-        const fetchList = async () => {
-            try {
-                const data = await fetchGetListLangsProgramming();
-
-                setLangsProgramming(data);
-            }
-            catch (err: unknown) {
-                const standardError = processError(err);
-                setError(standardError);
-            }
-            finally {
-                setLoading(false);
-            }
-        };
-
-        fetchList();
-    }, []);
+        (async () => {
+            const data = await load();
+            setLangsProgramming(data);
+        })();
+    }, [load]);
 
     return { langsProgramming, setLangsProgramming, loading, error };
 }

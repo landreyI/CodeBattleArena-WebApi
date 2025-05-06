@@ -1,29 +1,19 @@
 import { useEffect, useState, useCallback } from "react";
 import { Player } from "@/models/dbModels";
-import { processError, StandardError } from "@/untils/errorHandler";
 import { fetchGetSessionPlayers } from "@/services/session";
+import { useAsyncTask } from "../useAsyncTask";
 
 export function useSessionPlayers(sessionId?: number, enabled: boolean = true) {
     const [players, setPlayers] = useState<Player[]>([]);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<StandardError | null>(null);
+    const { run: load, loading, error } = useAsyncTask(fetchGetSessionPlayers);
 
     const loadPlayers = useCallback(async () => {
         if (!sessionId) return;
-        try {
-            setLoading(true);
-            const data = await fetchGetSessionPlayers(sessionId);
+        const data = await load(sessionId);
+        if (data) {
             setPlayers(data);
-            setError(null);
         }
-        catch (err: unknown) {
-            const standardError = processError(err);
-            setError(standardError);
-        }
-        finally {
-            setLoading(false);
-        }
-    }, [sessionId]);
+    }, [sessionId, load]);
 
     useEffect(() => {
         if (!enabled) return;

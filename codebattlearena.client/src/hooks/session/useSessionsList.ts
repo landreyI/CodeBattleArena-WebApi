@@ -1,26 +1,19 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { fetchGetSessionsList } from "@/services/session";
 import { Session } from "@/models/dbModels";
-import { processError, StandardError } from "@/untils/errorHandler";
 import { useCallback } from "react";
+import { useAsyncTask } from "../useAsyncTask";
 
 export function useSessionsList() {
     const [sessions, setSessions] = useState<Session[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<StandardError | null>(null);
+    const { run: load, loading, error } = useAsyncTask(fetchGetSessionsList);
 
     const loadSessions = useCallback(async () => {
-        try {
-            setLoading(true);
-            const data = await fetchGetSessionsList();
+        const data = await load();
+        if (data) {
             setSessions(data);
-        } catch (err: unknown) {
-            const standardError = processError(err);
-            setError(standardError);
-        } finally {
-            setLoading(false);
         }
-    },[]);
+    }, [load]);
 
     useEffect(() => {
         loadSessions();

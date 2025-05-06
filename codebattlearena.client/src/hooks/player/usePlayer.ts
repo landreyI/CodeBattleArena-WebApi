@@ -1,37 +1,30 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { fetchGetPlayer } from "@/services/player";
 import { Player } from "@/models/dbModels";
-import { StandardError, processError } from "@/untils/errorHandler";
+import { StandardError } from "@/untils/errorHandler";
+import { useAsyncTask } from "../useAsyncTask";
 
 export function usePlayer(playerId: string | undefined) {
     const [player, setPlayer] = useState<Player | null>(null);
     const [isEdit, setIsEdit] = useState<boolean>();
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<StandardError | null>(null);
+    const { run: loadPlayer, loading, error, setError } = useAsyncTask(fetchGetPlayer);
 
     useEffect(() => {
         if (!playerId) {
             setError(new StandardError("Player ID not specified"));
-            setLoading(false);
             return;
         }
 
-        const fetchPlayer = async () => {
-            try {
-                const data = await fetchGetPlayer(playerId);
-
+        (async () => {
+            const data = await loadPlayer(playerId);
+            if (data) {
                 setPlayer(data.player);
                 setIsEdit(data.isEdit);
-            } catch (err: unknown) {
-                const standardError = processError(err);
-                setError(standardError);
-            } finally {
-                setLoading(false);
             }
-        };
+        })();
 
-        fetchPlayer();
-    }, [playerId]);
+
+    }, [playerId, loadPlayer]);
 
     return { player, setPlayer, isEdit, loading, error };
 }

@@ -61,8 +61,8 @@ interface Props {
 export function TaskForm({ task, onClose, onUpdate, submitLabel }: Props) {
     const { langsProgramming, loading: langsLoad, error: langsError } = useLangsProgramming();
     const { inputDatas, setInputDatas, loading: datasLoad, error: datasError, reloadInputDatas } = useInputDatas();
-    const { createTask, isLoading: createIsLoad, error: createError } = useCreateTask();
-    const { updateTask, isLoading: updateIsLoad, error: updateError } = useUpdateTask();
+    const { createTask, loading: createIsLoad, error: createError } = useCreateTask();
+    const { updateTask, loading: updateIsLoad, error: updateError } = useUpdateTask();
 
     const [openModal, setOpenModal] = useState(false);
     const [selectedInputDatas, setSelectedInputDatas] = useState<InputData[]>([]);
@@ -177,7 +177,7 @@ export function TaskForm({ task, onClose, onUpdate, submitLabel }: Props) {
                     name="name"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Session Name</FormLabel>
+                            <FormLabel>Task Name</FormLabel>
                             <FormControl>
                                 <Input placeholder="Enter task name" {...field} />
                             </FormControl>

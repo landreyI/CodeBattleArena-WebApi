@@ -1,32 +1,20 @@
-import { useState, useCallback } from "react";
+import { useCallback } from "react";
 import { fetchsSelectTaskForSession } from "@/services/session";
-import { processError, StandardError } from "@/untils/errorHandler";
+import { StandardError } from "@/untils/errorHandler";
+import { useAsyncTask } from "../useAsyncTask";
 
 export function useSelectTaskForSession() {
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<StandardError | null>(null);
+    const { run: select, loading, error, setError } = useAsyncTask(fetchsSelectTaskForSession);
 
-    const selectTask = useCallback(async (sessionId: number | null, taskId: number | null): Promise<boolean> => {
-        setLoading(true);
-        setError(null);
-
+    const selectTask = useCallback(async (sessionId: number | null, taskId: number | null): Promise<boolean | null> => {
         if (!sessionId || !taskId) {
             const err = new StandardError("ID not specified");
             setError(err);
-            setLoading(false);
             return false;
         }
 
-        try {
-            const result = await fetchsSelectTaskForSession(sessionId, taskId);
-            return result;
-        } catch (err: unknown) {
-            const standardError = processError(err);
-            setError(standardError);
-            return false;
-        } finally {
-            setLoading(false);
-        }
+        const result = await select(sessionId, taskId);
+        return result;
     }, []);
 
     return { selectTask, loading, error };

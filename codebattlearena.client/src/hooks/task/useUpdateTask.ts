@@ -1,11 +1,10 @@
-import { useState } from "react";
+
 import { TaskProgramming } from "@/models/dbModels";
 import { fetchUpdateTask } from "@/services/task";
-import { StandardError, processError } from "@/untils/errorHandler";
+import { useAsyncTask } from "../useAsyncTask";
 
 export function useUpdateTask() {
-    const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState<StandardError | null>(null);
+    const { run: update, loading, error } = useAsyncTask(fetchUpdateTask);
 
     /**
     * Update task.
@@ -15,20 +14,9 @@ export function useUpdateTask() {
     const updateTask = async (
         task: TaskProgramming,
     ): Promise<boolean> => {
-        setIsLoading(true);
-        setError(null);
-
-        try {
-            const data = await fetchUpdateTask(task);
-            return data;
-        } catch (err: unknown) {
-            const standardError: StandardError = processError(err);
-            setError(standardError);
-            throw standardError;
-        } finally {
-            setIsLoading(false);
-        }
+        const data = await update(task);
+        return data ?? false;
     }
 
-    return { updateTask, isLoading, error };
+    return { updateTask, loading, error };
 }

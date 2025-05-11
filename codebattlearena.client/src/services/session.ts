@@ -1,5 +1,5 @@
 import axios, { api } from "../api/axios";
-import { Player, Session } from "@/models/dbModels";
+import { Player, Session, PlayerSession } from "@/models/dbModels";
 
 export const fetchGetSession = async (id: number): Promise<{ session: Session, isEdit: boolean }> => {
     try {
@@ -38,30 +38,7 @@ export const fetchStartGame = async (idSession: number): Promise<boolean> => {
     }
 }
 
-export const fetchLeaveSession = async (): Promise<boolean> => {
-    try {
-        let response = await api.get(`Session/leave-session`);
-        return response.data;
-    }
-    catch (error) {
-        console.error(error);
-        throw error;
-    }
-}
 
-
-export const fetchJoinSession = async (idSession: number, password?: string): Promise<boolean> => {
-    try {
-        let response = await api.get(`Session/join-session`, {
-            params: { idSession: idSession, password: password }
-        });
-        return response.data;
-    }
-    catch (error) {
-        console.error(error);
-        throw error;
-    }
-}
 
 export const fetchGetSessionsList = async (): Promise<Session[]> => {
     try {

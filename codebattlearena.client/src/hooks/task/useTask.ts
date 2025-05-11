@@ -19,7 +19,7 @@ export function useTask(taskId: number | undefined) {
             setTask(data);
         })();
 
-    }, [taskId]);
+    }, [taskId, load]);
 
     return { task, setTask, loading, error };
 }

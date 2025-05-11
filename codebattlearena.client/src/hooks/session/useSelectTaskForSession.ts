@@ -15,7 +15,7 @@ export function useSelectTaskForSession() {
 
         const result = await select(sessionId, taskId);
         return result;
-    }, []);
+    }, [select]);
 
     return { selectTask, loading, error };
 }

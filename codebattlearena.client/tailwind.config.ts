@@ -18,11 +18,17 @@ export default {
                 },
             },
             colors: {
-                // Пример настройки цвета для тем
-                background: 'var(--background)',
-                foreground: 'var(--foreground)',
-                primary: 'var(--primary)',
-                // добавьте сюда другие переменные для цвета
+                background: 'var(--color-background)',
+                foreground: 'var(--color-foreground)',
+
+                blue: 'var(--color-blue)',
+                'blue-foreground': 'var(--color-primary-foreground)',
+
+                green: 'var(--color-green)',
+                red: 'var(--color-red)',
+                yellow: 'var(--color-yellow)',
+                violet: 'var(--color-violet)',
+                gray: 'var(--color-gray)',
             },
         },
     },

@@ -15,7 +15,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using System.Threading;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace CodeBattleArena.Server.Controllers
 {
@@ -52,71 +51,24 @@ namespace CodeBattleArena.Server.Controllers
             if (!resultStart.IsSuccess)
                 return UnprocessableEntity(resultStart.Failure);
 
+            var session = await _sessionService.GetSessionAsync(idSession.Value, cancellationToken);
+            var dto = _mapper.Map<SessionDto>(session);
+
+            await _sessionNotificationService.NotifyStartGameAsync(idSession.Value);
+            await _sessionNotificationService.NotifySessionUpdatedGroupAsync(dto);
+            await _sessionNotificationService.NotifySessionUpdatedAllAsync(dto);
+
             return Ok(true);
         }
 
         [Authorize]
         [HttpGet("active-session")]
-        public async Task<IActionResult> GetActiveSession(CancellationToken ct)
+        public async Task<IActionResult> GetActiveSession(CancellationToken cancellationToken)
         {
             var currentUserId = _userManager.GetUserId(User);
-
-            var checkResult = ValidationHelper.CheckUserId<Unit>(currentUserId);
-            if (!checkResult.IsSuccess)
-                return UnprocessableEntity(checkResult.Failure);
-
-            var activeSession = await _playerSessionService.GetActiveSession(currentUserId, ct);
-            return Ok(_mapper.Map<SessionDto>(activeSession));
-        }
-
-        [Authorize]
-        [HttpGet("leave-session")]
-        public async Task<IActionResult> LeaveSession(CancellationToken cancellationToken)
-        {
-            var currentUserId = _userManager.GetUserId(User);
-
-            var checkResult = ValidationHelper.CheckUserId<Unit>(currentUserId);
-            if (!checkResult.IsSuccess)
-                return UnprocessableEntity(checkResult.Failure);
 
             var activeSession = await _playerSessionService.GetActiveSession(currentUserId, cancellationToken);
-            if(activeSession == null)
-                return Ok(false);
-
-            var resultDeleting = await _playerSessionService.DelPlayerSessionInDbAsync(activeSession.IdSession, currentUserId, cancellationToken);
-            if (!resultDeleting.IsSuccess)
-                return UnprocessableEntity(resultDeleting.Failure);
-
-            var player = await _playerService.GetPlayerAsync(currentUserId, cancellationToken);
-            var dtoPlayer = _mapper.Map<PlayerDto>(player);
-            await _sessionNotificationService.NotifySessionUnjoinAsync(activeSession.IdSession, dtoPlayer);
-
-            return Ok(true);
-        }
-
-        [Authorize]
-        [HttpGet("join-session")]
-        public async Task<IActionResult> JoinSession(int? idSession, string? password, CancellationToken cancellationToken)
-        {
-            if (idSession == null) return BadRequest(new ErrorResponse { Error = "Session ID not specified." });
-
-            var resultCheck = await _sessionService.CheckPassword(password, idSession.Value, cancellationToken);
-            if (!resultCheck.IsSuccess)
-                return UnprocessableEntity(resultCheck.Failure);
-            if (!resultCheck.Success)
-                return UnprocessableEntity(new ErrorResponse { Error = "Wrong password." });
-
-            var currentUserId = _userManager.GetUserId(User);
-            var resultCreatePlayerSession = await _playerSessionService.CreatPlayerSession(currentUserId, idSession.Value, cancellationToken);
-            if (!resultCreatePlayerSession.IsSuccess)
-                return UnprocessableEntity(resultCreatePlayerSession.Failure);
-
-            var player = await _playerService.GetPlayerAsync(currentUserId, cancellationToken);
-            var dtoPlayer = _mapper.Map<PlayerDto>(player);
-
-            await _sessionNotificationService.NotifySessionJoinAsync(idSession.Value, dtoPlayer);
-
-            return Ok(true);
+            return Ok(_mapper.Map<SessionDto>(activeSession));
         }
 
         [HttpGet("info-session")]

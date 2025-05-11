@@ -30,5 +30,9 @@ namespace CodeBattleArena.Server.Helpers
         {
             return session.CreatorId == userId;
         }
+        public static bool IsStartetSession(Session session)
+        {
+            return session.IsStart;
+        }
     }
 }

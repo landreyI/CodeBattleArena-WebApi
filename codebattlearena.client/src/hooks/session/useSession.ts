@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { fetchGetSession } from "@/services/session";
 import { Session } from "@/models/dbModels";
-import { processError, StandardError } from "@/untils/errorHandler";
+import { StandardError } from "@/untils/errorHandler";
 import { useAsyncTask } from "../useAsyncTask";
 
 export function useSession(sessionId: number | undefined) {

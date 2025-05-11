@@ -1,8 +1,8 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Session } from "@/models/dbModels";
 import { Badge } from "../ui/badge";
-import { Users, Code2, Calendar } from "lucide-react";
-import { getStateColor } from "@/untils/helpers";
+import { Users, Code2, Calendar, Gamepad2 } from "lucide-react";
+import { getIsStartGameColor, getStateColor } from "@/untils/helpers";
 
 interface SessionCardProps {
     session: Session;
@@ -14,6 +14,13 @@ export function SessionCard({ session }: SessionCardProps){
             <CardContent className="p-6">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-4">
                     <div className="text-xl font-bold font-mono">{session.name || "Unnamed"}</div>
+                    <div className="">
+                        <Badge className={getIsStartGameColor(session.isStart)}>
+                            <Gamepad2 size={14} className="mr-1" />
+                            {session.isStart ? "The game has started" : "The game hasn't started"}
+                        </Badge>
+                    </div>
+
                     <div className="flex items-center gap-2">
                         <Badge className={getStateColor(session.state)}>{session.state}</Badge>
                     </div>

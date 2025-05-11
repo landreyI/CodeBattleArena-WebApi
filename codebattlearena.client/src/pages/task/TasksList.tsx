@@ -65,7 +65,7 @@ export function TasksListPage() {
 
     return (
         <>
-            {deleteError && <InlineNotification message={deleteError.message} position="top" className="bg-red-700" />} {/* не прерывая рендер */}
+            {deleteError && <InlineNotification message={deleteError.message} position="top" className="bg-red" />} {/* не прерывая рендер */}
 
             <TaskFilter filter={filter} onChange={handleChangeFilter} handleSearch={handleSeacrh}></TaskFilter>
 

@@ -24,6 +24,7 @@ namespace CodeBattleArena.Server.Repositories
             return await _context.PlayersSession
                 .Include(p => p.Player)
                 .Include(s => s.Session)
+                .ThenInclude(l => l.LangProgramming)
                 .FirstOrDefaultAsync(s => s.IdSession == idSession && s.IdPlayer == idPlayer,
                 cancellationToken);
         }

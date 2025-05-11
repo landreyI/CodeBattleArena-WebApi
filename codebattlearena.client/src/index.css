@@ -3,40 +3,60 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* Тема сгруппирована по категориям */
 @theme inline {
+    /* Радиусы */
     --radius-sm: calc(var(--radius) - 4px);
     --radius-md: calc(var(--radius) - 2px);
     --radius-lg: var(--radius);
     --radius-xl: calc(var(--radius) + 4px);
+    /* Основные цвета */
     --color-background: var(--background);
     --color-foreground: var(--foreground);
-    --color-glow-box: var(--glow-box);
+    --color-primary: var(--primary);
+    --color-primary-foreground: var(--primary-foreground);
+    --color-secondary: var(--secondary);
+    --color-secondary-foreground: var(--secondary-foreground);
+    --color-accent: var(--accent);
+    --color-accent-foreground: var(--accent-foreground);
+    --color-muted: var(--muted);
+    --color-muted-foreground: var(--muted-foreground);
+    --color-border: var(--border);
+    --color-input: var(--input);
+    --color-ring: var(--ring);
+    /* Специфичные цвета */
+    --color-red: var(--destructive);
+    --color-red-pressed: var(--destructive-pressed);
+    --color-green: var(--success);
+    --color-green-pressed: var(--success-pressed);
+    --color-yellow: var(--yellow);
+    --color-yellow-pressed: var(--yellow-pressed);
+    --color-gray: var(--gray);
+    --color-gray-pressed: var(--gray-pressed);
+    --color-blue: var(--blue);
+    --color-blue-pressed: var(--blue-pressed);
+    --color-violet: var(--violet);
+    --color-violet-pressed: var(--violet-pressed);
+    --color-bubbles: var(--bubbles);
+    --color-bubbles-pressed: var(--bubbles-pressed);
+    /* Компоненты */
     --color-card: var(--card);
     --color-card-foreground: var(--card-foreground);
+    --color-glow-box: var(--glow-box);
     --color-header-bg: var(--header-bg);
     --color-header-foreground: var(--header-foreground);
     --color-footer-bg: var(--footer-bg);
     --color-footer-foreground: var(--footer-foreground);
     --color-popover: var(--popover);
     --color-popover-foreground: var(--popover-foreground);
-    --color-primary: var(--primary);
-    --color-primary-foreground: var(--primary-foreground);
-    --color-secondary: var(--secondary);
-    --color-secondary-foreground: var(--secondary-foreground);
-    --color-muted: var(--muted);
-    --color-muted-foreground: var(--muted-foreground);
-    --color-bubbles: var(--color-bubbles);
-    --color-accent: var(--accent);
-    --color-accent-foreground: var(--accent-foreground);
-    --color-destructive: var(--destructive);
-    --color-border: var(--border);
-    --color-input: var(--input);
-    --color-ring: var(--ring);
+    /* Диаграммы */
     --color-chart-1: var(--chart-1);
     --color-chart-2: var(--chart-2);
     --color-chart-3: var(--chart-3);
     --color-chart-4: var(--chart-4);
     --color-chart-5: var(--chart-5);
+    --color-chart-6: var(--chart-6);
+    /* Сайдбар */
     --color-sidebar: var(--sidebar);
     --color-sidebar-foreground: var(--sidebar-foreground);
     --color-sidebar-primary: var(--sidebar-primary);
@@ -47,12 +67,41 @@
     --color-sidebar-ring: var(--sidebar-ring);
 }
 
+/* Светлая тема */
 :root {
+    /* Радиусы */
     --radius: 0.5rem;
+    /* Основные цвета */
     --background: #f7fafc; /* Чистый светлый фон */
     --foreground: #1a202c; /* Темный текст */
+    --primary: #22c55e; /* Зеленый акцент */
+    --primary-foreground: #1a202c;
+    --secondary: #4ade80; /* Яркий зеленый для hover */
+    --secondary-foreground: #1a202c;
+    --accent: #c4c4c4; /* Серый для акцентов */
+    --accent-foreground: #1a202c;
+    --muted: #e2e8f0; /* Мягкий серый */
+    --muted-foreground: #4a5568;
+    --border: #e2e8f0;
+    --input: #e2e8f0;
+    --ring: #4ade80;
+    /* Специфичные цвета */
+    --destructive: #fc5353; /* Красный */
+    --destructive-pressed: #e34444;
+    --success: #30db6f; /* Зеленый */
+    --success-pressed: #2bc262;
+    --yellow: #facc15; /* Желтый */
+    --yellow-pressed: #ca8a04;
+    --gray: #b6c0d6; /* серый */
+    --gray-pressed: #9ea7ba;
+    --blue: #3b82f6; /* Синий */
+    --blue-pressed: #1d4ed8;
+    --violet: #a855f7; /* Фиолетовый */
+    --violet-pressed: #7e22ce;
+    --bubbles: #8bf092; /* Пузыри (зеленый) */
+    /* Компоненты */
     --glow-box: #ffffffcc; /* Полупрозрачный белый для карточек */
-    --card: #ffffff; /* Чистый белый для других элементов */
+    --card: #ffffff; /* Чистый белый */
     --card-foreground: #1a202c;
     --header-bg: #ffffff; /* Белый хедер */
     --header-foreground: #1a202c;
@@ -60,24 +109,14 @@
     --footer-foreground: #1a202c;
     --popover: #ffffff;
     --popover-foreground: #1a202c;
-    --primary: #2de370; /* Зеленый акцент */
-    --primary-foreground: #1a202c;
-    --secondary: #4ade80; /* Яркий зеленый для hover */
-    --secondary-foreground: #1a202c;
-    --muted: #e2e8f0; /* Мягкий серый */
-    --muted-foreground: #4a5568;
-    --color-bubbles: #8bf092; /* Пузыри */
-    --accent: #c4c4c4; /* Наведение на кнопки */
-    --accent-foreground: #191919; /* текст при наведении на кнопки */
-    --destructive: #ef4444;
-    --border: #e2e8f0;
-    --input: #e2e8f0;
-    --ring: #4ade80;
-    --chart-1: #22c55e;
-    --chart-2: #4ade80;
-    --chart-3: #a855f7;
-    --chart-4: #1dd160;
-    --chart-5: #dc2626;
+    /* Диаграммы */
+    --chart-1: #22c55e; /* Зеленый */
+    --chart-2: #4ade80; /* Светло-зеленый */
+    --chart-3: #a855f7; /* Фиолетовый */
+    --chart-4: #3b82f6; /* Синий */
+    --chart-5: #ef4444; /* Красный */
+    --chart-6: #d1d5db; /* Серый */
+    /* Сайдбар */
     --sidebar: #ffffff;
     --sidebar-foreground: #1a202c;
     --sidebar-primary: #22c55e;
@@ -88,12 +127,41 @@
     --sidebar-ring: #4ade80;
 }
 
+/* Темная тема */
 .dark {
+    /* Радиусы */
     --radius: 0.5rem;
+    /* Основные цвета */
     --background: #1a1a1a; /* Темный фон */
     --foreground: #e2e8f0; /* Светлый текст */
+    --primary: #16a34a; /* Темный зеленый акцент */
+    --primary-foreground: #050505;
+    --secondary: #4ade80; /* Яркий зеленый для hover */
+    --secondary-foreground: #e2e8f0;
+    --accent: #636363; /* Серый для акцентов */
+    --accent-foreground: #030303;
+    --muted: #404047; /* Темный серый */
+    --muted-foreground: #9ca3af;
+    --border: #3f3f46;
+    --input: #585861;
+    --ring: #4ade80;
+    /* Специфичные цвета */
+    --destructive: #eb2a2a; /* Темный красный */
+    --destructive-pressed: #d62424;
+    --success: #16a34a; /* Темный зеленый */
+    --success-pressed: #12873d;
+    --yellow: #eab308; /* Темный желтый */
+    --yellow-pressed: #c79806;
+    --gray: #6b7280; /* Темный серый */
+    --gray-pressed: #4f545e;
+    --blue: #2563eb; /* Темный синий */
+    --blue-pressed: #2054c7;
+    --violet: #9333ea; /* Темный фиолетовый */
+    --violet-pressed: #7d2cc7;
+    --bubbles: #15803d; /* Темные пузыри (зеленый) */
+    /* Компоненты */
     --glow-box: #2d2d32cc; /* Полупрозрачный темный для карточек */
-    --card: #2d2d32; /* Темный серый для других элементов */
+    --card: #2d2d32; /* Темный серый */
     --card-foreground: #e2e8f0;
     --header-bg: #2d2d32; /* Темный хедер */
     --header-foreground: #e2e8f0;
@@ -101,34 +169,25 @@
     --footer-foreground: #e2e8f0;
     --popover: #2d2d32;
     --popover-foreground: #e2e8f0;
-    --primary: #22c55e;
-    --primary-foreground: #1a202c;
-    --secondary: #4ade80;
-    --secondary-foreground: #1a202c;
-    --muted: #3f3f46;
-    --muted-foreground: #9ca3af;
-    --color-bubbles: #147338; /* Пузыри */
-    --accent: #545353; /* Наведение на кнопки */
-    --accent-foreground: #ffffff;
-    --destructive: #ef4444;
-    --border: #3f3f46;
-    --input: #3f3f46;
-    --ring: #4ade80;
-    --chart-1: #22c55e;
-    --chart-2: #4ade80;
-    --chart-3: #a855f7;
-    --chart-4: #16a34a;
-    --chart-5: #dc2626;
+    /* Диаграммы */
+    --chart-1: #16a34a; /* Темный зеленый */
+    --chart-2: #4ade80; /* Светло-зеленый */
+    --chart-3: #9333ea; /* Темный фиолетовый */
+    --chart-4: #2563eb; /* Темный синий */
+    --chart-5: #dc2626; /* Темный красный */
+    --chart-6: #6b7280; /* Темный серый */
+    /* Сайдбар */
     --sidebar: #2d2d32;
     --sidebar-foreground: #e2e8f0;
-    --sidebar-primary: #22c55e;
-    --sidebar-primary-foreground: #1a202c;
-    --sidebar-accent: #a855f7;
+    --sidebar-primary: #16a34a;
+    --sidebar-primary-foreground: #e2e8f0;
+    --sidebar-accent: #9333ea;
     --sidebar-accent-foreground: #ffffff;
     --sidebar-border: #3f3f46;
     --sidebar-ring: #4ade80;
 }
 
+/* Базовые стили */
 @layer base {
     * {
         @apply border-border outline-ring/50;

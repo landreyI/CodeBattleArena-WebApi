@@ -1,6 +1,7 @@
 import { Session } from "@/models/dbModels";
 import { fetchCreateSession } from "@/services/session";
 import { useAsyncTask } from "../useAsyncTask";
+import { useCallback } from "react";
 
 export function useCreateSession() {
     const { run: create, loading, error } = useAsyncTask(fetchCreateSession);
@@ -10,10 +11,10 @@ export function useCreateSession() {
     * @returns The ID of the created session.
     * @throws StandardError if the session creation fails.
     */
-    const createSession = async (session: Session) => {
+    const createSession = useCallback(async (session: Session) => {
         const data = await create(session);
         return data;
-    };
+    }, [create]);
 
     return { createSession, loading, error };
 }

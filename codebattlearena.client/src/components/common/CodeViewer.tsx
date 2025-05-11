@@ -4,32 +4,40 @@ import { useEffect, useRef, useState } from "react";
 
 interface Props {
     code: string;
+    onChange?: (value: string) => void;
     language: string;
-    maxHeight?: number; // лучше числом для удобства
+    maxHeight?: number;
+    readonly?: boolean;
+    autoResize?: boolean;
 }
 
-export function CodeViewer({ code, language, maxHeight = 400 }: Props) {
+export function CodeViewer({
+    code,
+    onChange,
+    language,
+    maxHeight = 400,
+    readonly = true,
+    autoResize,
+}: Props) {
     const { isDarkMode } = useTheme();
     const editorRef = useRef<any>(null);
     const monacoRef = useRef<any>(null);
-    const containerRef = useRef<HTMLDivElement>(null);
-    const [height, setHeight] = useState<number>(100);
+    const [height, setHeight] = useState<number | string>(autoResize ? 100 : "100%");
 
     const handleEditorDidMount = (editor: any, monaco: any) => {
         editorRef.current = editor;
         monacoRef.current = monaco;
 
-        // Установка темы
         monaco.editor.setTheme(isDarkMode ? "vs-dark" : "vs");
 
-        // Вычисляем высоту автоматически
-        const lineHeight = editor.getOption(monaco.editor.EditorOption.lineHeight);
-        const lineCount = editor.getModel()?.getLineCount() ?? 1;
-        const padding = 20; // сверху и снизу
-        const newHeight = Math.min(lineCount * lineHeight + padding, maxHeight);
-
-        setHeight(newHeight);
-        editor.layout(); // важно после изменения размеров
+        if (autoResize) {
+            const lineHeight = editor.getOption(monaco.editor.EditorOption.lineHeight);
+            const lineCount = editor.getModel()?.getLineCount() ?? 1;
+            const padding = 20;
+            const newHeight = Math.min(lineCount * lineHeight + padding, maxHeight);
+            setHeight(newHeight);
+            editor.layout();
+        }
     };
 
     useEffect(() => {
@@ -39,15 +47,27 @@ export function CodeViewer({ code, language, maxHeight = 400 }: Props) {
     }, [isDarkMode]);
 
     return (
-        <div ref={containerRef} className="rounded-xl overflow-hidden shadow-sm border border-muted" style={{ maxHeight, overflowY: "auto" }}>
+        <div
+            className="rounded-xl overflow-hidden shadow-sm border border-muted"
+            style={{
+                maxHeight: autoResize ? maxHeight : undefined,
+                height: autoResize ? undefined : "100%",
+                overflowY: "auto",
+            }}
+        >
             <Editor
                 height={height}
-                defaultLanguage={language}
-                defaultValue={code}
+                language={language}
+                value={code}
+                onChange={(val) => {
+                    if (!readonly && onChange) {
+                        onChange(val ?? "");
+                    }
+                }}
                 theme={isDarkMode ? "vs-dark" : "vs"}
                 onMount={handleEditorDidMount}
                 options={{
-                    readOnly: true,
+                    readOnly: readonly,
                     minimap: { enabled: false },
                     scrollBeyondLastLine: false,
                     lineNumbers: "off",

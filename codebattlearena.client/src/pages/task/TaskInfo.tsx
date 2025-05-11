@@ -47,7 +47,7 @@ export function TaskInfo() {
         setNotification(null);
         const isSuccess = await selectTask(activeSession?.idSession ?? null, Number(taskId));
         if (isSuccess)
-            setNotification("Success");
+            navigate(`/session/info-session/${activeSession?.idSession}`);
     };
 
     if (loading) return <LoadingScreen />
@@ -58,10 +58,10 @@ export function TaskInfo() {
 
     return (
         <>
-            {error && <InlineNotification message={error.message} position="top" className="bg-red-700" />}
+            {error && <InlineNotification message={error.message} position="top" className="bg-red" />}
 
             {notification && (
-                <InlineNotification message={notification} position="top" className="bg-sky-600" />
+                <InlineNotification message={notification} position="top" className="bg-blue" />
             )}
 
             <div className="glow-box">

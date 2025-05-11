@@ -15,7 +15,7 @@ import LoadingScreen from "@/components/common/LoadingScreen";
 import ErrorMessage from "@/components/common/ErrorMessage";
 import EmptyState from "@/components/common/EmptyState";
 import DropdownItem, { DropdownItemData } from "@/components/common/DropdownItem";
-import { usePlayerSessions } from "@/hooks/player/usePlayerSessions";
+import { usePlayerSessions } from "@/hooks/playerSession/usePlayerSessions";
 import SettingPlayerMenu from "@/components/menu/SettingPlayerMenu";
 
 export function PlayerPage() {

@@ -1,7 +1,8 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from "react";
 import { Session } from "@/models/dbModels";
-import { fetchGetActiveSession, fetchLeaveSession } from "@/services/session";
+import { fetchGetActiveSession } from "@/services/session";
 import { useMemo } from "react";
+import { fetchLeaveSession } from "@/services/playerSession";
 
 type SessionContextType = {
     activeSession: Session | null;

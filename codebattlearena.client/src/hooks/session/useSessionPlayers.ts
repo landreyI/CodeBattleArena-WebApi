@@ -9,9 +9,11 @@ export function useSessionPlayers(sessionId?: number, enabled: boolean = true) {
 
     const loadPlayers = useCallback(async () => {
         if (!sessionId) return;
-        const data = await load(sessionId);
-        if (data) {
-            setPlayers(data);
+        try {
+            const data = await load(sessionId);
+            setPlayers(data ?? []);
+        } catch {
+            setPlayers([]);
         }
     }, [sessionId, load]);
 

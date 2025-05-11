@@ -1,5 +1,5 @@
-import axios, { api } from "../api/axios";
-import { Player, Session } from "@/models/dbModels";
+import { api } from "../api/axios";
+import { Player } from "@/models/dbModels";
 
 export const fetchGetPlayer = async (id: string): Promise<{ player: Player; isEdit: boolean }> => {
     try {
@@ -17,20 +17,6 @@ export const fetchGetPlayer = async (id: string): Promise<{ player: Player; isEd
 export const fetchGetPlayersList = async (): Promise<Player[]> => {
     try {
         let response = await api.get(`/Player/list-players`);
-        return response.data;
-    }
-    catch (error) {
-        console.error(error);
-        throw error;
-    }
-}
-
-
-export const fetchGetPlayerSessions = async (id: string): Promise<Session[]> => {
-    try {
-        let response = await api.get(`/Player/player-sessions`, {
-            params: { id: id }
-        });
         return response.data;
     }
     catch (error) {

@@ -10,40 +10,44 @@ export const getArray = (input: any): any[] => {
 export const getStateColor = (state: string) => {
     switch (state) {
         case SessionState.Public:
-            return "bg-green-500 text-black";
+            return "bg-green";
         case SessionState.Private:
-            return "bg-red-500 text-black";
+            return "bg-red";
         default:
-            return "bg-gray-500 text-black";
+            return "bg-gray";
     }
 };
 
 export const getRoleColor = (role: string): string => {
     switch (role) {
         case Role.Admin:
-            return "bg-yellow-400";
+            return "bg-yellow";
         case Role.Manager:
-            return "bg-blue-500";
+            return "bg-blue";
         case Role.Moderator:
-            return "bg-violet-400";
+            return "bg-violet";
         case Role.Banned:
-            return "bg-red-400";
+            return "bg-red";
         case Role.User:
-            return "bg-green-500";
+            return "bg-green";
         default:
-            return "bg-gray-400"; // дефолтный стиль для неизвестных ролей
+            return "bg-gray"; // дефолтный стиль для неизвестных ролей
     }
 };
 
 export const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
         case Difficulty.Easy:
-            return "bg-green-500 text-black";
+            return "bg-green";
         case Difficulty.Medium:
-            return "bg-yellow-500 text-black";
+            return "bg-yellow";
         case Difficulty.Hard:
-            return "bg-red-500 text-black";
+            return "bg-red";
         default:
-            return "bg-gray-500 text-black";
+            return "bg-gray";
     }
+};
+
+export const getIsStartGameColor = (isStart: boolean) => {
+    return isStart ? "bg-red" : "bg-green"
 };

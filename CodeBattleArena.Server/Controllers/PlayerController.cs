@@ -55,16 +55,6 @@ namespace CodeBattleArena.Server.Controllers
             return Ok(dtosPlayer);
         }
 
-        [HttpGet("player-sessions")]
-        public async Task<IActionResult> GetPlayerSessions(string id, CancellationToken cancellationToken)
-        {
-            var playerSessions = await _playerSessionService.GetPlayerSessionByIdPlayer(id, cancellationToken);
-
-            var playerSessionsDto = _mapper.Map<List<PlayerSessionDto>>(playerSessions);
-
-            return Ok(playerSessionsDto.Select(S => S.Session));
-        }
-
         [Authorize]
         [HttpPut("edit-player")]
         public async Task<IActionResult> EditPlayer([FromBody] PlayerDto playerDto, CancellationToken cancellationToken)

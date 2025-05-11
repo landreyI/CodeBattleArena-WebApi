@@ -47,7 +47,13 @@ namespace CodeBattleArena.Server.Services.DBServices
                         Error="Session not found." 
                     });
 
-                if(session.MaxPeople == session.PlayerSessions.Count)
+                if (BusinessRules.IsStartetSession(session))
+                    return Result.Failure<PlayerSession, ErrorResponse>(new ErrorResponse
+                    {
+                        Error = "The session owner has already started the game."
+                    });
+
+                if (session.MaxPeople == session.PlayerSessions.Count)
                     return Result.Failure<PlayerSession, ErrorResponse>(new ErrorResponse
                     {
                         Error = "This session has the maximum number of participants."
@@ -127,16 +133,19 @@ namespace CodeBattleArena.Server.Services.DBServices
                 return false;
             }
         }
-        public async Task FinishTaskInDbAsync(int idSession, string idPlayer, CancellationToken ct)
+        public async Task<Result<Unit, ErrorResponse>> FinishTaskInDbAsync(int idSession, string idPlayer, CancellationToken ct)
         {
             try
             {
                 await _unitOfWork.PlayerSessionRepository.FinishTaskAsync(idSession, idPlayer, ct);
                 await _unitOfWork.CommitAsync(ct);
+                return Result.Success<Unit, ErrorResponse>(Unit.Value);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error FinishTask");
+                return Result.Failure<Unit, ErrorResponse>(new ErrorResponse { Error = "Database error when finish task playerSession." });
+
             }
         }
         public async Task<Result<Unit, ErrorResponse>> DelPlayerSessionInDbAsync(int idSession, string idPlayer, CancellationToken ct)

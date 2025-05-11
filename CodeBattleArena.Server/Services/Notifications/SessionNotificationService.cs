@@ -2,7 +2,9 @@
 using CodeBattleArena.Server.Hubs;
 using CodeBattleArena.Server.Models;
 using CodeBattleArena.Server.Services.Notifications.INotifications;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.SignalR;
+using System.Numerics;
 
 namespace CodeBattleArena.Server.Services.Notifications
 {
@@ -48,6 +50,17 @@ namespace CodeBattleArena.Server.Services.Notifications
         {
             await _hubContext.Clients.Group($"Session-{idSession}")
                 .SendAsync("SessionLeave", player);
+        }
+
+        public async Task NotifyStartGameAsync(int idSession)
+        {
+            await _hubContext.Clients.Group($"Session-{idSession}")
+                .SendAsync("StartGame");
+        }
+        public async Task NotifyUpdateCodePlayerAsync(int idSession, string code)
+        {
+            await _hubContext.Clients.Group($"Session-{idSession}")
+                .SendAsync("UpdateCodePlayer", code);
         }
     }
 }

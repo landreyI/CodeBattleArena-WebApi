@@ -10,15 +10,17 @@ export function useTasksList(filter?: TaskProgrammingFilters) {
     const { run: load, loading, error } = useAsyncTask(fetchGetTasks);
 
     const loadTasks = useCallback(async () => {
-        const data = await load(filter);
-        if (data) {
-            setTasks(data);
+        try {
+            const data = await load(filter);
+            setTasks(data ?? []);
+        } catch {
+            setTasks([]);
         }
     }, [filter, load]);
 
     useEffect(() => {
         loadTasks();
-    }, []);
+    }, [loadTasks]);
 
     return { tasks, setTasks, loading, error, reloadTasks: loadTasks };
 }

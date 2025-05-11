@@ -16,7 +16,7 @@ export function useAsyncTask<T extends any[], R>(
         } catch (err: unknown) {
             const standardError = processError(err);
             setError(standardError);
-            return null;
+            throw err;
         } finally {
             setLoading(false);
         }

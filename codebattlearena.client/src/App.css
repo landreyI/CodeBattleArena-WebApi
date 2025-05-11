@@ -103,15 +103,17 @@ footer.footer {
     text-align: center;
     z-index: 1;
 }
-    .footer p {
-        color: var(--color-footer-foreground);
-        font-size: 0.95rem;
-        font-weight: 500;
-        transition: color 0.3s ease;
+
+.footer p {
+    color: var(--color-footer-foreground);
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+    .footer p:hover {
+        color: var(--color-primary);
     }
-        .footer p:hover {
-            color: var(--color-primary);
-        }
 
 .social-link {
     display: inline-flex;
@@ -237,21 +239,30 @@ h1, h2, h3 {
     }
 
 .btn-green {
-    background-color: var(--color-primary);
+    background-color: var(--color-green);
     color: var(--color-primary-foreground);
 }
 
     .btn-green:hover {
-        background-color: var(--color-chart-4);
+        background-color: var(--color-green-pressed);
+    }
+
+.btn-gray {
+    background-color: var(--color-gray);
+    color: var(--color-primary-foreground);
+}
+
+    .btn-gray:hover {
+        background-color: var(--color-gray-pressed);
     }
 
 .btn-red {
-    background-color: var(--color-destructive);
+    background-color: var(--color-red);
     color: var(--color-primary-foreground);
 }
 
     .btn-red:hover {
-        background-color: var(--color-chart-5);
+        background-color: var(--color-red-pressed);
     }
 
 /* Мобильная адаптация */

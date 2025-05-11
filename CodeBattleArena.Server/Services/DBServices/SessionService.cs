@@ -132,6 +132,12 @@ namespace CodeBattleArena.Server.Services.DBServices
             if (session == null)
                 return Result.Failure<Unit, ErrorResponse>(new ErrorResponse { Error = "Session not found." });
 
+            if (BusinessRules.IsStartetSession(session))
+                return Result.Failure<Unit, ErrorResponse>(new ErrorResponse
+                {
+                    Error = "The game has started, session data cannot be changed."
+                });
+
             _mapper.Map(dto, session);
 
             if(session.TaskId != null)
@@ -165,7 +171,13 @@ namespace CodeBattleArena.Server.Services.DBServices
             if (task == null)
                 return Result.Failure<SessionDto, ErrorResponse>(new ErrorResponse { Error = "Task not found." });
 
-            if(session.LangProgrammingId != task.LangProgrammingId)
+            if(BusinessRules.IsStartetSession(session))
+                return Result.Failure<SessionDto, ErrorResponse>(new ErrorResponse
+                {
+                    Error = "The game has been started, the task cannot be changed."
+                });
+
+            if (session.LangProgrammingId != task.LangProgrammingId)
                 return Result.Failure<SessionDto, ErrorResponse>(new ErrorResponse 
                 { 
                     Error = "The programming language of the selected task does not match the session." 

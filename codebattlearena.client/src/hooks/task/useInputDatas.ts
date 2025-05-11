@@ -9,9 +9,11 @@ export function useInputDatas() {
     const { run: load, loading, error } = useAsyncTask(fetchGetInputDatas);
 
     const loadInputDatas = useCallback(async () => {
-        const data = await load();
-        if (data) {
-            setInputDatas(data);
+        try {
+            const data = await load();
+            setInputDatas(data ?? []);
+        } catch {
+            setInputDatas([]);
         }
     }, [load]);
 

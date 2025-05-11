@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { Session } from "@/models/dbModels";
-import { processError, StandardError } from "@/untils/errorHandler";
-import { fetchGetPlayerSessions } from "@/services/player";
+import { fetchGetPlayerSessions } from "@/services/playerSession";
 import { useCallback } from "react";
 import { useAsyncTask } from "../useAsyncTask";
 
@@ -11,13 +10,14 @@ export function usePlayerSessions(playerId?: string, enabled: boolean = true) {
 
     const loadSessions = useCallback(async () => {
         if (!playerId || !enabled) return;
-
-        const data = await load(playerId);
-        if (data) {
-            setSessions(data);
+        try {
+            const data = await load(playerId);
+            setSessions(data ?? []);
+        } catch {
+            setSessions([]);
         }
 
-    }, [load]);
+    }, [load, playerId]);
 
     useEffect(() => {
         loadSessions();

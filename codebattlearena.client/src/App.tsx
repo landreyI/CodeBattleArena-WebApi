@@ -18,6 +18,7 @@ import { ThemeProvider } from './contexts/ThemeContext';
 import { SessionProvider } from './contexts/SessionContext';
 import { SignalRSessionHubProvider } from './contexts/SignalRSessionHubContext';
 import { SignalRTaskHubProvider } from './contexts/SignalRTaskHubContext';
+import PlayerCodePage from './pages/session/PlayerCodePage';
 
 const App = () => {
     return (
@@ -57,6 +58,7 @@ const App = () => {
                                         <Route path="/session/create-session" element={<CreateSession />} />
                                         <Route path="/task/list-task" element={<TasksList />} />
                                         <Route path="/task/info-task/:taskId" element={<TaskInfo />} />
+                                        <Route path="/session/player-code" element={<PlayerCodePage />} />
                                     </Routes>
                                 </main>
                                 <Footer />

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { fetchJoinSession } from "@/services/session";
+import { fetchJoinSession } from "@/services/playerSession";
 import { useCallback } from "react";
 import { useAsyncTask } from "../useAsyncTask";
 

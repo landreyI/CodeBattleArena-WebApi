@@ -11,6 +11,8 @@ interface SessionEventHandlers {
     onListUpdate?: (session: Session) => void;
     onAdding?: (session: Session) => void;
     onListDelete?: (id: number) => void;
+    onStartGame?: () => void;
+    onUpdateCodePlayer?: (code: string) => void;
 }
 
 export function useSessionEventsHub(sessionId: number | undefined, handlers: SessionEventHandlers) {
@@ -44,5 +46,12 @@ export function useSessionEventsHub(sessionId: number | undefined, handlers: Ses
 
     useSessionHubEvent<[number]>("SessionsListDeleting", (id: number) => {
         handlers.onListDelete?.(id);
+    });
+
+    useSessionHubEvent<[]>("StartGame", () => {
+        handlers.onStartGame?.();
+    });
+    useSessionHubEvent<[string]>("UpdateCodePlayer", (code: string) => {
+        handlers.onUpdateCodePlayer?.(code);
     });
 }

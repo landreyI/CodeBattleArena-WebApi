@@ -1,17 +1,38 @@
 ﻿import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ExternalLink, SeparatorVertical, Users } from "lucide-react";
 import { useActiveSession } from "@/contexts/SessionContext";
 import { Button } from "@/components/ui/button";
 import InlineNotification from "@/components/common/InlineErrorNotification";
-import { useSessionHubConnection, useSessionHubEvent } from "@/contexts/SignalRSessionHubContext";
-import { useSignalRGroupSubscription } from "@/hooks/hubs/session/useSignalRGroupSubscription";
-import { Player, Session } from "@/models/dbModels";
-import { useSessionEventsHub } from "../../hooks/hubs/session/useSessionEventsHub";
+import { useSessionEventsHub } from "@/hooks/hubs/session/useSessionEventsHub";
+import { useAuth } from "@/contexts/AuthContext";
+import { useEffect } from "react";
 
 export function SessionActiveMenu() {
     const { activeSession, setActiveSession, leaveSession } = useActiveSession();
     const [notification, setNotification] = useState<string | null>(null);
+    const { user } = useAuth();
+
+    const [countdown, setCountdown] = useState<number | null>(null);
+    const countdownDuration = 10; // second
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (countdown === null || !user?.id || !activeSession?.idSession) return;
+
+        if (countdown === 0) {
+            const query = new URLSearchParams({
+                playerId: user!.id,
+                sessionId: activeSession!.idSession.toString(),
+            });
+            navigate(`/session/player-code?${query.toString()}`);
+            return;
+        }
+
+        const timer = setTimeout(() => setCountdown((prev) => (prev ?? 1) - 1), 1000);
+
+        return () => clearTimeout(timer);
+    }, [countdown]);
 
     useSessionEventsHub(activeSession?.idSession ?? undefined, {
         onDelete: () => {
@@ -37,6 +58,10 @@ export function SessionActiveMenu() {
                 });
             }
         },
+        onStartGame: () => {
+            if (!user?.id || !activeSession?.idSession) return;
+            setCountdown(countdownDuration);
+        }
     });
 
     if (!activeSession) return null;
@@ -45,6 +70,17 @@ export function SessionActiveMenu() {
         <>
             {notification && (
                 <InlineNotification message={notification} position="top" className="bg-sky-600" />
+            )}
+
+            {countdown !== null && countdown > 0 && (
+                <InlineNotification
+                    key={`countdown-${countdown}`}
+                    message={`Game starts in ${countdown} seconds...`}
+                    position="top"
+                    className="bg-green-600 text-white"
+                    duration={1000}
+                    fadeDuration={100}
+                />
             )}
 
             <div className="w-full p-4 header" style={{ zIndex: 1 }}>

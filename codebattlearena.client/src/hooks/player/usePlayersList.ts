@@ -9,11 +9,12 @@ export function usePlayersList() {
     const { run: load, loading, error } = useAsyncTask(fetchGetPlayersList);
 
     const loadPlayers = useCallback(async () => {
-        const data = await load();
-        if (data) {
-            setPlayers(data);
+        try {
+            const data = await load();
+            setPlayers(data ?? []);
+        } catch {
+            setPlayers([]);
         }
-
     }, [load]);
 
     useEffect(() => {

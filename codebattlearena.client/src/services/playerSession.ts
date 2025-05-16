@@ -1,11 +1,23 @@
 import { api } from "../api/axios";
 import { Player, PlayerSession, Session } from "@/models/dbModels";
+import { ExecutionResult } from "@/models/executionResult";
 
 export const fetchGetPlayerSessions = async (id: string): Promise<Session[]> => {
     try {
         let response = await api.get(`/PlayerSession/player-sessions`, {
             params: { id: id }
         });
+        return response.data;
+    }
+    catch (error) {
+        console.error(error);
+        throw error;
+    }
+}
+
+export const fetchFinishTaskPlayer = async (): Promise<boolean> => {
+    try {
+        let response = await api.put(`PlayerSession/finish-task`);
         return response.data;
     }
     catch (error) {
@@ -52,20 +64,9 @@ export const fetchUpdateCodePlayer = async (sessionId?: number, code?: string): 
     }
 }
 
-export const fetchCheckCodePlayer = async (code: string) => {
+export const fetchCheckCodePlayer = async (code: string): Promise<ExecutionResult> => {
     try {
         let response = await api.post(`PlayerSession/check-code-player`, { code });
-        return response.data;
-    }
-    catch (error) {
-        console.error(error);
-        throw error;
-    }
-}
-
-export const fetchFinishTask = async (): Promise<boolean> => {
-    try {
-        let response = await api.get(`PlayerSession/finish-task`);
         return response.data;
     }
     catch (error) {

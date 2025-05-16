@@ -2,11 +2,10 @@
 
 interface Props {
     setShowEditSession: (e: any) => void;
-    handleDeletAllPlayers: (e: any) => void;
     handleDeletSession: (e: any) => void;
 }
 
-export function SettingSessionMenu({ setShowEditSession, handleDeletAllPlayers, handleDeletSession }: Props) {
+export function SettingSessionMenu({ setShowEditSession, handleDeletSession }: Props) {
 
     return (
         <GenericDropdownMenu
@@ -21,7 +20,6 @@ export function SettingSessionMenu({ setShowEditSession, handleDeletAllPlayers, 
             menuLabel="Setting"
             actions={[
                 { label: "Edit session", onClick: setShowEditSession, shortcut: "⌘E" },
-                { label: "Exclude all players", onClick: handleDeletAllPlayers, shortcut: "⨉E" },
                 { label: "Delete session", onClick: handleDeletSession, shortcut: "⨉D" },
             ]}
         />

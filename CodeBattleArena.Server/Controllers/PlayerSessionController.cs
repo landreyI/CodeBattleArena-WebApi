@@ -3,11 +3,15 @@ using CodeBattleArena.Server.DTO;
 using CodeBattleArena.Server.Helpers;
 using CodeBattleArena.Server.Models;
 using CodeBattleArena.Server.Services.DBServices;
+using CodeBattleArena.Server.Services.Judge0;
 using CodeBattleArena.Server.Services.Notifications.INotifications;
 using CodeBattleArena.Server.Untils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Reflection.Emit;
+using System.Runtime.CompilerServices;
+using System.Threading;
 
 namespace CodeBattleArena.Server.Controllers
 {
@@ -19,18 +23,22 @@ namespace CodeBattleArena.Server.Controllers
         private readonly PlayerService _playerService;
         private readonly PlayerSessionService _playerSessionService;
         private readonly UserManager<Player> _userManager;
+        private readonly TaskService _taskService;
+        private readonly Judge0Client _judge0Client;
         private readonly ISessionNotificationService _sessionNotificationService;
         private readonly IMapper _mapper;
         public PlayerSessionController(SessionService sessionService, UserManager<Player> userManager,
             IMapper mapper, PlayerSessionService playerSessionService, PlayerService playerService,
-            ISessionNotificationService sessionNotificationService)
+            TaskService taskService, ISessionNotificationService sessionNotificationService, Judge0Client judge0Client)
         {
             _sessionService = sessionService;
             _userManager = userManager;
             _mapper = mapper;
             _playerSessionService = playerSessionService;
             _playerService = playerService;
+            _taskService = taskService;
             _sessionNotificationService = sessionNotificationService;
+            _judge0Client = judge0Client;
         }
 
         [HttpGet("info-player-session")]
@@ -62,7 +70,7 @@ namespace CodeBattleArena.Server.Controllers
 
             // Ограничение: нельзя просматривать чужой код
             bool isViewingOtherPlayer = targetPlayerId != authUserId;
-            bool isOpponentInSession = session.PlayerSessions.Any(p => p.IdPlayer == authUserId);
+            bool isOpponentInSession = session.PlayerSessions.Any(p => p.IdPlayer == authUserId && !p.IsCompleted);
             if (isViewingOtherPlayer && isOpponentInSession)
             {
                 return NotFound(new ErrorResponse { Error = "You can't view your opponent's code :)" });
@@ -76,14 +84,26 @@ namespace CodeBattleArena.Server.Controllers
         }
 
         [Authorize]
+        [HttpPut("finish-task")]
+        public async Task<IActionResult> FinistTask(CancellationToken cancellationToken)
+        {
+            var currentUserId = _userManager.GetUserId(User);
+            var activeSession = await _playerSessionService.GetActiveSession(currentUserId, cancellationToken);
+            if (activeSession == null)
+                return NotFound(new ErrorResponse { Error = "Not found active session." });
+
+            var resultFinish = await _playerSessionService.FinishTask(activeSession.IdSession, currentUserId, cancellationToken);
+            if (!resultFinish.IsSuccess)
+                return UnprocessableEntity(resultFinish.Failure);
+
+            return Ok(true);
+        }
+
+        [Authorize]
         [HttpGet("leave-session")]
         public async Task<IActionResult> LeaveSession(CancellationToken cancellationToken)
         {
             var currentUserId = _userManager.GetUserId(User);
-
-            var checkResult = ValidationHelper.CheckUserId<Unit>(currentUserId);
-            if (!checkResult.IsSuccess)
-                return UnprocessableEntity(checkResult.Failure);
 
             var activeSession = await _playerSessionService.GetActiveSession(currentUserId, cancellationToken);
             if (activeSession == null)
@@ -135,24 +155,36 @@ namespace CodeBattleArena.Server.Controllers
 
         [Authorize]
         [HttpPost("check-code-player")]
-        public async Task<IActionResult> CheckCodePlayer([FromBody] CodeRequest codeRequest)
-        {
-            return Ok();
-        }
-
-        [Authorize]
-        [HttpPut("finish-task")]
-        public async Task<IActionResult> FinishTask(CancellationToken cancellationToken)
+        public async Task<IActionResult> CheckCodePlayer([FromBody] CodeRequest codeRequest, CancellationToken cancellationToken)
         {
             var currentUserId = _userManager.GetUserId(User);
+
             var activeSession = await _playerSessionService.GetActiveSession(currentUserId, cancellationToken);
-            if (activeSession == null) return NotFound(new ErrorResponse { Error = "Active session not found." });
+            if (activeSession == null)
+                return NotFound(new ErrorResponse { Error = "Not found active session." });
 
-            var resultFinish = await _playerSessionService.FinishTaskInDbAsync(activeSession.IdSession, currentUserId, cancellationToken);
-            if (!resultFinish.IsSuccess)
-                return UnprocessableEntity(resultFinish.Failure);
+            var inputDataList = await _taskService.GetTaskInputDataByIdTaskProgrammingAsync(
+                activeSession.TaskId!.Value,
+                cancellationToken);
 
-            return Ok(true);
+            var payload = CodeCheckBuilder.Build(codeRequest, activeSession.TaskProgramming, inputDataList);
+
+            var result = await _judge0Client.CheckAsync(
+                payload.source_code,
+                activeSession.LangProgramming.IdCheckApi,
+                payload.stdin,
+                payload.expected_output);
+
+            var resultSave = await _playerSessionService.SaveCheckCodeAsync
+                (activeSession.IdSession, currentUserId, codeRequest.Code ,result, cancellationToken);
+
+            if (!resultSave.IsSuccess)
+                return UnprocessableEntity(resultSave.Failure);
+
+            await _sessionNotificationService.NotifyUpdatePlayerSessionAsync
+                (_mapper.Map<PlayerSessionDto>(resultSave.Success));
+
+            return Ok(result);
         }
 
         [HttpGet("player-sessions")]

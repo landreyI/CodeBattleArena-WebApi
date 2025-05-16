@@ -19,6 +19,11 @@ import { useSessionEventsHub } from "@/hooks/hubs/session/useSessionEventsHub";
 import { fetchUpdateCodePlayer } from "@/services/playerSession";
 import { useThrottleEffect } from "@/hooks/useThrottleEffect";
 import { Eye } from "lucide-react";
+import { useObserverJoin } from "@/hooks/hubs/session/useObserverJoin";
+import { Card } from "@/components/ui/card";
+import { ExecutionResult } from "@/models/executionResult";
+import CodeVerificationResult from "@/components/cards/CodeVerificationResult";
+import { useFinishTaskPlayer } from "@/hooks/playerSession/useFinishTaskPlayer";
 
 export function PlayerCodePage() {
     const [searchParams] = useSearchParams();
@@ -30,11 +35,13 @@ export function PlayerCodePage() {
     const { user } = useAuth();
     const taskId = playerSession?.session?.taskId;
     const { task, loading: taskLoad, error: taskError } = useTask(taskId ?? undefined);
+    const { loading: finishLoad, error: finishError, finishTask } = useFinishTaskPlayer();
     const navigate = useNavigate();
 
     const [observers, setObservers] = useState<number>(0);
     const [defaultCode, setDefaultCode] = useState<string>("");
     const [code, setCode] = useState<string>("");
+    const [responseCode, setResponseCode] = useState<ExecutionResult | null>(null);
     const [fullScreenPanel, setFullScreenPanel] = useState<'code' | 'task' | null>(null);
 
     useEffect(() => {
@@ -43,6 +50,14 @@ export function PlayerCodePage() {
 
         // Обновляем code, только если у пользователя еще не было своего текста
         setCode(prev => prev || playerSession?.codeText || newDefaultCode);
+
+        if (playerSession?.memory && playerSession?.time) {
+            const codeVerification: ExecutionResult = {
+                memory: playerSession.memory,
+                time: playerSession.time,
+            };
+            setResponseCode(codeVerification);
+        }
     }, [task, playerSession]);
 
     useThrottleEffect(() => {
@@ -59,6 +74,7 @@ export function PlayerCodePage() {
         update();
     }, [code], 100);
 
+    useObserverJoin(sessionId ?? undefined);
 
     useSessionEventsHub(Number(sessionId), {
         onDelete: () => navigate("/home"),
@@ -71,14 +87,33 @@ export function PlayerCodePage() {
                 setCode(code);
             }
         },
+        onUpdatePlayerSession: (playerSessionUpdate) => {
+            if (!isEdit) {
+                setPlayerSession(playerSessionUpdate);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        },
+        onUpdateObserversCount: (count) => setObservers(count-1),
     });
 
     const handleResetCode = () => setCode(defaultCode ?? "");
 
     const handleSubmit = async () => {
         // Post to backend here
-        console.log('Submitted code:', code);
-        const data = await checkCode(code);
+        try {
+            const data = await checkCode(code);
+            setResponseCode(data);
+        } catch (err) {
+            console.error("Failed to update code:", err);
+        }
+
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    const handleFinish = async () => {
+        const data = await finishTask();
+        if (data)
+            navigate(`/session/info-session/${sessionId}`);
     };
 
     if (infoLoad || taskLoad) return <LoadingScreen />
@@ -89,11 +124,18 @@ export function PlayerCodePage() {
     if (!playerSession) return <EmptyState message="Player Session not found" />;
     if (!task) return <EmptyState message="Task not found" />;
 
-    const isEdit = user && user.id === playerSession.idPlayer;
+    const isEdit = user && user.id === playerSession.idPlayer && !playerSession.isCompleted;
+
+    const errorNotifi = checkError || finishError;
 
     return (
         <>
+            {errorNotifi && <InlineNotification message={errorNotifi.message} position="top" className="bg-red" />}
+
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-4">
+                {responseCode && (
+                    <CodeVerificationResult executionResult={responseCode}></CodeVerificationResult>
+                )}
                 {playerSession.player && (
                     <PlayerMiniCard
                         player={playerSession.player}
@@ -101,9 +143,10 @@ export function PlayerCodePage() {
                     >
                     </PlayerMiniCard>
                 )}
-                <div className="flex items-center gap-2">
-                    <Eye size={26}></Eye>{observers}
-                </div>
+                <Card className="flex flex-row items-center gap-2 p-2">
+                    <Eye size={26} />
+                    <span>{observers}</span>
+                </Card>
             </div>
 
             <div className="flex w-full h-screen overflow-hidden my-4">
@@ -142,9 +185,12 @@ export function PlayerCodePage() {
                             />
                         </div>
                         {isEdit && (
-                            <div className="p-2 border border-green rounded-xl bg-muted">
+                            <div className="p-2 border border-green rounded-xl bg-muted flex justify-between">
                                 <Button onClick={handleSubmit} className="btn-green btn-animation">
-                                    Send
+                                    Check
+                                </Button>
+                                <Button onClick={handleFinish} className="btn-green btn-animation">
+                                    Finish
                                 </Button>
                             </div>
                         )}

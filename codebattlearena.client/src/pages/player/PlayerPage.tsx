@@ -44,45 +44,46 @@ export function PlayerPage() {
     return (
         <>
             <div className="glow-box">
-                    <div className="max-w-3xl mx-auto">
-                        {/* Заголовок страницы */}
-                        <div className="flex items-center justify-between mb-6">
-                            <h1 className="text-4xl font-bold text-green-400 font-mono">
-                                Player Profile
-                            </h1>
-                            {isEdit && (
-                                <SettingPlayerMenu setShowEditPlayer={setShowEditPlayer} />
-                            )}
-                        </div>
-
-                        {/* Карточка профиля */}
-                        <PlayerCard player={player} isEdit={isEdit}></PlayerCard>
-
-                        {(isEdit) && (
-                            <div className="space-y-4 rounded-2xl px-4 py-3 border shadow-sm mt-3">
-                                <div className="flex items-center justify-between">
-                                    <h2 className="text-xl font-mono text-green-400">Sessions</h2>
-                                    <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        onClick={() => setShowSessions((prev) => !prev)}
-                                    >
-                                        {showSessions ? <ChevronDown className="w-5 h-5" /> : <ChevronRight className="w-5 h-5" />}
-                                    </Button>
-                                </div>
-
-                                <Separator className="my-2" />
-
-                                {showSessions && (
-                                    <SessionList
-                                        sessions={sessions}
-                                        cardWrapperClassName="hover:scale-[1.02] transition"
-                                    />
-                                )}
-                            </div>
+                <div className="max-w-3xl mx-auto">
+                    {/* Заголовок страницы */}
+                    <div className="flex items-center justify-between mb-6">
+                        <h1 className="text-4xl font-bold text-green-400 font-mono">
+                            Player Profile
+                        </h1>
+                        {isEdit && (
+                            <SettingPlayerMenu setShowEditPlayer={setShowEditPlayer} />
                         )}
                     </div>
+
+                    {/* Карточка профиля */}
+                    <PlayerCard player={player} isEdit={isEdit}></PlayerCard>
+
+                    {(isEdit) && (
+                        <div className="space-y-4 rounded-2xl px-4 py-3 border shadow-sm mt-3">
+                            <div className="flex items-center justify-between">
+                                <h2 className="text-xl font-mono text-green-400">Sessions</h2>
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    onClick={() => setShowSessions((prev) => !prev)}
+                                >
+                                    {showSessions ? <ChevronDown className="w-5 h-5" /> : <ChevronRight className="w-5 h-5" />}
+                                </Button>
+                            </div>
+
+                            <Separator className="my-2" />
+
+                            {showSessions && (
+                                <SessionList
+                                    sessions={sessions}
+                                    cardWrapperClassName="hover:scale-[1.02] transition"
+                                    columns={2}
+                                />
+                            )}
+                        </div>
+                    )}
                 </div>
+            </div>
             {showEditPlayer && player && (
                 <EditPlayerModal open={showEditPlayer} player={player} onClose={() => setShowEditPlayer(false)} onUpdate={handleUpdatePlayer} />
             )}

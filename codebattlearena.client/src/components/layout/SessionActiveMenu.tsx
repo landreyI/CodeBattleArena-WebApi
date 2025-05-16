@@ -9,7 +9,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useEffect } from "react";
 
 export function SessionActiveMenu() {
-    const { activeSession, setActiveSession, leaveSession } = useActiveSession();
+    const { activeSession, setActiveSession, leaveSession, refreshSession } = useActiveSession();
     const [notification, setNotification] = useState<string | null>(null);
     const { user } = useAuth();
 
@@ -61,6 +61,10 @@ export function SessionActiveMenu() {
         onStartGame: () => {
             if (!user?.id || !activeSession?.idSession) return;
             setCountdown(countdownDuration);
+        },
+        onFinishGame: () => {
+            navigate(`/session/info-session/${activeSession?.idSession}`);
+            refreshSession();
         }
     });
 

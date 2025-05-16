@@ -18,7 +18,7 @@ export function SessionMiniCard({ session, className }: Props) {
         >
             <Card className={`mt-4 transition-shadow hover:shadow-md ${className}`}>
                 <CardContent>
-                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div className="flex flex-wrap justify-between gap-4">
                         {/* Левая часть: инфо о сессии */}
                         <div className="space-y-2 text-sm">
                             <div className="flex items-center gap-2">
@@ -53,7 +53,11 @@ export function SessionMiniCard({ session, className }: Props) {
                             </div>
                             <Badge className={getIsStartGameColor(session.isStart)}>
                                 <Gamepad2 size={14} className="mr-1" />
-                                {session.isStart ? "The game has started" : "The game hasn't started"}
+                                {session.isFinish
+                                    ? "Game Over"
+                                    : session.isStart
+                                        ? "Game on"
+                                        : "Waiting"}
                             </Badge>
                         </div>
                     </div>

@@ -18,6 +18,7 @@ using CodeBattleArena.Server.Enums;
 using CodeBattleArena.Server.Hubs;
 using CodeBattleArena.Server.Services.Notifications;
 using CodeBattleArena.Server.Services.Notifications.INotifications;
+using CodeBattleArena.Server.Services.Judge0;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -112,6 +113,7 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<ISessionNotificationService, SessionNotificationService>();
 builder.Services.AddScoped<ITaskNotificationService, TaskNotificationService>();
 
+builder.Services.AddHttpClient<Judge0Client>();
 
 var app = builder.Build();
 

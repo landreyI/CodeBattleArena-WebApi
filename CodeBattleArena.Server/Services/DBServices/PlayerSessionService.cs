@@ -1,7 +1,9 @@
 ﻿using CodeBattleArena.Server.Helpers;
 using CodeBattleArena.Server.IRepositories;
 using CodeBattleArena.Server.Models;
+using CodeBattleArena.Server.Services.Judge0;
 using CodeBattleArena.Server.Untils;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Threading;
@@ -33,7 +35,7 @@ namespace CodeBattleArena.Server.Services.DBServices
             try
             {
                 var sessions = await GetPlayerSessionByIdPlayer(idPlayer, ct);
-                bool isActive = sessions.Any(s => s.IsCompleted == false);
+                bool isActive = sessions.Any(s => !s.Session.IsFinish);
                 if (isActive)
                     return Result.Failure<PlayerSession, ErrorResponse>(new ErrorResponse 
                     { 
@@ -83,13 +85,57 @@ namespace CodeBattleArena.Server.Services.DBServices
 
             var sessions = await GetPlayerSessionByIdPlayer(idPlayer, ct);
             var activeSessionId = sessions
-                .FirstOrDefault(s => s.IsCompleted == false)?.IdSession;
+                .FirstOrDefault(s => !s.Session.IsFinish)?.IdSession;
 
             if (activeSessionId == null)
                 return null;
             var session = await _sessionService.GetSessionAsync(activeSessionId.Value, ct);
             return session;
         }
+        public async Task<Result<PlayerSession, ErrorResponse>> SaveCheckCodeAsync
+            (int idSession, string idPlayer, string code, ExecutionResult executionResult, CancellationToken ct)
+        {
+            var playerSession = await GetPlayerSessionAsync(idSession, idPlayer, ct);
+
+            if(playerSession.IsCompleted)
+                return Result.Failure<PlayerSession, ErrorResponse>(new ErrorResponse 
+                { 
+                    Error = "You have already completed the task"
+                });
+
+            if (string.IsNullOrEmpty(executionResult.CompileOutput) &&
+                executionResult.Memory.HasValue &&
+                !string.IsNullOrEmpty(executionResult.Time))
+            {
+                playerSession.Memory = executionResult.Memory;
+                playerSession.Time = executionResult.Time;
+                playerSession.CodeText = code;
+
+                var resultUpdate = await UpdatePlayerSessionInDbAsync(playerSession, ct);
+                if (!resultUpdate.IsSuccess)
+                    return Result.Failure<PlayerSession, ErrorResponse>(resultUpdate.Failure);
+            }
+
+            return Result.Success<PlayerSession, ErrorResponse>(playerSession);
+        }
+
+        public async Task<Result<Unit, ErrorResponse>> FinishTask(int idSession, string idPlayer, CancellationToken ct)
+        {
+            var playerSession = await GetPlayerSessionAsync(idSession, idPlayer, ct);
+
+            if (playerSession.IsCompleted)
+                return Result.Failure<Unit, ErrorResponse>(new ErrorResponse
+                {
+                    Error = "You have already completed the task"
+                });
+
+            var resultFinish = await FinishTaskInDbAsync(idSession, idPlayer, ct);
+            if (!resultFinish.IsSuccess)
+                return Result.Failure<Unit, ErrorResponse>(resultFinish.Failure);
+
+            return Result.Success<Unit, ErrorResponse>(Unit.Value);
+        }
+
 
         public async Task<Result<Unit, ErrorResponse>> AddPlayerSessionInDbAsync
             (PlayerSession playerSession, CancellationToken ct)
@@ -105,12 +151,11 @@ namespace CodeBattleArena.Server.Services.DBServices
                 _logger.LogError(ex, "Error adding PlayerSession");
                 return Result.Failure<Unit, ErrorResponse>(new ErrorResponse { Error = "Database error when adding playerSession." });
             }
-        }
+        }        
         public async Task<PlayerSession> GetPlayerSessionAsync(int idSession, string idPlayer, CancellationToken ct)
         {
             return await _unitOfWork.PlayerSessionRepository.GetPlayerSessionAsync(idSession, idPlayer, ct);
         }
-
         public async Task<List<PlayerSession>> GetPlayerSessionByIdPlayer(string idPlayer, CancellationToken ct)
         {
             return await _unitOfWork.PlayerSessionRepository.GetPlayerSessionByIdPlayer(idPlayer, ct);
@@ -119,18 +164,18 @@ namespace CodeBattleArena.Server.Services.DBServices
         {
             return await _unitOfWork.PlayerSessionRepository.GetPlayerSessionByIdSession(idSession, ct);
         }
-        public async Task<bool> UpdatePlayerSessionInDbAsync(PlayerSession playerSession, CancellationToken ct)
+        public async Task<Result<Unit, ErrorResponse>> UpdatePlayerSessionInDbAsync(PlayerSession playerSession, CancellationToken ct)
         {
             try
             {
                 _unitOfWork.PlayerSessionRepository.UpdatePlayerSession(playerSession);
                 await _unitOfWork.CommitAsync(ct);
-                return true;
+                return Result.Success<Unit, ErrorResponse>(Unit.Value);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error when updating PlayerSession");
-                return false;
+                return Result.Failure<Unit, ErrorResponse>(new ErrorResponse { Error = "Database error when finish task playerSession." });
             }
         }
         public async Task<Result<Unit, ErrorResponse>> FinishTaskInDbAsync(int idSession, string idPlayer, CancellationToken ct)

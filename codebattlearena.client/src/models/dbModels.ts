@@ -75,6 +75,7 @@ export interface LangProgramming {
     idLang: number;
     codeNameLang: string;
     nameLang: string;
+    idCheckApi: string;
 }
 
 export enum SessionState {

@@ -41,7 +41,7 @@ namespace CodeBattleArena.Server.Controllers
         }
 
         [Authorize]
-        [HttpGet("start-game")]
+        [HttpPut("start-game")]
         public async Task<IActionResult> StartGame(int? idSession, CancellationToken cancellationToken)
         {
             if (idSession == null) return BadRequest(new ErrorResponse { Error = "Session ID not specified." });
@@ -59,6 +59,35 @@ namespace CodeBattleArena.Server.Controllers
             await _sessionNotificationService.NotifySessionUpdatedAllAsync(dto);
 
             return Ok(true);
+        }
+
+        [Authorize]
+        [HttpPut("finish-game")]
+        public async Task<IActionResult> FinishGame(int? idSession, CancellationToken cancellationToken)
+        {
+            if (idSession == null) return BadRequest(new ErrorResponse { Error = "Session ID not specified." });
+
+            var currentUserId = _userManager.GetUserId(User);
+            var resultFinish = await _sessionService.FinishGameAsync(idSession.Value, currentUserId, cancellationToken);
+            if (!resultFinish.IsSuccess)
+                return UnprocessableEntity(resultFinish.Failure);
+
+            var session = await _sessionService.GetSessionAsync(idSession.Value, cancellationToken);
+            var dto = _mapper.Map<SessionDto>(session);
+
+            await _sessionNotificationService.NotifyFinishGameAsync(idSession.Value);
+            await _sessionNotificationService.NotifySessionUpdatedGroupAsync(dto);
+            await _sessionNotificationService.NotifySessionUpdatedAllAsync(dto);
+
+            return Ok(true);
+        }
+
+        [HttpGet("best-result-session")]
+        public async Task<IActionResult> GetBestResultSession(int? idSession, CancellationToken cancellationToken)
+        {
+            if (idSession == null) return BadRequest(new ErrorResponse { Error = "Session ID not specified." });
+            var result = await _sessionService.GetVinnerAsync(idSession.Value, cancellationToken);
+            return Ok(_mapper.Map<PlayerSessionDto>(result));
         }
 
         [Authorize]

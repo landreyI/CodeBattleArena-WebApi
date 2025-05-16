@@ -5,6 +5,7 @@ using CodeBattleArena.Server.Services.Notifications.INotifications;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.SignalR;
 using System.Numerics;
+using static Org.BouncyCastle.Crypto.Engines.SM2Engine;
 
 namespace CodeBattleArena.Server.Services.Notifications
 {
@@ -57,10 +58,22 @@ namespace CodeBattleArena.Server.Services.Notifications
             await _hubContext.Clients.Group($"Session-{idSession}")
                 .SendAsync("StartGame");
         }
+
+        public async Task NotifyFinishGameAsync(int idSession)
+        {
+            await _hubContext.Clients.Group($"Session-{idSession}")
+                .SendAsync("FinishGame");
+        }
+
         public async Task NotifyUpdateCodePlayerAsync(int idSession, string code)
         {
             await _hubContext.Clients.Group($"Session-{idSession}")
                 .SendAsync("UpdateCodePlayer", code);
+        }
+        public async Task NotifyUpdatePlayerSessionAsync(PlayerSessionDto playerSession)
+        {
+            await _hubContext.Clients.Group($"Session-{playerSession.IdSession}")
+                .SendAsync("UpdatePlayerSession", playerSession);
         }
     }
 }

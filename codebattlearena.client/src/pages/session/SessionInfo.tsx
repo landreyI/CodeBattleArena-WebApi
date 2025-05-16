@@ -1,10 +1,9 @@
-import { Link, useNavigate, useParams } from "react-router-dom";
+Ôªøimport { Link, useNavigate, useParams } from "react-router-dom";
 
 import { useSession } from "@/hooks/session/useSession";
 import { useState } from "react";
 import { Difficulty, Session, SessionState } from "@/models/dbModels";
 import { SessionCard } from "@/components/cards/SessionCard";
-import PlayersList from "@/components/lists/PlayersList";
 import LoadingScreen from "@/components/common/LoadingScreen";
 import ErrorMessage from "@/components/common/ErrorMessage";
 import EmptyState from "@/components/common/EmptyState";
@@ -23,10 +22,14 @@ import { Users } from "lucide-react";
 import { useSessionEventsHub } from "@/hooks/hubs/session/useSessionEventsHub";
 import { useStartGame } from "@/hooks/session/useStartGame";
 import { useAuth } from "@/contexts/AuthContext";
+import { useFinishGame } from "@/hooks/session/useFinishGame";
+import { useBestResult } from "@/hooks/session/useBestResult";
+import CodeVerificationResult from "@/components/cards/CodeVerificationResult";
+import { PlayersList } from "@/components/lists/PlayersList";
 
 export function SessionInfo() {
     const { sessionId } = useParams<{ sessionId: string }>();
-    const { session, setSession, isEdit, loading: sessionLoad, error: sessionError } = useSession(Number(sessionId));
+    const { session, setSession, isEdit, loading: sessionLoad, error: sessionError, loadSession } = useSession(Number(sessionId));
     const { players, setPlayers, loading: playersLoad, reloadPlayers } = useSessionPlayers(Number(sessionId), true);
     const { deleteSession, error: deleteError } = useDeleteSession();
     const [notification, setNotification] = useState<string | null>(null);
@@ -34,14 +37,16 @@ export function SessionInfo() {
     const [showEditSession, setShowEditSession] = useState(false);
     const { isCompleted, loading: joinLoad, error: joinError, joinSession } = useSessionJoin();
     const { error: startError, startGame } = useStartGame();
+    const { error: finishError, finishGame } = useFinishGame();
+    const { playerSession: bestResult } = useBestResult(Number(sessionId));
     const { activeSession, setActiveSession, leaveSession } = useActiveSession();
     const [password, setPassword] = useState<string>("");
     const { user } = useAuth();
 
     useSessionEventsHub(Number(sessionId), {
         onDelete: () => navigate("/home"),
-        onUpdate: (session) => {
-            setSession(session);
+        onUpdate: (sessionUpdate) => {
+            setSession(sessionUpdate);
             reloadPlayers();
         },
         onJoin: () => reloadPlayers(),
@@ -65,16 +70,12 @@ export function SessionInfo() {
             sessionId: session.idSession.toString(),
         });
 
-        navigate(`/session/player-code?${query.toString()}`);
+        navigate(`/session/player-code?${ query.toString() }`);
     };
-
-    const handleDeletAllPlayers = () => {
-
-    }
 
     const handleDeletSession = async () => {
         const success = await deleteSession(Number(sessionId));
-        await handleLeaveSession();
+        await leaveSession();
     }
 
     const handleJoinSession = async () => {
@@ -87,9 +88,6 @@ export function SessionInfo() {
         }
     };
 
-    const handleLeaveSession = async () => {
-        leaveSession();
-    }
 
     const goToTaskList = () => {
         const filter: TaskProgrammingFilters = {
@@ -99,144 +97,170 @@ export function SessionInfo() {
 
         const query = new URLSearchParams(filter as any).toString();
 
-        navigate(`/task/list-task?${query}`);
+        navigate(`/task/list-task?${ query }`);
     };
 
-    const handleStartGame = async () => {
-        if (session?.idSession) {
-            const data = await startGame(session.idSession);
-        }
-    };
-
-    if (sessionLoad) return <LoadingScreen/>
+    if (sessionLoad) return <LoadingScreen />
     if (sessionError) return <ErrorMessage error={sessionError} />;
     if (!session) return <EmptyState message="Session not found" />;
 
-    const error = deleteError || joinError || startError;
+    const isStarted = session?.isStart;
+    const isFinished = session?.isFinish;
+    const isPrivate = session?.state === SessionState.Private;
+    const isJoined = activeSession?.idSession === session?.idSession;
 
-  return (
-      <>
-          {error && <InlineNotification message={error.message} position="top" className="bg-red" />}
+    const error = deleteError || joinError || startError || finishError;
 
-          {notification && (
-              <InlineNotification message={notification} position="top" className="bg-blue" />
-          )}
+    return (
+        <>
+            {error && <InlineNotification message={error.message} position="top" className="bg-red" />}
 
-          <div className="glow-box">
-              <div className="max-w-3xl mx-auto">
-                  {/* «‡„ÓÎÓ‚ÓÍ ÒÚ‡ÌËˆ˚ */}
-                  <div className="flex items-center justify-between mb-6">
-                      <h1 className="text-4xl font-bold text-green font-mono">
-                          Session - details
-                      </h1>
-                      {isEdit && (
-                          <SettingSessionMenu
-                              setShowEditSession={setShowEditSession}
-                              handleDeletAllPlayers={handleDeletAllPlayers}
-                              handleDeletSession={handleDeletSession}
-                          />
-                      )}
-                  </div>
+            {notification && (
+                <InlineNotification message={notification} position="top" className="bg-blue" />
+            )}
 
-                  {/*  ‡ÚÓ˜Í‡ ÒÂÒÒËË */}
-                  <SessionCard session={session}></SessionCard>
+            <div className="glow-box">
+                <div className="max-w-3xl mx-auto">
+                    {/* –ó–∞–≥–æ–ª–æ–≤–æ–∫ —Å—Ç—Ä–∞–Ω–∏—Ü—ã */}
+                    <div className="flex items-center justify-between mb-6">
+                        <h1 className="text-4xl font-bold text-green font-mono">
+                            Session - details
+                        </h1>
+                        {isEdit && (
+                            <SettingSessionMenu
+                                setShowEditSession={setShowEditSession}
+                                handleDeletSession={handleDeletSession}
+                            />
+                        )}
+                    </div>
 
-                  <div className="my-3 text-2xl font-bold text-green">Task:</div>
+                    {bestResult && (
+                        <div className="bg-muted p-4 rounded-xl shadow-md mb-4">
+                            <h3 className="text-lg font-semibold text-green mb-2">
+                                üèÜ Best Result: <span className="text-foreground">{bestResult?.player?.username}</span>
+                            </h3>
 
-                  {session.taskProgramming && (
-                      <TaskProgrammingMiniCard
-                          className="hover:scale-[1.02] transition"
-                          task={session.taskProgramming}>
-                      </TaskProgrammingMiniCard>
-                  )}
+                            <div className="max-w-md">
+                                <CodeVerificationResult
+                                    executionResult={{
+                                        time: bestResult.time ?? undefined,
+                                        memory: bestResult.memory ?? undefined,
+                                        compileOutput: undefined
+                                    }}
+                                />
+                            </div>
+                        </div>
+                    )}
 
-                  <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-3 gap-3 mt-3">
-                      {isEdit && !session.isStart && (
-                          <>
-                              <Button
-                                  className="btn-green btn-animation flex items-center justify-center"
-                                  onClick={goToTaskList}
-                              >
-                                  {session.taskProgramming ? "Change task" : "Select task"}
-                              </Button>
 
-                              {session.taskProgramming && (
-                                  <Button
-                                      className="btn-green btn-animation flex items-center justify-center"
-                                      onClick={handleStartGame}
-                                  >
-                                      Start the game
-                                  </Button>
-                              )}
-                          </>
-                      )}
+                    {/* –ö–∞—Ä—Ç–æ—á–∫–∞ —Å–µ—Å—Å–∏–∏ */}
+                    <SessionCard session={session}></SessionCard>
 
-                      {!activeSession ? (
-                          <>
-                              {session.state === SessionState.Private && (
-                                  <InputPassword onChange={(e) => setPassword(e.target.value)} placeholder="Enter password" />
-                              )}
-                              <Button
-                                  disabled={joinLoad}
-                                  className="btn-green btn-animation flex items-center justify-center"
-                                  onClick={handleJoinSession}
-                              >
-                                  Join
-                              </Button>
-                          </>
+                    <div className="my-3 text-2xl font-bold text-green">Task:</div>
 
-                      ) : activeSession?.idSession === session.idSession && (
-                          <>
-                                  <Button
-                                      disabled={joinLoad}
-                                      className="btn-red btn-animation flex items-center justify-center"
-                                      onClick={handleLeaveSession}
-                                  >
-                                      Leave
-                                  </Button>
-                                  {session.isStart && (
-                                      <Button
-                                          className="btn-green btn-animation flex items-center justify-center"
-                                          onClick={() => handlePlayerSessionInfo(user?.id)}
-                                      >
-                                          Start coding
-                                      </Button>
-                                  )}
-                          </>
-                      )}
+                    {session.taskProgramming && (
+                        <TaskProgrammingMiniCard
+                            className="hover:scale-[1.02] transition"
+                            task={session.taskProgramming}>
+                        </TaskProgrammingMiniCard>
+                    )}
 
-                      <Button className="btn-green btn-animation flex items-center justify-center">
-                          Invite friend
-                      </Button>
-                  </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-3 gap-3 mt-3">
+                        {isEdit && !isStarted && !isFinished && (
+                            <>
+                                <Button
+                                    className="btn-green btn-animation flex items-center justify-center"
+                                    onClick={goToTaskList}
+                                >
+                                    {session.taskProgramming ? "Change task" : "Select task"}
+                                </Button>
 
-                  <div className="space-y-4 rounded-2xl px-4 py-3 border shadow-sm mt-3">
-                      <div className="text-sm flex items-center gap-1">
-                          <Users size={16} />
-                          <span>
-                              {players.length}/{session.maxPeople}
-                          </span>
-                      </div>
-                      {players.length !== 0 && (
-                          <PlayersList
-                              players={players}
-                              cardWrapperClassName="hover:scale-[1.02] transition"
-                              onDelete={handleDeletPlayer}
-                              onPlayerSessionInfo={
-                                  session.isStart && session.idSession !== activeSession?.idSession
-                                      ? handlePlayerSessionInfo
-                                      : undefined
-                              }
-                          />
-                      )}
-                  </div>
-              </div>
-          </div>
-          {showEditSession && session && (
-              <EditSessionModal open={showEditSession} session={session} onClose={() => setShowEditSession(false)} onUpdate={handleUpdateSession} />
-          )}
-      </>
-  );
+                                {session.taskProgramming && (
+                                    <Button
+                                        className="btn-green btn-animation flex items-center justify-center"
+                                        onClick={() => startGame(session.idSession)}
+                                    >
+                                        Start the game
+                                    </Button>
+                                )}
+
+                                <Button className="btn-green btn-animation flex items-center justify-center">
+                                    Invite friend
+                                </Button>
+                            </>
+                        )}
+
+                        {!activeSession && !isStarted && !isFinished ? (
+                            <>
+                                {isPrivate && (
+                                    <InputPassword onChange={(e) => setPassword(e.target.value)} placeholder="Enter password" />
+                                )}
+                                <Button
+                                    disabled={joinLoad}
+                                    className="btn-green btn-animation flex items-center justify-center"
+                                    onClick={handleJoinSession}
+                                >
+                                    Join
+                                </Button>
+                            </>
+
+                        ) : isJoined && !isFinished && (
+                            <>
+                                <Button
+                                    disabled={joinLoad}
+                                    className="btn-red btn-animation flex items-center justify-center"
+                                        onClick={leaveSession}
+                                >
+                                    Leave
+                                </Button>
+                                    {isStarted && (
+                                    <Button
+                                        className="btn-green btn-animation flex items-center justify-center"
+                                            onClick={() => handlePlayerSessionInfo(user?.id)}
+                                    >
+                                        My code
+                                    </Button>
+                                )}
+
+                                    {isEdit && isStarted && (
+                                    <Button
+                                        className="btn-green btn-animation flex items-center justify-center"
+                                            onClick={() => finishGame(session.idSession)}
+                                    >
+                                        Finish game
+                                    </Button>
+                                )}
+                            </>
+                        )}
+                    </div>
+
+                    <div className="space-y-4 rounded-2xl px-4 py-3 border shadow-sm mt-3">
+                        <div className="text-sm flex items-center gap-1">
+                            <Users size={16} />
+                            <span>
+                                {players.length}/{session.maxPeople}
+                            </span>
+                        </div>
+                        {players.length !== 0 && (
+                            <PlayersList
+                                players={players}
+                                cardWrapperClassName="hover:scale-[1.02] transition"
+                                onDelete={handleDeletPlayer}
+                                onPlayerSessionInfo={
+                                    session.isStart
+                                        ? handlePlayerSessionInfo
+                                        : undefined
+                                }
+                            />
+                        )}
+                    </div>
+                </div>
+            </div>
+            {showEditSession && session && (
+                <EditSessionModal open={showEditSession} session={session} onClose={() => setShowEditSession(false)} onUpdate={handleUpdateSession} />
+            )}
+        </>
+    );
 }
 
 export default SessionInfo;

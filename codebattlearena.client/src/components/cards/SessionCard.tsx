@@ -17,7 +17,11 @@ export function SessionCard({ session }: SessionCardProps){
                     <div className="">
                         <Badge className={getIsStartGameColor(session.isStart)}>
                             <Gamepad2 size={14} className="mr-1" />
-                            {session.isStart ? "The game has started" : "The game hasn't started"}
+                            {session.isFinish
+                                ? "Game Over"
+                                : session.isStart
+                                    ? "Game on"
+                                    : "Waiting"}
                         </Badge>
                     </div>
 

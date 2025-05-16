@@ -27,7 +27,7 @@ export const fetchGetActiveSession = async (): Promise<Session | null> => {
 
 export const fetchStartGame = async (idSession: number): Promise<boolean> => {
     try {
-        let response = await api.get(`Session/start-game`, {
+        let response = await api.put(`Session/start-game`, null, {
             params: { idSession: idSession }
         });
         return response.data;
@@ -38,7 +38,31 @@ export const fetchStartGame = async (idSession: number): Promise<boolean> => {
     }
 }
 
+export const fetchFinishGame = async (idSession: number): Promise<boolean> => {
+    try {
+        let response = await api.put(`Session/finish-game`, null, {
+            params: { idSession: idSession }
+        });
+        return response.data;
+    }
+    catch (error) {
+        console.error(error);
+        throw error;
+    }
+}
 
+export const fetchBestResult = async (idSession: number): Promise<PlayerSession> => {
+    try {
+        let response = await api.get(`Session/best-result-session`, {
+            params: { idSession: idSession }
+        });
+        return response.data;
+    }
+    catch (error) {
+        console.error(error);
+        throw error;
+    }
+}
 
 export const fetchGetSessionsList = async (): Promise<Session[]> => {
     try {

@@ -6,15 +6,17 @@ import { Link } from "react-router-dom";
 
 interface Props {
     player: Player;
+    number?: number;
     onDelete?: (playerId: string) => void;
     onPlayerSessionInfo?: (playerId: string) => void;
     className?: string;
 }
 
-export function PlayerMiniCard({ player, onDelete, className, onPlayerSessionInfo }: Props) {
+export function PlayerMiniCard({ player, number, onDelete, className, onPlayerSessionInfo }: Props) {
     return (
         <Link to={`/player/info-player/${player.id}`} title="View player">
             <div className={`flex flex-wrap items-center gap-4 bg-card border mt-2 rounded-2xl p-2 ${className}`}>
+                {number}
                 <Avatar className="w-10 h-10 sm:w-12 sm:h-12">
                     <AvatarImage src={player.photoUrl || undefined} />
                     <AvatarFallback className="text-green-400">

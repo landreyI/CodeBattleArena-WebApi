@@ -12,7 +12,7 @@ namespace CodeBattleArena.Server.Models
 
         [StringLength(30)]
         public string NameLang { get; set; }
-
+        public string IdCheckApi { get; set; }
         public virtual ICollection<Session>? Sessions { get; set; }
         public virtual ICollection<TaskProgramming>? TasksProgramming { get; set; }
     }

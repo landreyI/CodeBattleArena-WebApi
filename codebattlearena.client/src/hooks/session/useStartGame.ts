@@ -5,7 +5,8 @@ import { useAsyncTask } from "../useAsyncTask";
 export function useStartGame() {
     const { run: start, loading, error } = useAsyncTask(fetchStartGame);
 
-    const startGame = useCallback(async (idSession: number): Promise<boolean | null> => {
+    const startGame = useCallback(async (idSession: number | null): Promise<boolean | null> => {
+        if (!idSession) return false;
         const data = await start(idSession);
         return data;
     }, [start]);

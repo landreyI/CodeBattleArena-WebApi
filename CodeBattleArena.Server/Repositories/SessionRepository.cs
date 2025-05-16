@@ -26,6 +26,25 @@ namespace CodeBattleArena.Server.Repositories
                 _context.Sessions.Update(session);
             }
         }
+        public async Task FinishGameAsync(int idSession, CancellationToken cancellationToken)
+        {
+            var session = await _context.Sessions.FindAsync(idSession, cancellationToken);
+            if (session != null)
+            {
+                session.IsFinish = true;
+                _context.Sessions.Update(session);
+            }
+        }
+        public async Task<PlayerSession> GetVinnerAsync(int idSession, CancellationToken cancellationToken)
+        {
+            var session = await _context.Sessions.FindAsync(idSession, cancellationToken);
+            if (session != null && session.WinnerId != null)
+                return await _context.PlayersSession
+                    .Include(p => p.Player)
+                    .FirstOrDefaultAsync(p => p.IdPlayer == session.WinnerId, cancellationToken);
+
+            return null;
+        }
         public async Task AddSessionAsync(Session session, CancellationToken cancellationToken)
         {
             await _context.Sessions.AddAsync(session);
@@ -55,7 +74,6 @@ namespace CodeBattleArena.Server.Repositories
                 .FirstOrDefaultAsync(s => s.IdSession == idSession, cancellationToken);
             if (session != null && !string.IsNullOrEmpty(password)) session.Password = password;
         }
-
         public async Task DelSessionAsync(int id, CancellationToken cancellationToken)
         {
             var session = await _context.Sessions.FindAsync(id, cancellationToken);
@@ -80,13 +98,6 @@ namespace CodeBattleArena.Server.Repositories
         public async Task<int> GetPlayerCountInSessionAsync(int idSession, CancellationToken cancellationToken)
         {
             return await _context.PlayersSession.CountAsync(p => p.IdSession == idSession, cancellationToken);
-        }
-        public async Task<bool> GetVictorySessionAsync(int id, CancellationToken cancellationToken)
-        {
-            var session = await _context.Sessions
-                .FirstOrDefaultAsync(s => s.IdSession == id, cancellationToken);
-
-            return session != null && !string.IsNullOrEmpty(session.WinnerId);
         }
         public async Task<List<Session>> GetListSessionAsync(IFilter<Session>? filter, CancellationToken cancellationToken)
         {

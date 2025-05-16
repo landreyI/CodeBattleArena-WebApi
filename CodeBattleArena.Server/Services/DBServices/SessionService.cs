@@ -7,6 +7,7 @@ using CodeBattleArena.Server.IRepositories;
 using CodeBattleArena.Server.Models;
 using CodeBattleArena.Server.Untils;
 using Microsoft.AspNetCore.Identity;
+using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -44,9 +45,71 @@ namespace CodeBattleArena.Server.Services.DBServices
                     Error = "You do not have sufficient permissions to edit this session."
                 });
 
+            var session = await GetSessionAsync(sessionId, ct);
+            if (session.IsStart || session.IsFinish)
+                return Result.Failure<Unit, ErrorResponse>(new ErrorResponse
+                {
+                    Error = "At this stage the session cannot be launched for the game."
+                });
+
             var resultStart = await StartGameInDbAsync(sessionId, ct);
             if(!resultStart.IsSuccess)
                 return resultStart;
+
+            return Result.Success<Unit, ErrorResponse>(Unit.Value);
+        }
+        public async Task<Result<Unit, ErrorResponse>> FinishGameAsync(int sessionId, string userId, CancellationToken ct)
+        {
+            var resultIsEdit = await CanEditSessionAsync(sessionId, userId, ct);
+            if (!resultIsEdit.IsSuccess)
+                return Result.Failure<Unit, ErrorResponse>(resultIsEdit.Failure);
+
+            bool isEdit = resultIsEdit.Success;
+            if (!isEdit)
+                return Result.Failure<Unit, ErrorResponse>(new ErrorResponse
+                {
+                    Error = "You do not have sufficient permissions to edit this session."
+                });
+
+            var resultStart = await FinishGameInDbAsync(sessionId, ct);
+            if (!resultStart.IsSuccess)
+                return resultStart;
+
+            var session = await GetSessionAsync(sessionId, ct);
+            if (session == null)
+                return Result.Failure<Unit, ErrorResponse>(new ErrorResponse { Error = "Session not found." });
+
+            var result = await AssignBestResult(session, ct);
+
+            return Result.Success<Unit, ErrorResponse>(Unit.Value);
+        }
+        private async Task<Result<Unit, ErrorResponse>> AssignBestResult(Session session, CancellationToken ct)
+        {
+            var best = session.PlayerSessions
+                .Select(p => new {
+                    Player = p,
+                    ParsedTime = double.TryParse(p.Time, NumberStyles.Any, CultureInfo.InvariantCulture, out var t) ? t : double.MaxValue
+                })
+                .Where(p => p.Player.Memory.HasValue)
+                .OrderBy(p => p.ParsedTime)
+                .ThenBy(p => p.Player.Memory.Value)
+                .Select(p => p.Player)
+                .FirstOrDefault();
+
+            if (best == null)
+                return Result.Failure<Unit, ErrorResponse>(new ErrorResponse { Error = "No valid results." });
+
+            session.WinnerId = best.IdPlayer;
+            var resultUpdate = await UpdateSessionInDbAsync(session, ct);
+            if (!resultUpdate.IsSuccess)
+                return Result.Failure<Unit, ErrorResponse>(resultUpdate.Failure);
+
+            if(session.PlayerSessions.Count > 1)
+            {
+                var resultAdd = await _playerService.AddVictoryPlayerInDbAsync(best.IdPlayer, ct);
+                if (!resultAdd.IsSuccess)
+                    return Result.Failure<Unit, ErrorResponse>(resultAdd.Failure);
+            }
 
             return Result.Success<Unit, ErrorResponse>(Unit.Value);
         }
@@ -230,7 +293,8 @@ namespace CodeBattleArena.Server.Services.DBServices
             );
         }
 
-        //DATABASE
+
+        //------------ DATABASE ------------
         private async Task<Result<Unit, ErrorResponse>> StartGameInDbAsync(int idSession, CancellationToken ct)
         {
             try
@@ -247,6 +311,27 @@ namespace CodeBattleArena.Server.Services.DBServices
                     Error = "Database error when start game session."
                 });
             }
+        }
+        private async Task<Result<Unit, ErrorResponse>> FinishGameInDbAsync(int idSession, CancellationToken ct)
+        {
+            try
+            {
+                await _unitOfWork.SessionRepository.FinishGameAsync(idSession, ct);
+                await _unitOfWork.CommitAsync(ct);
+                return Result.Success<Unit, ErrorResponse>(Unit.Value);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error finish game Session");
+                return Result.Failure<Unit, ErrorResponse>(new ErrorResponse
+                {
+                    Error = "Database error when finish game session."
+                });
+            }
+        }
+        public async Task<PlayerSession> GetVinnerAsync(int idSession, CancellationToken ct)
+        {
+            return await _unitOfWork.SessionRepository.GetVinnerAsync(idSession, ct);
         }
         public async Task<Result<Unit, ErrorResponse>> AddSessionInDbAsync(Session session, CancellationToken ct)
         {
@@ -332,10 +417,6 @@ namespace CodeBattleArena.Server.Services.DBServices
         public async Task<int> GetPlayerCountInSessionAsync(int idSession, CancellationToken ct)
         {
             return await _unitOfWork.SessionRepository.GetPlayerCountInSessionAsync(idSession, ct);
-        }
-        public async Task<bool> GetVictorySessionAsync(int id, CancellationToken ct)
-        {
-            return await _unitOfWork.SessionRepository.GetVictorySessionAsync(id, ct);
         }
         public async Task<List<Session>> GetListSessionAsync(IFilter<Session>? filter, CancellationToken ct)
         {

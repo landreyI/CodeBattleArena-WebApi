@@ -144,19 +144,18 @@ namespace CodeBattleArena.Server.Services.DBServices
         {
             return await _unitOfWork.PlayerRepository.GetPlayersAsync(ct);
         }
-        public async Task<bool> AddVictoryPlayerInDbAsync(string id, CancellationToken ct)
+        public async Task<Result<Unit, ErrorResponse>> AddVictoryPlayerInDbAsync(string id, CancellationToken ct)
         {
-            if (string.IsNullOrEmpty(id)) return false;
             try
             {
                 await _unitOfWork.PlayerRepository.AddVictoryPlayerAsync(id, ct);
                 await _unitOfWork.CommitAsync(ct); // Сохранение изменений
-                return true;
+                return Result.Success<Unit, ErrorResponse>(Unit.Value);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error adding AddVictoryPlayer");
-                return false;
+                return Result.Failure<Unit, ErrorResponse>(new ErrorResponse { Error = "Database error when update player." });
             }
         }
         public async Task<List<Session>> MyGamesListAsync(string id, CancellationToken ct)

@@ -2,7 +2,7 @@ import { usePlayersList } from "@/hooks/player/usePlayersList";
 import EmptyState from "@/components/common/EmptyState";
 import ErrorMessage from "@/components/common/ErrorMessage";
 import LoadingScreen from "@/components/common/LoadingScreen";
-import PlayersList from "@/components/lists/PlayersList";
+import { PlayersList } from "@/components/lists/PlayersList";
 
 export function PlayersListPage() {
     const { players, setPlayers, loadPlayers, loading: playersLoad, error: playersError } = usePlayersList();
@@ -16,6 +16,7 @@ export function PlayersListPage() {
             <PlayersList
                 players={players}
                 cardWrapperClassName="w-full hover:scale-[1.02] transition"
+                isTop={true}
             />
         </div>
     );

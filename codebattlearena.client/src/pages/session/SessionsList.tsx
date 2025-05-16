@@ -24,12 +24,16 @@ export function SessionsList() {
     if (sessionsError) return <ErrorMessage error={sessionsError} />;
     if (!sessions) return <EmptyState message="Sessions not found" />;
 
-    return (
+    return sessions.length > 0 ? (
         <SessionList
             sessions={sessions}
             cardWrapperClassName="hover:scale-[1.02] transition"
         />
-    )
+    ) : (
+        <div className="text-center text-muted-foreground text-sm py-4">
+            No sessions available.
+        </div>
+    );
 }
 
 export default SessionsList;

@@ -1,6 +1,7 @@
-import { Player, Session } from "@/models/dbModels";
+import { Player, PlayerSession, Session } from "@/models/dbModels";
 import { useSessionHubConnection, useSessionHubEvent } from "@/contexts/SignalRSessionHubContext";
 import { useSignalRSessionGroupSubscription } from "./useSignalRSessionGroupSubscription";
+import { useEffect } from "react";
 
 
 interface SessionEventHandlers {
@@ -12,7 +13,10 @@ interface SessionEventHandlers {
     onAdding?: (session: Session) => void;
     onListDelete?: (id: number) => void;
     onStartGame?: () => void;
+    onFinishGame?: () => void;
     onUpdateCodePlayer?: (code: string) => void;
+    onUpdateObserversCount?: (count: number) => void;
+    onUpdatePlayerSession?: (playerSession: PlayerSession) => void;
 }
 
 export function useSessionEventsHub(sessionId: number | undefined, handlers: SessionEventHandlers) {
@@ -51,7 +55,20 @@ export function useSessionEventsHub(sessionId: number | undefined, handlers: Ses
     useSessionHubEvent<[]>("StartGame", () => {
         handlers.onStartGame?.();
     });
+
+    useSessionHubEvent<[]>("FinishGame", () => {
+        handlers.onFinishGame?.();
+    });
+
     useSessionHubEvent<[string]>("UpdateCodePlayer", (code: string) => {
         handlers.onUpdateCodePlayer?.(code);
+    });
+
+    useSessionHubEvent<[number]>("UpdateObserversCount", (count: number) => {
+        handlers.onUpdateObserversCount?.(count);
+    });
+
+    useSessionHubEvent<[PlayerSession]>("UpdatePlayerSession", (playerSession: PlayerSession) => {
+        handlers.onUpdatePlayerSession?.(playerSession);
     });
 }

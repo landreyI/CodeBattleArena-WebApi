@@ -26,10 +26,11 @@ import { useFinishGame } from "@/hooks/session/useFinishGame";
 import { useBestResult } from "@/hooks/session/useBestResult";
 import CodeVerificationResult from "@/components/cards/CodeVerificationResult";
 import { PlayersList } from "@/components/lists/PlayersList";
+import { useCountCompletedTask } from "@/hooks/session/useCountCompletedTask";
 
 export function SessionInfo() {
     const { sessionId } = useParams<{ sessionId: string }>();
-    const { session, setSession, isEdit, loading: sessionLoad, error: sessionError, loadSession } = useSession(Number(sessionId));
+    const { session, setSession, isEdit, loading: sessionLoad, error: sessionError, reloadSession } = useSession(Number(sessionId));
     const { players, setPlayers, loading: playersLoad, reloadPlayers } = useSessionPlayers(Number(sessionId), true);
     const { deleteSession, error: deleteError } = useDeleteSession();
     const [notification, setNotification] = useState<string | null>(null);
@@ -38,19 +39,24 @@ export function SessionInfo() {
     const { isCompleted, loading: joinLoad, error: joinError, joinSession } = useSessionJoin();
     const { error: startError, startGame } = useStartGame();
     const { error: finishError, finishGame } = useFinishGame();
-    const { playerSession: bestResult } = useBestResult(Number(sessionId));
+    const { playerSession: bestResult, reloadBestResult } = useBestResult(Number(sessionId));
     const { activeSession, setActiveSession, leaveSession } = useActiveSession();
+    const { count, setCount, error: countCompletedError, reloadCountCompleted } = useCountCompletedTask(Number(sessionId));
     const [password, setPassword] = useState<string>("");
     const { user } = useAuth();
 
     useSessionEventsHub(Number(sessionId), {
         onDelete: () => navigate("/home"),
         onUpdate: (sessionUpdate) => {
-            setSession(sessionUpdate);
-            reloadPlayers();
+            if (session?.state !== sessionUpdate.state)
+                reloadPlayers();
+
+            reloadSession();
         },
         onJoin: () => reloadPlayers(),
         onLeave: () => reloadPlayers(),
+        onFinishGame: () => reloadBestResult(),
+        onUpdateCountCompleted: (count) => setCount(count), 
     });
 
     const handleUpdateSession = (updatedSession: Session) => {
@@ -88,7 +94,6 @@ export function SessionInfo() {
         }
     };
 
-
     const goToTaskList = () => {
         const filter: TaskProgrammingFilters = {
             lang: session?.langProgramming?.codeNameLang ?? '',
@@ -99,6 +104,7 @@ export function SessionInfo() {
 
         navigate(`/task/list-task?${ query }`);
     };
+
 
     if (sessionLoad) return <LoadingScreen />
     if (sessionError) return <ErrorMessage error={sessionError} />;
@@ -152,7 +158,6 @@ export function SessionInfo() {
                         </div>
                     )}
 
-
                     {/* Карточка сессии */}
                     <SessionCard session={session}></SessionCard>
 
@@ -163,6 +168,12 @@ export function SessionInfo() {
                             className="hover:scale-[1.02] transition"
                             task={session.taskProgramming}>
                         </TaskProgrammingMiniCard>
+                    )}
+
+                    {count !== undefined && isStarted && !isFinished && (
+                        <h3 className="text-lg font-semibold text-green my-3">
+                            Completed task: <span className="text-foreground">{count}/{session.amountPeople}</span>
+                        </h3>
                     )}
 
                     <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-3 gap-3 mt-3">
@@ -213,7 +224,7 @@ export function SessionInfo() {
                                 >
                                     Leave
                                 </Button>
-                                    {isStarted && (
+                                {isStarted && (
                                     <Button
                                         className="btn-green btn-animation flex items-center justify-center"
                                             onClick={() => handlePlayerSessionInfo(user?.id)}

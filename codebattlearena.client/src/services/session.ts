@@ -1,5 +1,6 @@
 import axios, { api } from "../api/axios";
 import { Player, Session, PlayerSession } from "@/models/dbModels";
+import { SessionFilters } from "../models/filters";
 
 export const fetchGetSession = async (id: number): Promise<{ session: Session, isEdit: boolean }> => {
     try {
@@ -64,10 +65,23 @@ export const fetchBestResult = async (idSession: number): Promise<PlayerSession>
     }
 }
 
-export const fetchGetSessionsList = async (): Promise<Session[]> => {
+export const fetchGetCountCompletedTask = async (idSession: number): Promise<number> => {
+    try {
+        let response = await api.get(`Session/count-completed-task`, {
+            params: { idSession: idSession }
+        });
+        return response.data;
+    }
+    catch (error) {
+        console.error(error);
+        throw error;
+    }
+}
+
+export const fetchGetSessionsList = async (filter?: SessionFilters): Promise<Session[]> => {
     try {
         let response = await api.get(`Session/list-sessions`, {
-            params: {  }
+            params: filter
         });
         return response.data;
     }

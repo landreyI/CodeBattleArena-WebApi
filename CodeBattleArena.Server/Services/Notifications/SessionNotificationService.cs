@@ -65,6 +65,12 @@ namespace CodeBattleArena.Server.Services.Notifications
                 .SendAsync("FinishGame");
         }
 
+        public async Task NotifyUpdateCompletedCount(int idSession, int count)
+        {
+            await _hubContext.Clients.Group($"Session-{idSession}")
+               .SendAsync("UpdateCountCompleted", count);
+        }
+
         public async Task NotifyUpdateCodePlayerAsync(int idSession, string code)
         {
             await _hubContext.Clients.Group($"Session-{idSession}")

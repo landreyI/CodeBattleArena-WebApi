@@ -6,8 +6,8 @@ namespace CodeBattleArena.Server.IRepositories
     {
         Task AddPlayerSessionAsync(PlayerSession playerSession, CancellationToken cancellationToken);
         Task<PlayerSession> GetPlayerSessionAsync(int idSession, string idPlayer, CancellationToken cancellationToken);
-        Task<List<PlayerSession>> GetPlayerSessionByIdPlayer(string idPlayer, CancellationToken cancellationToken);
-        Task<List<PlayerSession>> GetPlayerSessionByIdSession(int idSession, CancellationToken cancellationToken);
+        Task<List<PlayerSession>> GetPlayerSessionByIdPlayerAsync(string idPlayer, CancellationToken cancellationToken);
+        Task<List<PlayerSession>> GetPlayerSessionByIdSessionAsync(int idSession, CancellationToken cancellationToken);
 
         void UpdatePlayerSession(PlayerSession playerSession);
         Task FinishTaskAsync(int idSession, string idPlayer, CancellationToken cancellationToken);

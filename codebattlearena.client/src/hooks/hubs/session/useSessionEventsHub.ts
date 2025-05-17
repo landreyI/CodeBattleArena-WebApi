@@ -14,6 +14,7 @@ interface SessionEventHandlers {
     onListDelete?: (id: number) => void;
     onStartGame?: () => void;
     onFinishGame?: () => void;
+    onUpdateCountCompleted?: (count: number) => void;
     onUpdateCodePlayer?: (code: string) => void;
     onUpdateObserversCount?: (count: number) => void;
     onUpdatePlayerSession?: (playerSession: PlayerSession) => void;
@@ -58,6 +59,10 @@ export function useSessionEventsHub(sessionId: number | undefined, handlers: Ses
 
     useSessionHubEvent<[]>("FinishGame", () => {
         handlers.onFinishGame?.();
+    });
+
+    useSessionHubEvent<[number]>("UpdateCountCompleted", (count: number) => {
+        handlers.onUpdateCountCompleted?.(count);
     });
 
     useSessionHubEvent<[string]>("UpdateCodePlayer", (code: string) => {

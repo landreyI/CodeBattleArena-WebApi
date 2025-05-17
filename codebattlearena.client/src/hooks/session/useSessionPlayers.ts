@@ -15,7 +15,7 @@ export function useSessionPlayers(sessionId?: number, enabled: boolean = true) {
         } catch {
             setPlayers([]);
         }
-    }, [sessionId, load]);
+    }, [load, sessionId]);
 
     useEffect(() => {
         if (!enabled) return;

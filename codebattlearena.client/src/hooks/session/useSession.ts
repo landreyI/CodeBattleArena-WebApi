@@ -19,12 +19,12 @@ export function useSession(sessionId: number | undefined) {
             setSession(data.session);
             setIsEdit(data.isEdit);
         }
-    }, [sessionId, load, setError]);
+    }, [setError, load, sessionId]);
 
     useEffect(() => {
         loadSession();
 
     }, [sessionId, loadSession, setError]);
 
-    return { session, setSession, isEdit, loading, error, loadSession };
+    return { session, setSession, isEdit, loading, error, reloadSession: loadSession };
 }

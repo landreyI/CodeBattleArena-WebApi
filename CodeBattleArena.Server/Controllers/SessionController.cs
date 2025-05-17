@@ -76,8 +76,6 @@ namespace CodeBattleArena.Server.Controllers
             var dto = _mapper.Map<SessionDto>(session);
 
             await _sessionNotificationService.NotifyFinishGameAsync(idSession.Value);
-            await _sessionNotificationService.NotifySessionUpdatedGroupAsync(dto);
-            await _sessionNotificationService.NotifySessionUpdatedAllAsync(dto);
 
             return Ok(true);
         }
@@ -98,6 +96,16 @@ namespace CodeBattleArena.Server.Controllers
 
             var activeSession = await _playerSessionService.GetActiveSession(currentUserId, cancellationToken);
             return Ok(_mapper.Map<SessionDto>(activeSession));
+        }
+
+        [HttpGet("count-completed-task")]
+        public async Task<IActionResult> GetCountCompletedTask(int idSession, CancellationToken cancellationToken)
+        {
+            var resultCount = await _sessionService.GetCountCompletedTaskAsync(idSession, cancellationToken);
+            if(!resultCount.IsSuccess)
+                return UnprocessableEntity(resultCount.Failure);
+
+            return Ok(resultCount.Success);
         }
 
         [HttpGet("info-session")]
@@ -123,7 +131,7 @@ namespace CodeBattleArena.Server.Controllers
         }
 
         [HttpGet("list-sessions")]
-        public async Task<IActionResult> GetSessionsList(SessionFilter? filter, CancellationToken cancellationToken)
+        public async Task<IActionResult> GetSessionsList([FromQuery] SessionFilter? filter, CancellationToken cancellationToken)
         {
             var sessions = await _sessionService.GetListSessionAsync(filter, cancellationToken);
             var sessionDtos = _mapper.Map<List<SessionDto>>(sessions);
@@ -148,7 +156,7 @@ namespace CodeBattleArena.Server.Controllers
             if(!result.Success)
                 return NoContent();
  
-            var playerSessions = await _playerSessionService.GetPlayerSessionByIdSession(id.Value, cancellationToken);
+            var playerSessions = await _playerSessionService.GetPlayerSessionByIdSessionAsync(id.Value, cancellationToken);
 
             var playerSessionsDto = _mapper.Map<List<PlayerSessionDto>>(playerSessions);
 
@@ -164,7 +172,7 @@ namespace CodeBattleArena.Server.Controllers
 
             var currentUserId = _userManager.GetUserId(User);
 
-            var resultSelect = await _sessionService.SelectTaskForSession(
+            var resultSelect = await _sessionService.SelectTaskForSessionAsync(
                 currentUserId, sessionId.Value, taskId.Value, cancellationToken
                 );
 
@@ -215,7 +223,7 @@ namespace CodeBattleArena.Server.Controllers
 
             var currentUserId = _userManager.GetUserId(User);
 
-            var resultCreateSession = await _sessionService.CreateSession(currentUserId, sessionDto, cancellationToken);
+            var resultCreateSession = await _sessionService.CreateSessionAsync(currentUserId, sessionDto, cancellationToken);
             if (!resultCreateSession.IsSuccess)
                 return UnprocessableEntity(resultCreateSession.Failure);
 

@@ -7,6 +7,17 @@ export const getArray = (input: any): any[] => {
     return [];
 };
 
+export function parseEnumParam<T extends Record<string, string>>(
+    value: string | null,
+    enumType: T,
+    defaultValue: T[keyof T]
+): T[keyof T] {
+    if (value && Object.values(enumType).includes(value as T[keyof T])) {
+        return value as T[keyof T];
+    }
+    return defaultValue;
+}
+
 export const getStateColor = (state: string) => {
     switch (state) {
         case SessionState.Public:

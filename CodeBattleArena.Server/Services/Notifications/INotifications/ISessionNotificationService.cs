@@ -13,6 +13,7 @@ namespace CodeBattleArena.Server.Services.Notifications.INotifications
         Task NotifySessionUnjoinAsync(int idSession, PlayerDto player);
         Task NotifyStartGameAsync(int idSession);
         Task NotifyFinishGameAsync(int idSession);
+        Task NotifyUpdateCompletedCount(int idSession, int count);
         Task NotifyUpdateCodePlayerAsync(int idSession, string code);
         Task NotifyUpdatePlayerSessionAsync(PlayerSessionDto playerSession);
     }

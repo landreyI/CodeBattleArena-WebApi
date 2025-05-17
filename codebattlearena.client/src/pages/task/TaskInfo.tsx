@@ -19,7 +19,7 @@ import { useTaskEventsHub } from "@/hooks/hubs/task/useTaskEventsHub";
 
 export function TaskInfo() {
     const { taskId } = useParams<{ taskId: string }>();
-    const { task, setTask, loading, error: taskLoad } = useTask(Number(taskId));
+    const { task, setTask, loading: taskLoad, error: taskError } = useTask(Number(taskId));
     const [notification, setNotification] = useState<string | null>(null);
     const { deleteTask, error: deleteError } = useDeleteTask();
     const { selectTask, error: selectTaskError } = useSelectTaskForSession();
@@ -50,8 +50,8 @@ export function TaskInfo() {
             navigate(`/session/info-session/${activeSession?.idSession}`);
     };
 
-    if (loading) return <LoadingScreen />
-    if (taskLoad) return <ErrorMessage error={taskLoad} />;
+    if (taskLoad) return <LoadingScreen />
+    if (taskError) return <ErrorMessage error={taskError} />;
     if (!task) return <EmptyState message="Session not found" />;
 
     const error = deleteError || selectTaskError;

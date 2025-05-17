@@ -17,8 +17,13 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     const [activeSession, setActiveSession] = useState<Session | null>(null);
 
     const loadActiveSession = async () => {
-        let data = await fetchGetActiveSession();
-        setActiveSession(data);
+        try {
+            let data = await fetchGetActiveSession();
+            setActiveSession(data);
+        }
+        catch (err){
+            console.log(err);
+        }
     }
 
     useEffect(() => {

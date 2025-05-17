@@ -13,18 +13,18 @@ import { TaskProgrammingFilters } from "@/models/filters";
 import { Difficulty } from "@/models/dbModels";
 import TaskFilter from "@/components/filters/TaskFilter";
 import { useTaskEventsHub } from "@/hooks/hubs/task/useTaskEventsHub";
+import { parseEnumParam } from "@/untils/helpers";
 
 export function TasksListPage() {
     const location = useLocation();
     const queryParams = new URLSearchParams(location.search);
 
     const lang = queryParams.get('lang') ?? '';
-    const difficulty = queryParams.get('difficulty') ?? Difficulty.Easy;
+    const difficulty = parseEnumParam(queryParams.get('difficulty'), Difficulty, Difficulty.Easy);
 
-    // Преобразуем строку difficulty в соответствующее значение из Difficulty Enum
     const filterReceived: TaskProgrammingFilters = {
         lang,
-        difficulty: Difficulty[difficulty as keyof typeof Difficulty] || Difficulty.Easy,
+        difficulty,
     };
 
     const [filter, setFilter] = useState<TaskProgrammingFilters>(filterReceived);
@@ -56,10 +56,6 @@ export function TasksListPage() {
         setFilter(filter);
     }
 
-    const handleSeacrh = () => {
-        reloadTasks();
-    }
-
     if (tasksLoad) return <LoadingScreen />
     if (tasksError) return <ErrorMessage error={tasksError} />;
 
@@ -67,7 +63,7 @@ export function TasksListPage() {
         <>
             {deleteError && <InlineNotification message={deleteError.message} position="top" className="bg-red" />} {/* не прерывая рендер */}
 
-            <TaskFilter filter={filter} onChange={handleChangeFilter} handleSearch={handleSeacrh}></TaskFilter>
+            <TaskFilter filter={filter} onChange={handleChangeFilter} handleSearch={reloadTasks}></TaskFilter>
 
             {!tasks || tasks.length === 0 && (<EmptyState message="Tasks not found" />)}
 

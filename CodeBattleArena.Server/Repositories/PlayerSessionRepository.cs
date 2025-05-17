@@ -28,7 +28,7 @@ namespace CodeBattleArena.Server.Repositories
                 .FirstOrDefaultAsync(s => s.IdSession == idSession && s.IdPlayer == idPlayer,
                 cancellationToken);
         }
-        public async Task<List<PlayerSession>> GetPlayerSessionByIdPlayer(string idPlayer, CancellationToken cancellationToken)
+        public async Task<List<PlayerSession>> GetPlayerSessionByIdPlayerAsync(string idPlayer, CancellationToken cancellationToken)
         {
             return await _context.PlayersSession
                 .Include(p => p.Player)
@@ -37,7 +37,7 @@ namespace CodeBattleArena.Server.Repositories
                 .Where(ps => ps.IdPlayer == idPlayer)
                 .ToListAsync(cancellationToken);
         }
-        public async Task<List<PlayerSession>> GetPlayerSessionByIdSession(int idSession, CancellationToken cancellationToken)
+        public async Task<List<PlayerSession>> GetPlayerSessionByIdSessionAsync(int idSession, CancellationToken cancellationToken)
         {
             return await _context.PlayersSession
                 .Include(p => p.Player)

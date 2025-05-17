@@ -30,7 +30,7 @@ export function PlayersList({ players, onDelete, cardWrapperClassName, onPlayerS
                 <PlayerMiniCard
                     key={player.id}
                     player={player}
-                    number={index+1}
+                    number={isTop ? index+1 : undefined}
                     onDelete={onDelete}
                     onPlayerSessionInfo={onPlayerSessionInfo}
                     className={`${cardWrapperClassName ?? ""} ${getBorderClass(index)} rounded-xl`}

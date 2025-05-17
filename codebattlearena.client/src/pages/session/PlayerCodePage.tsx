@@ -44,6 +44,9 @@ export function PlayerCodePage() {
     const [responseCode, setResponseCode] = useState<ExecutionResult | null>(null);
     const [fullScreenPanel, setFullScreenPanel] = useState<'code' | 'task' | null>(null);
 
+    const isCurrentUserPlayer = user && user.id === playerSession?.idPlayer;
+    const isEdit = isCurrentUserPlayer && !playerSession.isCompleted;
+
     useEffect(() => {
         const newDefaultCode = task?.preparation ?? "";
         setDefaultCode(newDefaultCode);
@@ -74,7 +77,7 @@ export function PlayerCodePage() {
         update();
     }, [code], 100);
 
-    useObserverJoin(sessionId ?? undefined);
+    useObserverJoin(((!isCurrentUserPlayer) && sessionId && playerSession) ? sessionId : undefined);
 
     useSessionEventsHub(Number(sessionId), {
         onDelete: () => navigate("/home"),
@@ -93,7 +96,7 @@ export function PlayerCodePage() {
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             }
         },
-        onUpdateObserversCount: (count) => setObservers(count-1),
+        onUpdateObserversCount: (count) => setObservers(count),
     });
 
     const handleResetCode = () => setCode(defaultCode ?? "");
@@ -123,8 +126,6 @@ export function PlayerCodePage() {
 
     if (!playerSession) return <EmptyState message="Player Session not found" />;
     if (!task) return <EmptyState message="Task not found" />;
-
-    const isEdit = user && user.id === playerSession.idPlayer && !playerSession.isCompleted;
 
     const errorNotifi = checkError || finishError;
 

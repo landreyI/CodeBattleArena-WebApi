@@ -34,7 +34,7 @@ namespace CodeBattleArena.Server.Services.DBServices
 
             try
             {
-                var sessions = await GetPlayerSessionByIdPlayer(idPlayer, ct);
+                var sessions = await GetPlayerSessionByIdPlayerAsync(idPlayer, ct);
                 bool isActive = sessions.Any(s => !s.Session.IsFinish);
                 if (isActive)
                     return Result.Failure<PlayerSession, ErrorResponse>(new ErrorResponse 
@@ -83,7 +83,7 @@ namespace CodeBattleArena.Server.Services.DBServices
             if (!checkResult.IsSuccess)
                 return null;
 
-            var sessions = await GetPlayerSessionByIdPlayer(idPlayer, ct);
+            var sessions = await GetPlayerSessionByIdPlayerAsync(idPlayer, ct);
             var activeSessionId = sessions
                 .FirstOrDefault(s => !s.Session.IsFinish)?.IdSession;
 
@@ -156,13 +156,13 @@ namespace CodeBattleArena.Server.Services.DBServices
         {
             return await _unitOfWork.PlayerSessionRepository.GetPlayerSessionAsync(idSession, idPlayer, ct);
         }
-        public async Task<List<PlayerSession>> GetPlayerSessionByIdPlayer(string idPlayer, CancellationToken ct)
+        public async Task<List<PlayerSession>> GetPlayerSessionByIdPlayerAsync(string idPlayer, CancellationToken ct)
         {
-            return await _unitOfWork.PlayerSessionRepository.GetPlayerSessionByIdPlayer(idPlayer, ct);
+            return await _unitOfWork.PlayerSessionRepository.GetPlayerSessionByIdPlayerAsync(idPlayer, ct);
         }
-        public async Task<List<PlayerSession>> GetPlayerSessionByIdSession(int idSession, CancellationToken ct)
+        public async Task<List<PlayerSession>> GetPlayerSessionByIdSessionAsync(int idSession, CancellationToken ct)
         {
-            return await _unitOfWork.PlayerSessionRepository.GetPlayerSessionByIdSession(idSession, ct);
+            return await _unitOfWork.PlayerSessionRepository.GetPlayerSessionByIdSessionAsync(idSession, ct);
         }
         public async Task<Result<Unit, ErrorResponse>> UpdatePlayerSessionInDbAsync(PlayerSession playerSession, CancellationToken ct)
         {

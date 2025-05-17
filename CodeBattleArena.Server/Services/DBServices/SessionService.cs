@@ -154,10 +154,10 @@ namespace CodeBattleArena.Server.Services.DBServices
 
             return Result.Success<bool, ErrorResponse>(isEdit);
         }
-        public async Task<Result<Session, ErrorResponse>> CreateSession
+        public async Task<Result<Session, ErrorResponse>> CreateSessionAsync
             (string userId, SessionDto dto, CancellationToken ct)
         {
-            var sessions = await _unitOfWork.PlayerSessionRepository.GetPlayerSessionByIdPlayer(userId, ct);
+            var sessions = await _unitOfWork.PlayerSessionRepository.GetPlayerSessionByIdPlayerAsync(userId, ct);
             bool isActive = sessions.Any(s => s.IsCompleted == false);
             if (isActive)
                 return Result.Failure<Session, ErrorResponse>(new ErrorResponse
@@ -223,7 +223,7 @@ namespace CodeBattleArena.Server.Services.DBServices
 
             return Result.Success<Unit, ErrorResponse>(Unit.Value);
         }
-        public async Task<Result<SessionDto, ErrorResponse>> SelectTaskForSession
+        public async Task<Result<SessionDto, ErrorResponse>> SelectTaskForSessionAsync
             (string userId, int idSession, int idTask, CancellationToken ct)
         {
             var session = await GetSessionAsync(idSession, ct);
@@ -281,7 +281,7 @@ namespace CodeBattleArena.Server.Services.DBServices
 
             return Result.Success<Unit, ErrorResponse>(Unit.Value);
         }
-        public async Task<Result<bool, ErrorResponse>> CheckPassword
+        public async Task<Result<bool, ErrorResponse>> CheckPasswordAsync
             (string password, int idSession, CancellationToken ct)
         {
             var session = await GetSessionAsync (idSession, ct);
@@ -291,6 +291,18 @@ namespace CodeBattleArena.Server.Services.DBServices
             return Result.Success<bool, ErrorResponse>(
                 session.State == SessionState.Public || session.Password == password
             );
+        }
+
+        public async Task<Result<int, ErrorResponse>> GetCountCompletedTaskAsync(int idSession, CancellationToken ct)
+        {
+            var playerSessionList = await _unitOfWork.PlayerSessionRepository.GetPlayerSessionByIdSessionAsync(idSession, ct);
+
+            if (playerSessionList == null)
+                return Result.Failure<int, ErrorResponse>(new ErrorResponse { Error = "Session not found" });
+
+            var completedCount = playerSessionList.Count(p => p.IsCompleted);
+
+            return Result.Success<int, ErrorResponse>(completedCount);
         }
 
 

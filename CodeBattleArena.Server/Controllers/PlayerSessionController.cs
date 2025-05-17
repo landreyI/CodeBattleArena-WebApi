@@ -7,6 +7,7 @@ using CodeBattleArena.Server.Services.Judge0;
 using CodeBattleArena.Server.Services.Notifications.INotifications;
 using CodeBattleArena.Server.Untils;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Reflection.Emit;
@@ -96,6 +97,10 @@ namespace CodeBattleArena.Server.Controllers
             if (!resultFinish.IsSuccess)
                 return UnprocessableEntity(resultFinish.Failure);
 
+            var resultCount = await _sessionService.GetCountCompletedTaskAsync(activeSession.IdSession, cancellationToken);
+            if (resultCount.IsSuccess)
+                await _sessionNotificationService.NotifyUpdateCompletedCount(activeSession.IdSession, resultCount.Success);
+
             return Ok(true);
         }
 
@@ -126,7 +131,7 @@ namespace CodeBattleArena.Server.Controllers
         {
             if (idSession == null) return BadRequest(new ErrorResponse { Error = "Session ID not specified." });
 
-            var resultCheck = await _sessionService.CheckPassword(password, idSession.Value, cancellationToken);
+            var resultCheck = await _sessionService.CheckPasswordAsync(password, idSession.Value, cancellationToken);
             if (!resultCheck.IsSuccess)
                 return UnprocessableEntity(resultCheck.Failure);
             if (!resultCheck.Success)
@@ -190,7 +195,7 @@ namespace CodeBattleArena.Server.Controllers
         [HttpGet("player-sessions")]
         public async Task<IActionResult> GetPlayerSessions(string id, CancellationToken cancellationToken)
         {
-            var playerSessions = await _playerSessionService.GetPlayerSessionByIdPlayer(id, cancellationToken);
+            var playerSessions = await _playerSessionService.GetPlayerSessionByIdPlayerAsync(id, cancellationToken);
 
             var playerSessionsDto = _mapper.Map<List<PlayerSessionDto>>(playerSessions);
 

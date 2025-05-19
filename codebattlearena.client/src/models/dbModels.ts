@@ -18,6 +18,7 @@ export interface Session {
 
     state: SessionState;
     maxPeople: number;
+    timePlay: number | null; //minutes
 
     taskId: number | null;
     taskProgramming: TaskProgramming | null;
@@ -26,6 +27,7 @@ export interface Session {
     creatorId: string;
     password: string | null;
     dateCreating: Date;
+    dateStartGame: Date | null;
     isStart: boolean;
     isFinish: boolean;
     amountPeople: number | null;
@@ -39,6 +41,7 @@ export interface PlayerSession {
     codeText: string | null;
     time: string | null;
     memory: number | null;
+    finishTask: Date | null;
     isCompleted: boolean;
 }
 
@@ -78,6 +81,18 @@ export interface LangProgramming {
     idCheckApi: string;
 }
 
+export interface League {
+    idLeague: number | null;
+    name: string;
+    minWins: number;
+    maxWins: number | null;
+}
+
+export interface LeaguePlayers {
+    league?: League;
+    players?: Player[];
+}
+
 export enum SessionState {
     Public = "Public",
     Private = "Private"
@@ -95,4 +110,11 @@ export enum Difficulty {
     Hard = "Hard",
     Medium = "Medium",
     Easy = "Easy"
+}
+export enum LeagueEnum {
+    Bronze = "Bronze",
+    Silver = "Silver",
+    Gold = "Gold",
+    Platinum = "Platinum",
+    Diamond = "Diamond"
 }

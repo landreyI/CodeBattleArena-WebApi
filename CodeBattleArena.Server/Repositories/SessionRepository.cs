@@ -22,6 +22,7 @@ namespace CodeBattleArena.Server.Repositories
             var session = await _context.Sessions.FindAsync(idSession, cancellationToken);
             if (session != null)
             {
+                session.DateStartGame = DateTime.UtcNow;
                 session.IsStart = true;
                 _context.Sessions.Update(session);
             }
@@ -47,6 +48,7 @@ namespace CodeBattleArena.Server.Repositories
         }
         public async Task AddSessionAsync(Session session, CancellationToken cancellationToken)
         {
+            session.DateCreating = DateTime.UtcNow;
             await _context.Sessions.AddAsync(session);
         }
         public async Task AddTaskToSession(int idSession, int idTask, CancellationToken cancellationToken)
@@ -113,7 +115,7 @@ namespace CodeBattleArena.Server.Repositories
                 .Include(t => t.PlayerSessions)
                 .ToListAsync(cancellationToken);
         }
-        public async Task DeleteExpiredSessionsAsync(DateTime dateTime, CancellationToken cancellationToken)
+        public async Task<List<int>> DeleteExpiredSessionsAsync(DateTime dateTime, CancellationToken cancellationToken)
         {
             // Выборка сессий, которые существуют более одного дня
             var listSessionsExpired = await _context.Sessions
@@ -133,7 +135,29 @@ namespace CodeBattleArena.Server.Repositories
 
                 _context.Sessions.RemoveRange(sessionsToDelete);
             }
+
+            return listSessionsExpired;
         }
+        public async Task<List<int>> FinishExpiredSessionsAsync(DateTime dateTime, CancellationToken cancellationToken)
+        {
+            var expiredSessions = await _context.Sessions
+                .Where(s =>
+                    !s.IsFinish &&
+                    s.DateStartGame != null &&
+                    s.TimePlay != null &&
+                    s.DateStartGame.Value.AddMinutes((double)s.TimePlay.Value) <= dateTime
+                )
+                .ToListAsync(cancellationToken);
+
+            foreach (var session in expiredSessions)
+            {
+                session.IsFinish = true;
+            }
+
+            _context.Sessions.UpdateRange(expiredSessions);
+            return expiredSessions.Select(s => s.IdSession).ToList();
+        }
+
         public void UpdateSession(Session session)
         {
             _context.Sessions.Update(session);

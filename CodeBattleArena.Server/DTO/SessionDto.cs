@@ -20,6 +20,7 @@ namespace CodeBattleArena.Server.DTO
 
         [Range(1, 10, ErrorMessage = "MaxPeople must be between 1 and 10.")]
         public int MaxPeople { get; set; }
+        public int? TimePlay { get; set; } //Minutes
         public int? TaskId { get; set; }
         public TaskProgrammingDto? TaskProgramming { get; set; }
         public string? WinnerId { get; set; }
@@ -28,6 +29,7 @@ namespace CodeBattleArena.Server.DTO
 
         [Required(ErrorMessage = "DateCreating is required.")]
         public DateTime DateCreating { get; set; }
+        public DateTime? DateStartGame { get; set; }
         public bool IsStart { get; set; }
         public bool IsFinish { get; set; }
         public int? AmountPeople { get; set; }

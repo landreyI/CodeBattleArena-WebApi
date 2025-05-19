@@ -1,4 +1,5 @@
 ﻿using CodeBattleArena.Server.Data;
+using CodeBattleArena.Server.Repositories.IRepositories;
 
 namespace CodeBattleArena.Server.IRepositories
 {
@@ -11,6 +12,7 @@ namespace CodeBattleArena.Server.IRepositories
         IFriendRepository FriendRepository { get; }
         IChatRepository ChatRepository { get; }
         ILangProgrammingRepository LangProgrammingRepository { get; }
+        ILeagueRepository LeagueRepository { get; }
         Task<int> CommitAsync(CancellationToken cancellationToken);
     }
 }

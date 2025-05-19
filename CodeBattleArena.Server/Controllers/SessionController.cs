@@ -189,10 +189,7 @@ namespace CodeBattleArena.Server.Controllers
         [HttpDelete("delete-session")]
         public async Task<IActionResult> DeleteSession(int? id, CancellationToken cancellationToken)
         {
-            if (id == null)
-            {
-                return BadRequest(new ErrorResponse { Error = "Session ID not specified." });
-            }
+            if (id == null) return BadRequest(new ErrorResponse { Error = "Session ID not specified." });
             var currentUserId = _userManager.GetUserId(User);
 
             var resultDeleting = await _sessionService.DeletingSessionAsync(currentUserId, id.Value, cancellationToken);

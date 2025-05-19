@@ -105,7 +105,7 @@ namespace CodeBattleArena.Server.Controllers
         }
 
         [Authorize]
-        [HttpGet("leave-session")]
+        [HttpDelete("leave-session")]
         public async Task<IActionResult> LeaveSession(CancellationToken cancellationToken)
         {
             var currentUserId = _userManager.GetUserId(User);
@@ -126,7 +126,7 @@ namespace CodeBattleArena.Server.Controllers
         }
 
         [Authorize]
-        [HttpGet("join-session")]
+        [HttpPut("join-session")]
         public async Task<IActionResult> JoinSession(int? idSession, string? password, CancellationToken cancellationToken)
         {
             if (idSession == null) return BadRequest(new ErrorResponse { Error = "Session ID not specified." });

@@ -367,7 +367,7 @@ export function TaskForm({ task, onClose, onUpdate, submitLabel }: Props) {
                                     type="button"
                                     variant="destructive"
                                     size="sm"
-                                    className="ml-auto mt-1"
+                                    className="ml-auto mt-1 btn-animation btn-red"
                                     onClick={() => remove(index)}
                                 >
                                     Remove

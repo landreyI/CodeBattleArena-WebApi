@@ -9,11 +9,12 @@ import CodeViewer from "../common/CodeViewer";
 interface Props {
     task: TaskProgramming;
     isEditRole?: boolean;
+    className?: string;
 }
 
-export function TaskProgrammingCard({ task, isEditRole }: Props) {
+export function TaskProgrammingCard({ task, isEditRole, className }: Props) {
     return (
-        <Card className="border rounded-2xl w-full">
+        <Card className={`border rounded-2xl w-full ${className}`}>
             <CardContent className="p-6">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-4">
                     <div className="text-xl font-bold font-mono break-words">
@@ -65,9 +66,6 @@ export function TaskProgrammingCard({ task, isEditRole }: Props) {
                             </div>
                         </>
                     )}
-
-
-                    { /* ядекюрэ бундмше дюммше */}
                     {task.taskInputData && (
                         <InputDatasList inputDatas={task.taskInputData}></InputDatasList>
                     )}

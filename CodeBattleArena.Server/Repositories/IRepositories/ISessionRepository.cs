@@ -18,7 +18,8 @@ namespace CodeBattleArena.Server.IRepositories
         Task<List<Player>> GetListPlayerFromSessionAsync(int idSession, CancellationToken cancellationToken);
         Task<int> GetPlayerCountInSessionAsync(int idSession, CancellationToken cancellationToken);
         Task<List<Session>> GetListSessionAsync(IFilter<Session>? filter, CancellationToken cancellationToken);
-        Task DeleteExpiredSessionsAsync(DateTime dateTime, CancellationToken cancellationToken);
+        Task<List<int>> DeleteExpiredSessionsAsync(DateTime dateTime, CancellationToken cancellationToken);
+        Task<List<int>> FinishExpiredSessionsAsync(DateTime dateTime, CancellationToken cancellationToken);
         void UpdateSession(Session session);
 
     }

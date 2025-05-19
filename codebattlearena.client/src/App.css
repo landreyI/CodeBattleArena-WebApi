@@ -265,6 +265,43 @@ h1, h2, h3 {
         background-color: var(--color-red-pressed);
     }
 
+
+.league-bronze {
+    background-color: var(--bronze);
+    border: 2px solid var(--bronze);
+    box-shadow: var(--bronze-shadow);
+    border-radius: 0.5rem;
+}
+
+.league-silver {
+    background-color: var(--silver);
+    border: 2px solid var(--silver);
+    box-shadow: var(--silver-shadow);
+    border-radius: 0.5rem;
+}
+
+.league-gold {
+    background-color: var(--gold);
+    border: 2px solid var(--gold);
+    box-shadow: var(--gold-shadow);
+    border-radius: 0.5rem;
+}
+
+.league-platinum {
+    background-color: var(--platinum);
+    border: 2px solid var(--platinum);
+    box-shadow: var(--platinum-shadow);
+    border-radius: 0.5rem;
+}
+
+.league-diamond {
+    background-color: var(--diamond);
+    border: 2px solid var(--diamond);
+    box-shadow: var(--diamond-shadow);
+    border-radius: 0.5rem;
+}
+
+
 /* Мобильная адаптация */
 @media (max-width: 768px) {
     .app-main {

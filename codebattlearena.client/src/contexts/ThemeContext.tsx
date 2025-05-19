@@ -6,16 +6,32 @@ import {
     ReactNode,
 } from "react";
 
+export enum BubblesColors {
+    Green = "green",
+    Red = "red",
+    Yellow = "yellow",
+    Blue = "blue",
+    Purple = "purple",
+}
 interface ThemeContextType {
     isDarkMode: boolean;
     toggleTheme: () => void;
+
+    bubblesEnabled: boolean;
+    toggleBubbles: () => void;
+
+    bubblesColors: BubblesColors;
+    setBubblesColors: (color: BubblesColors) => void;
 }
 
 export const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
     const [isDarkMode, setIsDarkMode] = useState(false);
+    const [bubblesEnabled, setBubblesEnabled] = useState(true);
+    const [bubblesColors, setBubblesColorsState] = useState<BubblesColors>(BubblesColors.Green);
 
+    // Load theme from localStorage
     useEffect(() => {
         const savedTheme = localStorage.getItem("theme");
         const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
@@ -26,6 +42,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
         }
     }, []);
 
+    // Save theme to localStorage
     useEffect(() => {
         if (isDarkMode) {
             document.documentElement.classList.add("dark");
@@ -36,13 +53,49 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
         }
     }, [isDarkMode]);
 
-    const toggleTheme = () => {
-        setIsDarkMode((prev) => !prev);
+    const toggleTheme = () => setIsDarkMode(prev => !prev);
+
+    // Load bubbles enabled/disabled
+    useEffect(() => {
+        const savedBubbles = localStorage.getItem("bubbles");
+        if (savedBubbles === "false") {
+            setBubblesEnabled(false);
+        }
+    }, []);
+
+    useEffect(() => {
+        localStorage.setItem("bubbles", bubblesEnabled ? "true" : "false");
+    }, [bubblesEnabled]);
+
+    const toggleBubbles = () => setBubblesEnabled(prev => !prev);
+
+    // Load bubbles color
+    useEffect(() => {
+        const savedColor = localStorage.getItem("bubblesColor") as BubblesColors | null;
+        if (savedColor && Object.values(BubblesColors).includes(savedColor as BubblesColors)) {
+            setBubblesColorsState(savedColor as BubblesColors);
+            document.documentElement.style.setProperty("--color-bubbles", `var(--bubbles-${savedColor})`);
+        }
+    }, []);
+
+    // Save bubbles color
+    const setBubblesColors = (color: BubblesColors) => {
+        setBubblesColorsState(color);
+        localStorage.setItem("bubblesColor", color);
+        document.documentElement.style.setProperty("--color-bubbles", `var(--bubbles-${color})`);
     };
 
     return (
-        <ThemeContext.Provider value={{ isDarkMode, toggleTheme }
-        }>
+        <ThemeContext.Provider
+            value={{
+                isDarkMode,
+                toggleTheme,
+                bubblesEnabled,
+                toggleBubbles,
+                bubblesColors,
+                setBubblesColors,
+            }}
+        >
             {children}
         </ThemeContext.Provider>
     );

@@ -19,8 +19,7 @@ export function UserMenu({ user, handleLogout }: Props) {
             actions={[
                 { label: "Profile", href: `/player/info-player/${user.id}`, shortcut: "⇧⌘P", isSeparator: true },
                 { label: "Players", href: `/player/list-players`, shortcut: "⌘P" },
-                { label: "Friends", href: `/friend/info-player/${user.id}`, shortcut: "⌘F" },
-                { label: "Chats", href: `/chat/info-player/${user.id}`, shortcut: "⌘C", isSeparator: true },
+                { label: "Friends", href: `/friend/list-friends/${user.id}`, shortcut: "⌘F" },
                 { label: "Log out", onClick: handleLogout, shortcut: "⇩⌘L" },
             ]}
         />

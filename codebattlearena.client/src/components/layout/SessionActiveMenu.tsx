@@ -17,6 +17,8 @@ export function SessionActiveMenu() {
     const countdownDuration = 10; // second
     const navigate = useNavigate();
 
+    const [sessionTimeLeft, setSessionTimeLeft] = useState<number | null>(null);
+
     useEffect(() => {
         if (countdown === null || !user?.id || !activeSession?.idSession) return;
 
@@ -33,6 +35,36 @@ export function SessionActiveMenu() {
 
         return () => clearTimeout(timer);
     }, [countdown]);
+
+    useEffect(() => {
+        if (!activeSession || !activeSession.isStart || activeSession.isFinish) {
+            setSessionTimeLeft(null);
+            return;
+        }
+
+        if (!activeSession.dateStartGame || !activeSession.timePlay) {
+            setSessionTimeLeft(null);
+            return;
+        }
+
+        console.log(activeSession);
+
+        const interval = setInterval(() => {
+            const startTime = new Date(activeSession.dateStartGame + "Z").getTime();
+            const now = Date.now();
+            const durationMs = (activeSession.timePlay ?? 5) * 60 * 1000;
+
+            const timeLeftMs = startTime + durationMs - now;
+            if (timeLeftMs <= 0) {
+                setSessionTimeLeft(0);
+                clearInterval(interval);
+            } else {
+                setSessionTimeLeft(Math.floor(timeLeftMs / 1000));
+            }
+        }, 1000);
+
+        return () => clearInterval(interval);
+    }, [activeSession, refreshSession]);
 
     useSessionEventsHub(activeSession?.idSession ?? undefined, {
         onDelete: () => {
@@ -70,6 +102,12 @@ export function SessionActiveMenu() {
 
     if (!activeSession) return null;
 
+    const formatTime = (seconds: number) => {
+        const m = Math.floor(seconds / 60).toString().padStart(2, "0");
+        const s = (seconds % 60).toString().padStart(2, "0");
+        return `${m}:${s}`;
+    };
+
     return (
         <>
             {notification && (
@@ -103,6 +141,14 @@ export function SessionActiveMenu() {
                             Lang:
                             {activeSession.langProgramming?.nameLang || "Unknown"}
                         </div>
+                        {sessionTimeLeft !== null && (
+                            <>
+                                <SeparatorVertical />
+                                <div className="font-mono text-yellow-500 select-none">
+                                    Time left: {formatTime(sessionTimeLeft)}
+                                </div>
+                            </>
+                        )}
                     </div>
 
                     <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">

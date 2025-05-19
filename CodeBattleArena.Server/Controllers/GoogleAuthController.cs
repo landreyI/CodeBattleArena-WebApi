@@ -55,7 +55,7 @@ namespace Travel_Agency.Controllers
                 player = new Player
                 {
                     Email = infoUser.Email,
-                    UserName = infoUser.Email,
+                    UserName = "player" + new Random().Next(0, 10000000).ToString("D6"),
                     PhotoUrl = infoUser.Picture
                 };
 

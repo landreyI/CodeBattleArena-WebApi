@@ -6,11 +6,12 @@ import { getIsStartGameColor, getStateColor } from "@/untils/helpers";
 
 interface SessionCardProps {
     session: Session;
+    className?: string;
 }
 
-export function SessionCard({ session }: SessionCardProps){
+export function SessionCard({ session, className }: SessionCardProps){
     return (
-        <Card className="rounded-2xl">
+        <Card className={`rounded-2xl ${className}`}>
             <CardContent className="p-6">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-4">
                     <div className="text-xl font-bold font-mono">{session.name || "Unnamed"}</div>

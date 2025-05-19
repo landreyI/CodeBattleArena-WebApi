@@ -18,6 +18,10 @@ namespace CodeBattleArena.Server.Data
         public DbSet<Chat> Chats { get; set; }
         public DbSet<Message> Messages { get; set; }
         public DbSet<LangProgramming> LangProgrammings { get; set; }
+        public DbSet<League> Leagues { get; set; }
+        public DbSet<TaskPlay> TasksPlay { get; set; }
+        public DbSet<TaskPlayParam> TaskPlayParams { get; set; }
+        public DbSet<PlayerTaskPlay> PlayerTaskPlays { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -75,6 +79,29 @@ namespace CodeBattleArena.Server.Data
                 .HasOne(ti => ti.InputData)
                 .WithMany(i => i.TaskInputData)
                 .HasForeignKey(ti => ti.IdInputDataTask);
+
+
+            modelBuilder.Entity<TaskPlay>()
+                    .HasOne(t => t.TaskPlayParam)
+                    .WithOne(p => p.TaskPlay)    
+                    .HasForeignKey<TaskPlay>(t => t.TaskPlayParamId);
+
+            modelBuilder.Entity<TaskPlayParam>()
+                .HasIndex(p => p.TaskPlayId)
+                .IsUnique();
+
+            modelBuilder.Entity<PlayerTaskPlay>()
+                .HasKey(b => b.IdPlayerTaskPlay);
+
+            modelBuilder.Entity<PlayerTaskPlay>()
+                .HasOne(b => b.Player)
+                .WithMany(u => u.PlayerTaskPlays)
+                .HasForeignKey(b => b.PlayerId);
+
+            modelBuilder.Entity<PlayerTaskPlay>()
+                .HasOne(b => b.TaskPlay)
+                .WithMany(p => p.PlayerTaskPlays)
+                .HasForeignKey(b => b.TaskPlayId);
 
 
             modelBuilder.Entity<Friend>()

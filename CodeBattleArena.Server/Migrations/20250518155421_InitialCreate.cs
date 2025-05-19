@@ -74,11 +74,42 @@ namespace CodeBattleArena.Server.Migrations
                     IdLang = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     CodeNameLang = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
-                    NameLang = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false)
+                    NameLang = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
+                    IdCheckApi = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_LangProgrammings", x => x.IdLang);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Leagues",
+                columns: table => new
+                {
+                    IdLeague = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
+                    MinWins = table.Column<int>(type: "int", nullable: false),
+                    MaxWins = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Leagues", x => x.IdLeague);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TaskPlayParams",
+                columns: table => new
+                {
+                    IdParam = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    TaskPlayId = table.Column<int>(type: "int", nullable: true),
+                    ParamKey = table.Column<string>(type: "nvarchar(40)", maxLength: 40, nullable: false),
+                    ParamValue = table.Column<string>(type: "nvarchar(40)", maxLength: 40, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TaskPlayParams", x => x.IdParam);
                 });
 
             migrationBuilder.CreateTable(
@@ -263,6 +294,29 @@ namespace CodeBattleArena.Server.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "TasksPlay",
+                columns: table => new
+                {
+                    IdTask = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(40)", maxLength: 40, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Type = table.Column<string>(type: "nvarchar(40)", maxLength: 40, nullable: false),
+                    Reward = table.Column<int>(type: "int", nullable: false),
+                    IsRepeatable = table.Column<bool>(type: "bit", nullable: false),
+                    TaskPlayParamId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TasksPlay", x => x.IdTask);
+                    table.ForeignKey(
+                        name: "FK_TasksPlay_TaskPlayParams_TaskPlayParamId",
+                        column: x => x.TaskPlayParamId,
+                        principalTable: "TaskPlayParams",
+                        principalColumn: "IdParam");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Messages",
                 columns: table => new
                 {
@@ -300,13 +354,12 @@ namespace CodeBattleArena.Server.Migrations
                     LangProgrammingId = table.Column<int>(type: "int", nullable: false),
                     State = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
                     MaxPeople = table.Column<int>(type: "int", nullable: false),
-                    Difficulty = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
                     TaskId = table.Column<int>(type: "int", nullable: true),
                     WinnerId = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CreatorId = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Password = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     DateCreating = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    DateStart = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IsStart = table.Column<bool>(type: "bit", nullable: false),
                     IsFinish = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
@@ -331,7 +384,7 @@ namespace CodeBattleArena.Server.Migrations
                 {
                     IdTaskProgramming = table.Column<int>(type: "int", nullable: false),
                     IdInputDataTask = table.Column<int>(type: "int", nullable: false),
-                    Answer = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true)
+                    Answer = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -351,6 +404,34 @@ namespace CodeBattleArena.Server.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "PlayerTaskPlays",
+                columns: table => new
+                {
+                    IdPlayerTaskPlay = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    PlayerId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    TaskPlayId = table.Column<int>(type: "int", nullable: false),
+                    IsCompleted = table.Column<bool>(type: "bit", nullable: false),
+                    ProgressValue = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PlayerTaskPlays", x => x.IdPlayerTaskPlay);
+                    table.ForeignKey(
+                        name: "FK_PlayerTaskPlays_AspNetUsers_PlayerId",
+                        column: x => x.PlayerId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_PlayerTaskPlays_TasksPlay_TaskPlayId",
+                        column: x => x.TaskPlayId,
+                        principalTable: "TasksPlay",
+                        principalColumn: "IdTask",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "PlayersSession",
                 columns: table => new
                 {
@@ -359,7 +440,7 @@ namespace CodeBattleArena.Server.Migrations
                     CodeText = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Time = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
                     Memory = table.Column<int>(type: "int", nullable: true),
-                    State = table.Column<bool>(type: "bit", nullable: false)
+                    IsCompleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -449,6 +530,16 @@ namespace CodeBattleArena.Server.Migrations
                 column: "IdSession");
 
             migrationBuilder.CreateIndex(
+                name: "IX_PlayerTaskPlays_PlayerId",
+                table: "PlayerTaskPlays",
+                column: "PlayerId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PlayerTaskPlays_TaskPlayId",
+                table: "PlayerTaskPlays",
+                column: "TaskPlayId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Sessions_LangProgrammingId",
                 table: "Sessions",
                 column: "LangProgrammingId");
@@ -462,6 +553,20 @@ namespace CodeBattleArena.Server.Migrations
                 name: "IX_TaskInputData_IdInputDataTask",
                 table: "TaskInputData",
                 column: "IdInputDataTask");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TaskPlayParams_TaskPlayId",
+                table: "TaskPlayParams",
+                column: "TaskPlayId",
+                unique: true,
+                filter: "[TaskPlayId] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TasksPlay_TaskPlayParamId",
+                table: "TasksPlay",
+                column: "TaskPlayParamId",
+                unique: true,
+                filter: "[TaskPlayParamId] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_TasksProgramming_LangProgrammingId",
@@ -491,10 +596,16 @@ namespace CodeBattleArena.Server.Migrations
                 name: "Friends");
 
             migrationBuilder.DropTable(
+                name: "Leagues");
+
+            migrationBuilder.DropTable(
                 name: "Messages");
 
             migrationBuilder.DropTable(
                 name: "PlayersSession");
+
+            migrationBuilder.DropTable(
+                name: "PlayerTaskPlays");
 
             migrationBuilder.DropTable(
                 name: "TaskInputData");
@@ -509,6 +620,9 @@ namespace CodeBattleArena.Server.Migrations
                 name: "Sessions");
 
             migrationBuilder.DropTable(
+                name: "TasksPlay");
+
+            migrationBuilder.DropTable(
                 name: "InputData");
 
             migrationBuilder.DropTable(
@@ -516,6 +630,9 @@ namespace CodeBattleArena.Server.Migrations
 
             migrationBuilder.DropTable(
                 name: "TasksProgramming");
+
+            migrationBuilder.DropTable(
+                name: "TaskPlayParams");
 
             migrationBuilder.DropTable(
                 name: "LangProgrammings");

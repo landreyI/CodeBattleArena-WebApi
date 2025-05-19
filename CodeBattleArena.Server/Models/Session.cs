@@ -18,6 +18,8 @@ namespace CodeBattleArena.Server.Models
         public SessionState State { get; set; }
         public int MaxPeople { get; set; }
 
+        public int? TimePlay { get; set; } //Minutes
+
         public int? TaskId { get; set; }
         public virtual TaskProgramming? TaskProgramming { get; set; }
 
@@ -26,6 +28,7 @@ namespace CodeBattleArena.Server.Models
 
         public string? Password { get; set; }
         public DateTime DateCreating { get; set; }
+        public DateTime? DateStartGame { get; set; }
         public bool IsStart { get; set; }
         public bool IsFinish { get; set; }
 

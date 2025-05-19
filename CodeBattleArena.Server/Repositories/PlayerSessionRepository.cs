@@ -53,6 +53,7 @@ namespace CodeBattleArena.Server.Repositories
         public async Task FinishTaskAsync(int idSession, string idPlayer, CancellationToken cancellationToken)
         {
             var playerSession = await GetPlayerSessionAsync(idSession, idPlayer, cancellationToken);
+            playerSession.FinishTask = DateTime.UtcNow;
             if (playerSession != null) playerSession.IsCompleted = true;
         }
         public async Task DelPlayerSessionAsync(int idSession, string idPlayer, CancellationToken cancellationToken)

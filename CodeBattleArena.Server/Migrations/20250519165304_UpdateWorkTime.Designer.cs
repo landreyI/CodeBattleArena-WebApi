@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CodeBattleArena.Server.Migrations
 {
     [DbContext(typeof(AppDBContext))]
-    [Migration("20250420191002_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20250519165304_UpdateWorkTime")]
+    partial class UpdateWorkTime
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -99,6 +99,10 @@ namespace CodeBattleArena.Server.Migrations
                         .HasMaxLength(30)
                         .HasColumnType("nvarchar(30)");
 
+                    b.Property<string>("IdCheckApi")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("NameLang")
                         .IsRequired()
                         .HasMaxLength(30)
@@ -107,6 +111,30 @@ namespace CodeBattleArena.Server.Migrations
                     b.HasKey("IdLang");
 
                     b.ToTable("LangProgrammings");
+                });
+
+            modelBuilder.Entity("CodeBattleArena.Server.Models.League", b =>
+                {
+                    b.Property<int>("IdLeague")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdLeague"));
+
+                    b.Property<int?>("MaxWins")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MinWins")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.HasKey("IdLeague");
+
+                    b.ToTable("Leagues");
                 });
 
             modelBuilder.Entity("CodeBattleArena.Server.Models.Message", b =>
@@ -228,11 +256,14 @@ namespace CodeBattleArena.Server.Migrations
                     b.Property<string>("CodeText")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime?>("FinishTask")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsCompleted")
+                        .HasColumnType("bit");
+
                     b.Property<int?>("Memory")
                         .HasColumnType("int");
-
-                    b.Property<bool>("State")
-                        .HasColumnType("bit");
 
                     b.Property<string>("Time")
                         .HasMaxLength(50)
@@ -243,6 +274,36 @@ namespace CodeBattleArena.Server.Migrations
                     b.HasIndex("IdSession");
 
                     b.ToTable("PlayersSession");
+                });
+
+            modelBuilder.Entity("CodeBattleArena.Server.Models.PlayerTaskPlay", b =>
+                {
+                    b.Property<int>("IdPlayerTaskPlay")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdPlayerTaskPlay"));
+
+                    b.Property<bool>("IsCompleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("PlayerId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ProgressValue")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("TaskPlayId")
+                        .HasColumnType("int");
+
+                    b.HasKey("IdPlayerTaskPlay");
+
+                    b.HasIndex("PlayerId");
+
+                    b.HasIndex("TaskPlayId");
+
+                    b.ToTable("PlayerTaskPlays");
                 });
 
             modelBuilder.Entity("CodeBattleArena.Server.Models.Session", b =>
@@ -260,15 +321,13 @@ namespace CodeBattleArena.Server.Migrations
                     b.Property<DateTime>("DateCreating")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime?>("DateStart")
+                    b.Property<DateTime?>("DateStartGame")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Difficulty")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
                     b.Property<bool>("IsFinish")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsStart")
                         .HasColumnType("bit");
 
                     b.Property<int>("LangProgrammingId")
@@ -293,6 +352,9 @@ namespace CodeBattleArena.Server.Migrations
                     b.Property<int?>("TaskId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("TimePlay")
+                        .HasColumnType("int");
+
                     b.Property<string>("WinnerId")
                         .HasColumnType("nvarchar(max)");
 
@@ -314,6 +376,7 @@ namespace CodeBattleArena.Server.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Answer")
+                        .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
@@ -322,6 +385,76 @@ namespace CodeBattleArena.Server.Migrations
                     b.HasIndex("IdInputDataTask");
 
                     b.ToTable("TaskInputData");
+                });
+
+            modelBuilder.Entity("CodeBattleArena.Server.Models.TaskPlay", b =>
+                {
+                    b.Property<int>("IdTask")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdTask"));
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsRepeatable")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)");
+
+                    b.Property<int>("Reward")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("TaskPlayParamId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)");
+
+                    b.HasKey("IdTask");
+
+                    b.HasIndex("TaskPlayParamId")
+                        .IsUnique()
+                        .HasFilter("[TaskPlayParamId] IS NOT NULL");
+
+                    b.ToTable("TasksPlay");
+                });
+
+            modelBuilder.Entity("CodeBattleArena.Server.Models.TaskPlayParam", b =>
+                {
+                    b.Property<int>("IdParam")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdParam"));
+
+                    b.Property<string>("ParamKey")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)");
+
+                    b.Property<string>("ParamValue")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)");
+
+                    b.Property<int?>("TaskPlayId")
+                        .HasColumnType("int");
+
+                    b.HasKey("IdParam");
+
+                    b.HasIndex("TaskPlayId")
+                        .IsUnique()
+                        .HasFilter("[TaskPlayId] IS NOT NULL");
+
+                    b.ToTable("TaskPlayParams");
                 });
 
             modelBuilder.Entity("CodeBattleArena.Server.Models.TaskProgramming", b =>
@@ -572,6 +705,25 @@ namespace CodeBattleArena.Server.Migrations
                     b.Navigation("Session");
                 });
 
+            modelBuilder.Entity("CodeBattleArena.Server.Models.PlayerTaskPlay", b =>
+                {
+                    b.HasOne("CodeBattleArena.Server.Models.Player", "Player")
+                        .WithMany("PlayerTaskPlays")
+                        .HasForeignKey("PlayerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CodeBattleArena.Server.Models.TaskPlay", "TaskPlay")
+                        .WithMany("PlayerTaskPlays")
+                        .HasForeignKey("TaskPlayId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Player");
+
+                    b.Navigation("TaskPlay");
+                });
+
             modelBuilder.Entity("CodeBattleArena.Server.Models.Session", b =>
                 {
                     b.HasOne("CodeBattleArena.Server.Models.LangProgramming", "LangProgramming")
@@ -606,6 +758,15 @@ namespace CodeBattleArena.Server.Migrations
                     b.Navigation("InputData");
 
                     b.Navigation("TaskProgramming");
+                });
+
+            modelBuilder.Entity("CodeBattleArena.Server.Models.TaskPlay", b =>
+                {
+                    b.HasOne("CodeBattleArena.Server.Models.TaskPlayParam", "TaskPlayParam")
+                        .WithOne("TaskPlay")
+                        .HasForeignKey("CodeBattleArena.Server.Models.TaskPlay", "TaskPlayParamId");
+
+                    b.Navigation("TaskPlayParam");
                 });
 
             modelBuilder.Entity("CodeBattleArena.Server.Models.TaskProgramming", b =>
@@ -700,11 +861,23 @@ namespace CodeBattleArena.Server.Migrations
                     b.Navigation("Messages");
 
                     b.Navigation("PlayerSessions");
+
+                    b.Navigation("PlayerTaskPlays");
                 });
 
             modelBuilder.Entity("CodeBattleArena.Server.Models.Session", b =>
                 {
                     b.Navigation("PlayerSessions");
+                });
+
+            modelBuilder.Entity("CodeBattleArena.Server.Models.TaskPlay", b =>
+                {
+                    b.Navigation("PlayerTaskPlays");
+                });
+
+            modelBuilder.Entity("CodeBattleArena.Server.Models.TaskPlayParam", b =>
+                {
+                    b.Navigation("TaskPlay");
                 });
 
             modelBuilder.Entity("CodeBattleArena.Server.Models.TaskProgramming", b =>

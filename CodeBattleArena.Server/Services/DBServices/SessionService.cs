@@ -5,11 +5,10 @@ using CodeBattleArena.Server.Filters;
 using CodeBattleArena.Server.Helpers;
 using CodeBattleArena.Server.IRepositories;
 using CodeBattleArena.Server.Models;
+using CodeBattleArena.Server.Services.Notifications.INotifications;
 using CodeBattleArena.Server.Untils;
 using Microsoft.AspNetCore.Identity;
 using System.Globalization;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace CodeBattleArena.Server.Services.DBServices
 {
@@ -21,8 +20,10 @@ namespace CodeBattleArena.Server.Services.DBServices
         private readonly UserManager<Player> _userManager;
         private readonly PlayerService _playerService;
         private readonly TaskService _taskService;
+        private readonly ISessionNotificationService _sessionNotificationService;
         public SessionService(IUnitOfWork unitOfWork, ILogger<SessionService> logger, IMapper mapper, 
-            UserManager<Player> userManager, PlayerService playerService, TaskService taskService)
+            UserManager<Player> userManager, PlayerService playerService, TaskService taskService,
+            ISessionNotificationService sessionNotificationService)
         {
             _unitOfWork = unitOfWork;
             _logger = logger;
@@ -30,6 +31,7 @@ namespace CodeBattleArena.Server.Services.DBServices
             _userManager = userManager;
             _playerService = playerService;
             _taskService = taskService;
+            _sessionNotificationService = sessionNotificationService;
         }
 
         public async Task<Result<Unit, ErrorResponse>> StartGameAsync(int sessionId, string userId, CancellationToken ct)
@@ -58,14 +60,15 @@ namespace CodeBattleArena.Server.Services.DBServices
 
             return Result.Success<Unit, ErrorResponse>(Unit.Value);
         }
-        public async Task<Result<Unit, ErrorResponse>> FinishGameAsync(int sessionId, string userId, CancellationToken ct)
+        public async Task<Result<Unit, ErrorResponse>> FinishGameAsync
+            (int sessionId, string userId, CancellationToken ct, bool? isBackground = false)
         {
             var resultIsEdit = await CanEditSessionAsync(sessionId, userId, ct);
-            if (!resultIsEdit.IsSuccess)
+            if (!resultIsEdit.IsSuccess && !isBackground.HasValue)
                 return Result.Failure<Unit, ErrorResponse>(resultIsEdit.Failure);
 
             bool isEdit = resultIsEdit.Success;
-            if (!isEdit)
+            if (!isEdit && !isBackground.HasValue)
                 return Result.Failure<Unit, ErrorResponse>(new ErrorResponse
                 {
                     Error = "You do not have sufficient permissions to edit this session."
@@ -438,12 +441,36 @@ namespace CodeBattleArena.Server.Services.DBServices
         {
             try
             {
-                await _unitOfWork.SessionRepository.DeleteExpiredSessionsAsync(dateTime, ct);
+                var idSessionsDelete = await _unitOfWork.SessionRepository.DeleteExpiredSessionsAsync(dateTime, ct);
                 await _unitOfWork.CommitAsync(ct);
+                foreach(var id in idSessionsDelete)
+                {
+                    await _sessionNotificationService.NotifySessionDeletedAllAsync(id);
+                    await _sessionNotificationService.NotifySessionDeletedGroupAsync(id);
+                }
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error when executing a method (DeleteExpiredSessionsAsync)");
+            }
+        }
+        public async Task FinishExpiredSessionsInDbAsync(DateTime dateTime, CancellationToken ct)
+        {
+            {
+                try
+                {
+                    var idSessionsFinishid = await _unitOfWork.SessionRepository.FinishExpiredSessionsAsync(dateTime, ct);
+                    await _unitOfWork.CommitAsync(ct);
+                    foreach (var id in idSessionsFinishid)
+                    {
+                        await _sessionNotificationService.NotifyFinishGameAsync(id);
+                        await FinishGameAsync(id, null, ct, isBackground: true);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Error when executing a method (FinishExpiredSessionsAsync)");
+                }
             }
         }
         private async Task<Result<Unit, ErrorResponse>> UpdateSessionInDbAsync(Session session, CancellationToken ct)

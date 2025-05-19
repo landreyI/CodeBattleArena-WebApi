@@ -39,6 +39,17 @@
     --color-violet-pressed: var(--violet-pressed);
     --color-bubbles: var(--bubbles);
     --color-bubbles-pressed: var(--bubbles-pressed);
+    /* Цвета для лиг */
+    --league-bronze: var(--bronze);
+    --league-silver: var(--silver);
+    --league-gold: var(--gold);
+    --league-platinum: var(--platinum);
+    --league-diamond: var(--diamond);
+    --league-bronze-shadow: var(--bronze-shadow);
+    --league-silver-shadow: var(--silver-shadow);
+    --league-gold-shadow: var(--gold-shadow);
+    --league-platinum-shadow: var(--platinum-shadow);
+    --league-diamond-shadow: var(--diamond-shadow);
     /* Компоненты */
     --color-card: var(--card);
     --color-card-foreground: var(--card-foreground);
@@ -98,7 +109,22 @@
     --blue-pressed: #1d4ed8;
     --violet: #a855f7; /* Фиолетовый */
     --violet-pressed: #7e22ce;
-    --bubbles: #8bf092; /* Пузыри (зеленый) */
+    --bubbles-green: #8bf092;
+    --bubbles-red: #f74f4f;
+    --bubbles-yellow: #fad543;
+    --bubbles-blue: #649dfa;
+    --bubbles-purple: #bb77fc;
+    /* Цвета лиг */
+    --bronze: #ffa24d; /* Медь */
+    --silver: #d4d4d4; /* Серебро */
+    --gold: #ffdd29; /* Золото */
+    --platinum: #f0f0f0; /* Платина */
+    --diamond: #B9F2FF; /* Бриллиант */
+    --bronze-shadow: #B87333;
+    --silver-shadow: #C0C0C0;
+    --gold-shadow: #FFD700;
+    --platinum-shadow: #E5E4E2;
+    --diamond-shadow: #B9F2FF;
     /* Компоненты */
     --glow-box: #ffffffcc; /* Полупрозрачный белый для карточек */
     --card: #ffffff; /* Чистый белый */
@@ -158,7 +184,22 @@
     --blue-pressed: #2054c7;
     --violet: #9333ea; /* Темный фиолетовый */
     --violet-pressed: #7d2cc7;
-    --bubbles: #15803d; /* Темные пузыри (зеленый) */
+    --bubbles-green: #15803d;
+    --bubbles-red: #eb2a2a;
+    --bubbles-yellow: #eab308;
+    --bubbles-blue: #2563eb;
+    --bubbles-purple: #9333ea;
+    /* Цвета лиг */
+    --bronze: rgba(184, 115, 51, 0.3); /* Темная медь */
+    --silver: rgba(192, 192, 192, 0.3); /* Темное серебро */
+    --gold: rgba(255, 215, 0, 0.3); /* Темное золото */
+    --platinum: rgba(229, 228, 226, 0.3); /* Темная платина */
+    --diamond: rgba(0, 255, 255, 0.3); /* Темный бриллиант */
+    --bronze-shadow: #9B5A1F;
+    --silver-shadow: #A8A8A8;
+    --gold-shadow: #E5B800;
+    --platinum-shadow: #C7C6C4;
+    --diamond-shadow: #99D6EA;
     /* Компоненты */
     --glow-box: #2d2d32cc; /* Полупрозрачный темный для карточек */
     --card: #2d2d32; /* Темный серый */

@@ -3,13 +3,14 @@ import { Card } from "../ui/card";
 
 interface Props {
     executionResult: ExecutionResult;
+    className?: string;
 }
 
-export function CodeVerificationResult({ executionResult }: Props) {
+export function CodeVerificationResult({ executionResult, className }: Props) {
     const { time, memory, compileOutput } = executionResult;
 
     return (
-        <Card className="p-4 space-y-4 text-sm">
+        <Card className={`p-4 space-y-4 text-sm ${className}`}>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                     <span className="font-medium">⏱️ Time:</span>

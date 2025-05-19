@@ -28,7 +28,7 @@ export const fetchFinishTaskPlayer = async (): Promise<boolean> => {
 
 export const fetchLeaveSession = async (): Promise<boolean> => {
     try {
-        let response = await api.get(`PlayerSession/leave-session`);
+        let response = await api.delete(`PlayerSession/leave-session`);
         return response.data;
     }
     catch (error) {
@@ -40,7 +40,7 @@ export const fetchLeaveSession = async (): Promise<boolean> => {
 
 export const fetchJoinSession = async (idSession: number, password?: string): Promise<boolean> => {
     try {
-        let response = await api.get(`PlayerSession/join-session`, {
+        let response = await api.put(`PlayerSession/join-session`, {
             params: { idSession: idSession, password: password }
         });
         return response.data;

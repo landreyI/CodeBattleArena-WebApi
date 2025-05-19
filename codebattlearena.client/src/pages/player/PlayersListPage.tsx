@@ -17,6 +17,7 @@ export function PlayersListPage() {
                 players={players}
                 cardWrapperClassName="w-full hover:scale-[1.02] transition"
                 isTop={true}
+                isNumbered={true}
             />
         </div>
     );

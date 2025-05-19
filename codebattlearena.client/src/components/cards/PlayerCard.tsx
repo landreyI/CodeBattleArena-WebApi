@@ -1,20 +1,21 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Player, Role } from "@/models/dbModels";
+import { Player } from "@/models/dbModels";
 import { BookOpenText, Calendar, Mail, Trophy } from "lucide-react";
 import clsx from "clsx";
 import { useState } from "react";
 import { getRoleColor } from "@/untils/helpers";
 interface Props {
-    player: Player
-    isEdit?: boolean
+    player: Player;
+    isEdit?: boolean;
+    className?: string;
 }
-export function PlayerCard({ player, isEdit }: Props) {
+export function PlayerCard({ player, isEdit, className }: Props) {
     const [showFullBio, setShowFullBio] = useState<boolean>();
 
     return (
-        <Card className="shadow-lg">
+        <Card className={`shadow-lg ${className}`}>
             <CardHeader className="flex flex-col items-center">
                 <Avatar className="w-30 h-30 mb-4">
                     <AvatarImage src={player.photoUrl || undefined} alt={player.username} className="hover:scale-[1.3] transition" />

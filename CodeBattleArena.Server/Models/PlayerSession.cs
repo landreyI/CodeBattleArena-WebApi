@@ -14,6 +14,7 @@ namespace CodeBattleArena.Server.Models
         [StringLength(50)]
         public string? Time { get; set; }
         public int? Memory { get; set; }
+        public DateTime? FinishTask { get; set; }
         public bool IsCompleted { get; set; }
     }
 }

@@ -1,4 +1,4 @@
-import { Difficulty, Role, SessionState } from "../models/dbModels";
+import { Difficulty, Role, SessionState, LeagueEnum } from "../models/dbModels";
 import { StandardError } from "./errorHandler";
 
 export const getArray = (input: any): any[] => {

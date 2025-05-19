@@ -7,9 +7,10 @@ interface Props {
     onPlayerSessionInfo?: (playerId: string) => void;
     cardWrapperClassName?: string;
     isTop?: boolean;
+    isNumbered?: boolean;
 }
 
-export function PlayersList({ players, onDelete, cardWrapperClassName, onPlayerSessionInfo, isTop = false }: Props) {
+export function PlayersList({ players, onDelete, cardWrapperClassName, onPlayerSessionInfo, isTop = false, isNumbered = false }: Props) {
     const sortedPlayers = isTop
         ? [...players].sort((a, b) => (b.victories ?? 0) - (a.victories ?? 0))
         : players;
@@ -30,7 +31,7 @@ export function PlayersList({ players, onDelete, cardWrapperClassName, onPlayerS
                 <PlayerMiniCard
                     key={player.id}
                     player={player}
-                    number={isTop ? index+1 : undefined}
+                    number={isNumbered ? index+1 : undefined}
                     onDelete={onDelete}
                     onPlayerSessionInfo={onPlayerSessionInfo}
                     className={`${cardWrapperClassName ?? ""} ${getBorderClass(index)} rounded-xl`}

@@ -35,6 +35,7 @@ export const formSchema = z
         state: z.nativeEnum(SessionState, {
             errorMap: () => ({ message: "Invalid session state" }),
         }),
+        timePlay: z.coerce.number().min(5, { message: "Minimum 5 minutes" }).max(60, { message: "Maximum 60 minutes" }),
         password: z.string().nullable(),
     })
     .superRefine((data, ctx) => {
@@ -76,6 +77,7 @@ export function SessionForm({ session, onClose, onUpdate, submitLabel }: Props) 
             maxPeople: session?.maxPeople || 1,
             idLangProgramming: session?.langProgrammingId || -1,
             state: session?.state || SessionState.Public,
+            timePlay: session?.timePlay || 5,
             password: session?.password || null,
         },
     });
@@ -96,11 +98,13 @@ export function SessionForm({ session, onClose, onUpdate, submitLabel }: Props) 
             langProgramming: langsProgramming?.find(lang => lang.idLang === values.idLangProgramming) ?? null,
             taskId: session?.taskId ?? null,
             taskProgramming: session?.taskProgramming ?? null,
+            dateStartGame: session?.dateStartGame ?? null,
 
             name: values.name,
             maxPeople: values.maxPeople,
             langProgrammingId: values.idLangProgramming,
             state: values.state,
+            timePlay: values.timePlay,
             password: values.password,
         };
     }
@@ -164,7 +168,7 @@ export function SessionForm({ session, onClose, onUpdate, submitLabel }: Props) 
                         <FormItem>
                             <FormLabel>Maximum number of participants</FormLabel>
                             <FormControl>
-                                <Input type="number" placeholder="Please specify the maximum number of participants (1-10)" {...field} />
+                                <Input type="number" placeholder="Players (1-10)" {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -231,6 +235,20 @@ export function SessionForm({ session, onClose, onUpdate, submitLabel }: Props) 
                                         ))}
                                     </SelectContent>
                                 </Select>
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+
+                <FormField
+                    control={form.control}
+                    name="timePlay"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Time to complete the task</FormLabel>
+                            <FormControl>
+                                <Input type="number" placeholder="Time (5-60)" {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>

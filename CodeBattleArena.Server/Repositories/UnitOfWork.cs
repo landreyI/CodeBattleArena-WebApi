@@ -1,5 +1,6 @@
 ﻿using CodeBattleArena.Server.Data;
 using CodeBattleArena.Server.IRepositories;
+using CodeBattleArena.Server.Repositories.IRepositories;
 
 namespace CodeBattleArena.Server.Repositories
 {
@@ -13,6 +14,7 @@ namespace CodeBattleArena.Server.Repositories
         private IFriendRepository _friendRepository;
         private IChatRepository _chatRepository;
         private ILangProgrammingRepository _langProgrammingRepository;
+        private ILeagueRepository _leagueRepository;
 
         public UnitOfWork(AppDBContext context)
         {
@@ -26,7 +28,7 @@ namespace CodeBattleArena.Server.Repositories
         public IFriendRepository FriendRepository => _friendRepository ??= new FriendRepository(_context);
         public IChatRepository ChatRepository => _chatRepository ??= new ChatRepository(_context);
         public ILangProgrammingRepository LangProgrammingRepository => _langProgrammingRepository ??= new LangProgrammingRepository(_context);
-
+        public ILeagueRepository LeagueRepository => _leagueRepository ??= new LeagueRepository(_context);
         public async Task<int> CommitAsync(CancellationToken cancellationToken)
         {
             return await _context.SaveChangesAsync(cancellationToken);

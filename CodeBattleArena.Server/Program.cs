@@ -106,8 +106,11 @@ builder.Services.AddScoped<FriendService>();
 builder.Services.AddScoped<PlayerSessionService>();
 builder.Services.AddScoped<TaskService>();
 builder.Services.AddScoped<LangProgrammingService>();
+builder.Services.AddScoped<LeagueService>();
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+builder.Services.AddHostedService<SessionObserverService>();
 
 //------ SIGNALR ------
 builder.Services.AddScoped<ISessionNotificationService, SessionNotificationService>();

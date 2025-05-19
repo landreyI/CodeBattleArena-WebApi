@@ -33,9 +33,9 @@ namespace CodeBattleArena.Server.Services.DBServices
 
             foreach (var taskInputData in taskProgramming.TaskInputData)
             {
-                if (taskInputData.InputData?.IdInputData is int existingId)
+                if (taskInputData.InputData?.IdInputData > 0)
                 {
-                    var existingInputData = await _unitOfWork.TaskRepository.GetInputDataById(existingId);
+                    var existingInputData = await _unitOfWork.TaskRepository.GetInputDataById(taskInputData.InputData.IdInputData);
 
                     if (existingInputData == null)
                         return Result.Failure<TaskProgramming, ErrorResponse>(

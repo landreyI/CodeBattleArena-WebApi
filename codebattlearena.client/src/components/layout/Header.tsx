@@ -23,6 +23,7 @@ export function Header() {
     const [showRegistration, setShowRegistration] = useState(false);
     const [showAuthorization, setShowAuthorization] = useState(false);
     const [showAddTask, setShowAddTask] = useState(false);
+
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const navigate = useNavigate();
 

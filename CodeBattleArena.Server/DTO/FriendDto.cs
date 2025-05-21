@@ -1,11 +1,11 @@
-﻿namespace CodeBattleArena.Server.Models
+﻿namespace CodeBattleArena.Server.DTO
 {
-    public class Friend
+    public class FriendDto
     {
         public string IdPlayer1 { get; set; }
-        public virtual Player? Player1 { get; set; }
+        public PlayerDto? Player1 { get; set; }
         public string IdPlayer2 { get; set; }
-        public virtual Player? Player2 { get; set; }
+        public PlayerDto? Player2 { get; set; }
 
         public DateTime FriendshipDate { get; set; } = DateTime.Now;
     }

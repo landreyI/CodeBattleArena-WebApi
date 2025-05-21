@@ -1,7 +1,6 @@
 export interface Player {
     id: string;
     username: string;
-    email: string | null;
     photoUrl: string | null;
     roles: string[] | null;
     victories: number;
@@ -86,6 +85,23 @@ export interface League {
     name: string;
     minWins: number;
     maxWins: number | null;
+}
+
+export interface Chat {
+    idChat: number | null;
+    idPlayer1: number;
+    player1: Player | null;
+    idPlayer2: number;
+    player2: Player | null;
+}
+export interface Message {
+    idMessage: number | null;
+    idChat: number | null;
+    chat: Chat | null
+    idSender: string | null;
+    sender: Player | null;
+    messageText: string;
+    sentDateTime: Date;
 }
 
 export interface LeaguePlayers {

@@ -1,5 +1,5 @@
 import { api } from "../api/axios";
-import { Player, PlayerSession, Session } from "@/models/dbModels";
+import { Message, Player, PlayerSession, Session } from "@/models/dbModels";
 import { ExecutionResult } from "@/models/executionResult";
 
 export const fetchGetPlayerSessions = async (id: string): Promise<Session[]> => {
@@ -40,8 +40,8 @@ export const fetchLeaveSession = async (): Promise<boolean> => {
 
 export const fetchJoinSession = async (idSession: number, password?: string): Promise<boolean> => {
     try {
-        let response = await api.put(`PlayerSession/join-session`, {
-            params: { idSession: idSession, password: password }
+        let response = await api.put(`PlayerSession/join-session`, null, {
+            params: { idSession, password }
         });
         return response.data;
     }
@@ -55,6 +55,19 @@ export const fetchUpdateCodePlayer = async (sessionId?: number, code?: string): 
     try {
         let response = await api.get(`PlayerSession/update-code-player`, {
             params: { sessionId: sessionId, code: code}
+        });
+        return response.data;
+    }
+    catch (error) {
+        console.error(error);
+        throw error;
+    }
+}
+
+export const fetchSendMessageSession = async (message?: string): Promise<boolean> => {
+    try {
+        let response = await api.get(`PlayerSession/send-message-session`, {
+            params: { message: message }
         });
         return response.data;
     }

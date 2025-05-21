@@ -9,8 +9,7 @@ namespace CodeBattleArena.Helpers
         public PlayerMappingProfile()
         {
             CreateMap<PlayerDto, Player>();
-            CreateMap<Player, PlayerDto>()
-                .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email));
+            CreateMap<Player, PlayerDto>();
         }
     }
 }

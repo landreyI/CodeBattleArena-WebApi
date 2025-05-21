@@ -301,6 +301,18 @@ h1, h2, h3 {
     border-radius: 0.5rem;
 }
 
+.league-master {
+    background-color: var(--master);
+    border: 2px solid var(--master);
+    box-shadow: var(--master-shadow);
+    border-radius: 0.5rem;
+}
+
+.clip-custom-shape {
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 100% 100%, 0 70%);
+    border: none;
+    border-radius: 0;
+}
 
 /* Мобильная адаптация */
 @media (max-width: 768px) {

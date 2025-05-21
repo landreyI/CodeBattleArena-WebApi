@@ -16,5 +16,6 @@ namespace CodeBattleArena.Server.Services.Notifications.INotifications
         Task NotifyUpdateCompletedCount(int idSession, int count);
         Task NotifyUpdateCodePlayerAsync(int idSession, string code);
         Task NotifyUpdatePlayerSessionAsync(PlayerSessionDto playerSession);
+        Task NotifySendMessageSessionAsync(int idSession, MessageDto messageDto);
     }
 }

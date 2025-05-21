@@ -19,8 +19,9 @@ import { SessionProvider } from './contexts/SessionContext';
 import { SignalRSessionHubProvider } from './contexts/SignalRSessionHubContext';
 import { SignalRTaskHubProvider } from './contexts/SignalRTaskHubContext';
 import PlayerCodePage from './pages/session/PlayerCodePage';
-import LeaguesPage from './pages/LeaguesPage';
 import Bubbles from './components/layout/Bubbles';
+import LeaguesPage from './pages/league/LeaguesPage';
+import CreateLeague from './pages/league/CreateLeague';
 
 const App = () => {
     return (
@@ -49,6 +50,7 @@ const App = () => {
                                         <Route path="/task/info-task/:taskId" element={<TaskInfo />} />
                                         <Route path="/session/player-code" element={<PlayerCodePage />} />
                                         <Route path="/league/list-leagues/" element={<LeaguesPage />} />
+                                        <Route path="/league/create-league" element={<CreateLeague />} />
                                     </Routes>
                                 </main>
                                 <Footer />

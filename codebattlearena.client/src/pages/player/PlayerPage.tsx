@@ -17,6 +17,7 @@ import EmptyState from "@/components/common/EmptyState";
 import DropdownItem, { DropdownItemData } from "@/components/common/DropdownItem";
 import { usePlayerSessions } from "@/hooks/playerSession/usePlayerSessions";
 import SettingPlayerMenu from "@/components/menu/SettingPlayerMenu";
+import { useAuth } from "../../contexts/AuthContext";
 
 export function PlayerPage() {
 
@@ -28,6 +29,7 @@ export function PlayerPage() {
     const { playerId } = useParams<{ playerId: string }>();
     const { player, setPlayer, isEdit, loading: playerLoad, error: playerError } = usePlayer(playerId);
     const { sessions, setSessions, loading, error } = usePlayerSessions(playerId, isEdit);
+    const { user } = useAuth();
 
     const [showEditPlayer, setShowEditPlayer] = useState(false);
 

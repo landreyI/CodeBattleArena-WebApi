@@ -10,6 +10,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Folder Include="%40\components\ui\" />
+    <Folder Include="%40\hooks\" />
     <Folder Include="src\store\" />
   </ItemGroup>
 </Project>

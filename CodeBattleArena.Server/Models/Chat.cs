@@ -1,5 +1,4 @@
-﻿using Google.Apis.Gmail.v1.Data;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace CodeBattleArena.Server.Models
 {
@@ -9,11 +8,11 @@ namespace CodeBattleArena.Server.Models
         public int IdChat { get; set; }
 
         public string IdPlayer1 { get; set; }
-        public Player Player1 { get; set; }
+        public virtual Player? Player1 { get; set; }
         public string IdPlayer2 { get; set; }
-        public Player Player2 { get; set; }
+        public virtual Player? Player2 { get; set; }
 
-        public ICollection<Message> Messages { get; set; }
+        public virtual ICollection<Message>? Messages { get; set; }
     }
 
 }

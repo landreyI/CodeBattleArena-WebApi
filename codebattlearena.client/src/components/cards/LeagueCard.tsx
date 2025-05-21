@@ -6,85 +6,104 @@
     CardFooter,
     CardAction,
 } from "../ui/card";
-import { Button } from "../ui/button";
-import { PlayersList } from "../lists/PlayersList";
+import { ShieldCheck, ChevronDown, ChevronUp } from "lucide-react";
 import { League, Player } from "@/models/dbModels";
-import { ChevronDown, ChevronUp, ShieldCheck } from "lucide-react";
-import { useState } from "react";
+import { PlayersList } from "../lists/PlayersList";
 import clsx from "clsx";
+import { useState } from "react";
+import { Button } from "../ui/button";
+import SettingLeagueMenu from "../menu/SettingLeagueMenu";
+import EditLeagueModal from "../modals/EditLeagueModal";
 
 interface Props {
     league?: League;
     players?: Player[];
     className?: string;
+    isEdit?: boolean
+    handleDeletLeague: (e: any) => void;
 }
 
-export function LeagueCard({ league, players, className }: Props) {
+export function LeagueCard({ league, players, className, isEdit, handleDeletLeague }: Props) {
     const [showPlayers, setShowPlayers] = useState(true);
-    const togglePlayers = () => setShowPlayers((prev) => !prev);
     const name = league?.name ?? "unknown";
+    const [showEditLeague, setShowEditLeague] = useState(false);
 
     return (
-        <Card className={clsx("shadow-xl", className, "league-" + name.toLowerCase())}>
-            <CardHeader className="flex flex-col px-6 pb-0">
-                <div className="flex items-center justify-between w-full">
-                    <div className="flex items-center gap-3">
-                        <ShieldCheck size={24} className="text-primary shrink-0" />
-                        <CardTitle className="text-xl sm:text-2xl font-mono tracking-tight leading-tight">
-                            {name} League
-                        </CardTitle>
-                    </div>
+        <>
+            <div
+                className={clsx(
+                    "flex flex-col md:flex-row gap-6 items-start w-full",
+                    className
+                )}
+            >
+                {/* Левая карточка лиги */}
+                <Card className={clsx("w-full md:w-[60%] pb-25 rounded-0", "clip-custom-shape", "league-" + name.toLowerCase())}>
+                    <CardHeader className="px-6 pt-2 pb-2">
+                        <div className="flex flex-col items-center text-center gap-1">
+                            <div className="flex items-center gap-2 text-xl">
+                                <ShieldCheck size={20} className="text-primary" />
+                                <CardTitle className="font-mono">{name} League</CardTitle>
+                                {isEdit && (
+                                    <SettingLeagueMenu
+                                        setShowEditLeague={setShowEditLeague}
+                                        handleDeletLeague={handleDeletLeague}
+                                    />
+                                )}
+                            </div>
+                            <span className="text-m text-muted-foreground">
+                                Victories: {league?.minWins} - {league?.maxWins ?? "∞"}
+                            </span>
+                        </div>
+                    </CardHeader>
 
-                    <CardAction>
-                        <Button
-                            onClick={togglePlayers}
-                            size="icon"
-                            variant="ghost"
-                            className="rounded-full hover:bg-muted transition"
-                        >
-                            {showPlayers ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
-                        </Button>
-                    </CardAction>
-                </div>
+                    <CardContent className="flex justify-between items-center px-6 pb-2">
+                        <span className="text-m text-muted-foreground">{players?.length ?? 0} Players</span>
+                        <CardAction>
+                            <Button
+                                onClick={() => setShowPlayers((prev) => !prev)}
+                                size="icon"
+                                variant="ghost"
+                                className="rounded-full hover:bg-muted transition"
+                            >
+                                {showPlayers ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+                            </Button>
+                        </CardAction>
+                    </CardContent>
 
-                {/* Subtitle with players count and range */}
-                <div className="mt-1 flex items-center justify-between text-sm text-muted-foreground font-sans w-full">
-                    <span>Victories: {league?.minWins} - {league?.maxWins ?? "∞"}</span>
-                    <span>Players: {players?.length ?? 0}</span>
-                </div>
-            </CardHeader>
+                    <CardFooter className="flex justify-center px-4 pb-4 hover:scale-[1.1] transition">
+                        <img
+                            src={`/images/ranks/${name.toLowerCase()}.png`}
+                            alt={`${name} emblem`}
+                            className="object-contain select-none pointer-events-none"
+                        />
+                    </CardFooter>
+                </Card>
 
-            {/* Emblem */}
-            <CardContent className="p-0 hover:scale-[1.1] transition">
-                <div className="w-full h-[220px] sm:h-[260px] md:h-[300px] relative flex justify-center items-center">
-                    <img
-                        src={`/images/ranks/${name.toLowerCase()}.png`}
-                        alt={`${name} emblem`}
-                        className="h-full object-contain pointer-events-none select-none"
-                    />
-                </div>
-            </CardContent>
 
-            <CardFooter className="flex-col items-start p-0">
+                {/* Правая часть — список игроков */}
                 <div
                     className={clsx(
-                        "transition-all duration-500 ease-in-out overflow-hidden w-full",
-                        showPlayers
-                            ? "max-h-[1000px] opacity-100 mt-4 px-6"
-                            : "max-h-0 opacity-0"
+                        "transition-all duration-500 ease-in-out overflow-hidden w-full p-2 league-" + name.toLowerCase(),
+                        showPlayers ? "max-h-[1000px] opacity-100" : "max-h-0 opacity-0"
                     )}
                 >
-                    {players && players.length !== 0 && (
+                    {players && players.length > 0 ? (
                         <PlayersList
                             players={players}
                             cardWrapperClassName="w-full hover:scale-[1.02] transition"
                             isNumbered={true}
                         />
+                    ) : (
+                        <div className="text-muted-foreground text-center text-sm">
+                            No players in this league
+                        </div>
                     )}
                 </div>
-            </CardFooter>
-        </Card>
-
+            </div>
+            {showEditLeague && league && (
+                <EditLeagueModal open={showEditLeague} league={league} onClose={() => setShowEditLeague(false)} />
+            )}
+        </>
     );
 }
 

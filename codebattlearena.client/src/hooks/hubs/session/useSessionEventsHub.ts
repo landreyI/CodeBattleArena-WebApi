@@ -1,4 +1,4 @@
-import { Player, PlayerSession, Session } from "@/models/dbModels";
+import { Message, Player, PlayerSession, Session } from "@/models/dbModels";
 import { useSessionHubConnection, useSessionHubEvent } from "@/contexts/SignalRSessionHubContext";
 import { useSignalRSessionGroupSubscription } from "./useSignalRSessionGroupSubscription";
 import { useEffect } from "react";
@@ -18,6 +18,7 @@ interface SessionEventHandlers {
     onUpdateCodePlayer?: (code: string) => void;
     onUpdateObserversCount?: (count: number) => void;
     onUpdatePlayerSession?: (playerSession: PlayerSession) => void;
+    onSendMessageSession?: (message: Message) => void;
 }
 
 export function useSessionEventsHub(sessionId: number | undefined, handlers: SessionEventHandlers) {
@@ -75,5 +76,9 @@ export function useSessionEventsHub(sessionId: number | undefined, handlers: Ses
 
     useSessionHubEvent<[PlayerSession]>("UpdatePlayerSession", (playerSession: PlayerSession) => {
         handlers.onUpdatePlayerSession?.(playerSession);
+    });
+
+    useSessionHubEvent<[Message]>("SendMessageSession", (message: Message) => {
+        handlers.onSendMessageSession?.(message);
     });
 }

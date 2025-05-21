@@ -159,6 +159,28 @@ namespace CodeBattleArena.Server.Controllers
         }
 
         [Authorize]
+        [HttpGet("send-message-session")]
+        public async Task<IActionResult> SendMessageSession(string? message, CancellationToken cancellationToken)
+        {
+            var currentUser = await _userManager.GetUserAsync(User);
+
+            var activeSession = await _playerSessionService.GetActiveSession(currentUser.Id, cancellationToken);
+            if (activeSession == null || string.IsNullOrEmpty(message))
+                return Ok(false);
+
+            var messageDto = new MessageDto
+            {
+                IdSender = currentUser.Id,
+                Sender = _mapper.Map<PlayerDto>(currentUser),
+                MessageText = message,
+                SentDateTime = DateTime.UtcNow,
+            };
+
+            await _sessionNotificationService.NotifySendMessageSessionAsync(activeSession.IdSession, messageDto);
+            return Ok(true);
+        }
+
+        [Authorize]
         [HttpPost("check-code-player")]
         public async Task<IActionResult> CheckCodePlayer([FromBody] CodeRequest codeRequest, CancellationToken cancellationToken)
         {

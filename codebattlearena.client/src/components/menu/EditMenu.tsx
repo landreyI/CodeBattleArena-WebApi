@@ -11,6 +11,7 @@ export function EditMenu({ setShowAddTask }: Props) {
             menuLabel="Actions with edits"
             actions={[
                 { label: "Add Task", onClick: setShowAddTask, shortcut: "+⌘T" },
+                { label: "Add League", href: "/league/create-league", shortcut: "+⌘L" },
             ]}
         />
     );

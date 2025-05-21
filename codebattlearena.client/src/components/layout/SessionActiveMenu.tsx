@@ -1,17 +1,29 @@
-﻿import { useState } from "react";
+﻿import { useCallback, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ExternalLink, SeparatorVertical, Users } from "lucide-react";
+import { ExternalLink, MessageCircle, SeparatorVertical, Users } from "lucide-react";
 import { useActiveSession } from "@/contexts/SessionContext";
 import { Button } from "@/components/ui/button";
 import InlineNotification from "@/components/common/InlineErrorNotification";
 import { useSessionEventsHub } from "@/hooks/hubs/session/useSessionEventsHub";
 import { useAuth } from "@/contexts/AuthContext";
 import { useEffect } from "react";
+import ChatSheet from "../common/ChatSheet";
+import { MessageProps } from "../common/Message";
 
 export function SessionActiveMenu() {
     const { activeSession, setActiveSession, leaveSession, refreshSession } = useActiveSession();
     const [notification, setNotification] = useState<string | null>(null);
     const { user } = useAuth();
+
+    const [isChatOpen, setChatOpen] = useState(false);
+    const toggleChat = () => {
+        setChatOpen(prev => {
+            if (!prev) setUnreadCount(0); // если открываем чат — сбрасываем
+            return !prev;
+        });
+    };
+    const [messages, setMessages] = useState<MessageProps[]>([]);
+    const [unreadCount, setUnreadCount] = useState(0);
 
     const [countdown, setCountdown] = useState<number | null>(null);
     const countdownDuration = 10; // second
@@ -97,8 +109,21 @@ export function SessionActiveMenu() {
         onFinishGame: () => {
             navigate(`/session/info-session/${activeSession?.idSession}`);
             refreshSession();
+        },
+        onSendMessageSession: (message) => {
+            incomingMessage({
+                message: message,
+                isUser: message.idSender === user?.id
+            });
+            if (!isChatOpen) {
+                setUnreadCount(prev => prev + 1);
+            }
         }
     });
+
+    const incomingMessage = useCallback((message: MessageProps) => {
+        setMessages((prev) => [...prev, message]);
+    }, []);
 
     if (!activeSession) return null;
 
@@ -152,6 +177,21 @@ export function SessionActiveMenu() {
                     </div>
 
                     <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+
+                        <ChatSheet
+                            trigger={
+                                <div className="relative cursor-pointer" onClick={toggleChat}>
+                                    <MessageCircle className="hover:text-green-400" size={28} />
+                                    {unreadCount > 0 && (
+                                        <div className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                                            {unreadCount}
+                                        </div>
+                                    )}
+                                </div>
+                            }
+                            messages={messages}
+                        />
+
                         <Link to={`/session/info-session/${activeSession.idSession}`} className="hover:text-green-400 mx-4">
                             <ExternalLink size={28} />
                         </Link>

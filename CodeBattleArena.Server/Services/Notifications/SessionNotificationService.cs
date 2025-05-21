@@ -81,5 +81,11 @@ namespace CodeBattleArena.Server.Services.Notifications
             await _hubContext.Clients.Group($"Session-{playerSession.IdSession}")
                 .SendAsync("UpdatePlayerSession", playerSession);
         }
+
+        public async Task NotifySendMessageSessionAsync(int idSession, MessageDto messageDto)
+        {
+            await _hubContext.Clients.Group($"Session-{idSession}")
+                .SendAsync("SendMessageSession", messageDto);
+        }
     }
 }

@@ -3,14 +3,13 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* Тема сгруппирована по категориям */
 @theme inline {
-    /* Радиусы */
+
     --radius-sm: calc(var(--radius) - 4px);
     --radius-md: calc(var(--radius) - 2px);
     --radius-lg: var(--radius);
     --radius-xl: calc(var(--radius) + 4px);
-    /* Основные цвета */
+
     --color-background: var(--background);
     --color-foreground: var(--foreground);
     --color-primary: var(--primary);
@@ -24,7 +23,7 @@
     --color-border: var(--border);
     --color-input: var(--input);
     --color-ring: var(--ring);
-    /* Специфичные цвета */
+
     --color-red: var(--destructive);
     --color-red-pressed: var(--destructive-pressed);
     --color-green: var(--success);
@@ -39,18 +38,20 @@
     --color-violet-pressed: var(--violet-pressed);
     --color-bubbles: var(--bubbles);
     --color-bubbles-pressed: var(--bubbles-pressed);
-    /* Цвета для лиг */
+
     --league-bronze: var(--bronze);
     --league-silver: var(--silver);
     --league-gold: var(--gold);
     --league-platinum: var(--platinum);
     --league-diamond: var(--diamond);
+    --league-master: var(--master);
     --league-bronze-shadow: var(--bronze-shadow);
     --league-silver-shadow: var(--silver-shadow);
     --league-gold-shadow: var(--gold-shadow);
     --league-platinum-shadow: var(--platinum-shadow);
     --league-diamond-shadow: var(--diamond-shadow);
-    /* Компоненты */
+    --league-master-shadow: var(--master-shadow);
+
     --color-card: var(--card);
     --color-card-foreground: var(--card-foreground);
     --color-glow-box: var(--glow-box);
@@ -60,14 +61,14 @@
     --color-footer-foreground: var(--footer-foreground);
     --color-popover: var(--popover);
     --color-popover-foreground: var(--popover-foreground);
-    /* Диаграммы */
+
     --color-chart-1: var(--chart-1);
     --color-chart-2: var(--chart-2);
     --color-chart-3: var(--chart-3);
     --color-chart-4: var(--chart-4);
     --color-chart-5: var(--chart-5);
     --color-chart-6: var(--chart-6);
-    /* Сайдбар */
+
     --color-sidebar: var(--sidebar);
     --color-sidebar-foreground: var(--sidebar-foreground);
     --color-sidebar-primary: var(--sidebar-primary);
@@ -78,71 +79,73 @@
     --color-sidebar-ring: var(--sidebar-ring);
 }
 
-/* Светлая тема */
+
 :root {
-    /* Радиусы */
+
     --radius: 0.5rem;
-    /* Основные цвета */
-    --background: #f7fafc; /* Чистый светлый фон */
-    --foreground: #1a202c; /* Темный текст */
-    --primary: #22c55e; /* Зеленый акцент */
+
+    --background: #f7fafc; 
+    --foreground: #1a202c; 
+    --primary: #22c55e; 
     --primary-foreground: #1a202c;
-    --secondary: #4ade80; /* Яркий зеленый для hover */
+    --secondary: #4ade80; 
     --secondary-foreground: #1a202c;
-    --accent: #c4c4c4; /* Серый для акцентов */
+    --accent: #c4c4c4; 
     --accent-foreground: #1a202c;
-    --muted: #e2e8f0; /* Мягкий серый */
+    --muted: #e2e8f0; 
     --muted-foreground: #4a5568;
     --border: #e2e8f0;
     --input: #e2e8f0;
     --ring: #4ade80;
-    /* Специфичные цвета */
-    --destructive: #fc5353; /* Красный */
+   
+    --destructive: #fc5353; 
     --destructive-pressed: #e34444;
-    --success: #30db6f; /* Зеленый */
+    --success: #30db6f; 
     --success-pressed: #2bc262;
-    --yellow: #facc15; /* Желтый */
+    --yellow: #facc15; 
     --yellow-pressed: #ca8a04;
-    --gray: #b6c0d6; /* серый */
+    --gray: #b6c0d6; 
     --gray-pressed: #9ea7ba;
-    --blue: #3b82f6; /* Синий */
+    --blue: #3b82f6; 
     --blue-pressed: #1d4ed8;
-    --violet: #a855f7; /* Фиолетовый */
+    --violet: #a855f7; 
     --violet-pressed: #7e22ce;
     --bubbles-green: #8bf092;
     --bubbles-red: #f74f4f;
     --bubbles-yellow: #fad543;
     --bubbles-blue: #649dfa;
     --bubbles-purple: #bb77fc;
-    /* Цвета лиг */
-    --bronze: #ffa24d; /* Медь */
-    --silver: #d4d4d4; /* Серебро */
-    --gold: #ffdd29; /* Золото */
-    --platinum: #f0f0f0; /* Платина */
-    --diamond: #B9F2FF; /* Бриллиант */
+    
+    --bronze: #ffa24d; 
+    --silver: #d4d4d4; 
+    --gold: #ffdd29; 
+    --platinum: #f0f0f0; 
+    --diamond: #B9F2FF;
+    --master: #f4a3ff;
     --bronze-shadow: #B87333;
     --silver-shadow: #C0C0C0;
     --gold-shadow: #FFD700;
     --platinum-shadow: #E5E4E2;
     --diamond-shadow: #B9F2FF;
-    /* Компоненты */
-    --glow-box: #ffffffcc; /* Полупрозрачный белый для карточек */
-    --card: #ffffff; /* Чистый белый */
+    --master-shadow: #f4a3ff;
+    
+    --glow-box: #ffffffcc; 
+    --card: #ffffff; 
     --card-foreground: #1a202c;
-    --header-bg: #ffffff; /* Белый хедер */
+    --header-bg: #ffffff; 
     --header-foreground: #1a202c;
-    --footer-bg: #edf2f7; /* Легкий серый футер */
+    --footer-bg: #edf2f7; 
     --footer-foreground: #1a202c;
     --popover: #ffffff;
     --popover-foreground: #1a202c;
-    /* Диаграммы */
-    --chart-1: #22c55e; /* Зеленый */
-    --chart-2: #4ade80; /* Светло-зеленый */
-    --chart-3: #a855f7; /* Фиолетовый */
-    --chart-4: #3b82f6; /* Синий */
-    --chart-5: #ef4444; /* Красный */
-    --chart-6: #d1d5db; /* Серый */
-    /* Сайдбар */
+    
+    --chart-1: #22c55e; 
+    --chart-2: #4ade80;
+    --chart-3: #a855f7;
+    --chart-4: #3b82f6;
+    --chart-5: #ef4444;
+    --chart-6: #d1d5db;
+    
     --sidebar: #ffffff;
     --sidebar-foreground: #1a202c;
     --sidebar-primary: #22c55e;
@@ -153,71 +156,73 @@
     --sidebar-ring: #4ade80;
 }
 
-/* Темная тема */
+
 .dark {
-    /* Радиусы */
+
     --radius: 0.5rem;
-    /* Основные цвета */
-    --background: #1a1a1a; /* Темный фон */
-    --foreground: #e2e8f0; /* Светлый текст */
-    --primary: #16a34a; /* Темный зеленый акцент */
+ 
+    --background: #1a1a1a; 
+    --foreground: #e2e8f0;
+    --primary: #16a34a;
     --primary-foreground: #050505;
-    --secondary: #4ade80; /* Яркий зеленый для hover */
+    --secondary: #4ade80; 
     --secondary-foreground: #e2e8f0;
-    --accent: #636363; /* Серый для акцентов */
+    --accent: #636363; 
     --accent-foreground: #030303;
-    --muted: #404047; /* Темный серый */
+    --muted: #404047; 
     --muted-foreground: #9ca3af;
     --border: #3f3f46;
     --input: #585861;
     --ring: #4ade80;
-    /* Специфичные цвета */
-    --destructive: #eb2a2a; /* Темный красный */
+
+    --destructive: #eb2a2a; 
     --destructive-pressed: #d62424;
-    --success: #16a34a; /* Темный зеленый */
+    --success: #16a34a; 
     --success-pressed: #12873d;
-    --yellow: #eab308; /* Темный желтый */
+    --yellow: #eab308; 
     --yellow-pressed: #c79806;
-    --gray: #6b7280; /* Темный серый */
+    --gray: #6b7280; 
     --gray-pressed: #4f545e;
-    --blue: #2563eb; /* Темный синий */
+    --blue: #2563eb;
     --blue-pressed: #2054c7;
-    --violet: #9333ea; /* Темный фиолетовый */
+    --violet: #9333ea; 
     --violet-pressed: #7d2cc7;
     --bubbles-green: #15803d;
     --bubbles-red: #eb2a2a;
     --bubbles-yellow: #eab308;
     --bubbles-blue: #2563eb;
     --bubbles-purple: #9333ea;
-    /* Цвета лиг */
-    --bronze: rgba(184, 115, 51, 0.3); /* Темная медь */
-    --silver: rgba(192, 192, 192, 0.3); /* Темное серебро */
-    --gold: rgba(255, 215, 0, 0.3); /* Темное золото */
-    --platinum: rgba(229, 228, 226, 0.3); /* Темная платина */
-    --diamond: rgba(0, 255, 255, 0.3); /* Темный бриллиант */
+
+    --bronze: rgba(184, 115, 51, 0.3); 
+    --silver: rgba(192, 192, 192, 0.3);
+    --gold: rgba(255, 215, 0, 0.3);
+    --platinum: rgba(229, 228, 226, 0.3);
+    --diamond: rgba(0, 255, 255, 0.3);
+    --master: rgba(188, 54, 255, 0.3);
     --bronze-shadow: #9B5A1F;
     --silver-shadow: #A8A8A8;
     --gold-shadow: #E5B800;
     --platinum-shadow: #C7C6C4;
     --diamond-shadow: #99D6EA;
-    /* Компоненты */
-    --glow-box: #2d2d32cc; /* Полупрозрачный темный для карточек */
-    --card: #2d2d32; /* Темный серый */
+    --master-shadow: #cc99ea;
+
+    --glow-box: #2d2d32cc;
+    --card: #2d2d32;
     --card-foreground: #e2e8f0;
-    --header-bg: #2d2d32; /* Темный хедер */
+    --header-bg: #2d2d32;
     --header-foreground: #e2e8f0;
-    --footer-bg: #252529; /* Чуть темнее футер */
+    --footer-bg: #252529;
     --footer-foreground: #e2e8f0;
     --popover: #2d2d32;
     --popover-foreground: #e2e8f0;
-    /* Диаграммы */
-    --chart-1: #16a34a; /* Темный зеленый */
-    --chart-2: #4ade80; /* Светло-зеленый */
-    --chart-3: #9333ea; /* Темный фиолетовый */
-    --chart-4: #2563eb; /* Темный синий */
-    --chart-5: #dc2626; /* Темный красный */
-    --chart-6: #6b7280; /* Темный серый */
-    /* Сайдбар */
+
+    --chart-1: #16a34a;
+    --chart-2: #4ade80;
+    --chart-3: #9333ea;
+    --chart-4: #2563eb;
+    --chart-5: #dc2626;
+    --chart-6: #6b7280;
+
     --sidebar: #2d2d32;
     --sidebar-foreground: #e2e8f0;
     --sidebar-primary: #16a34a;
@@ -228,7 +233,6 @@
     --sidebar-ring: #4ade80;
 }
 
-/* Базовые стили */
 @layer base {
     * {
         @apply border-border outline-ring/50;

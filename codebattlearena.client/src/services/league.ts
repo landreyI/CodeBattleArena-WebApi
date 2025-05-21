@@ -38,7 +38,7 @@ export const fetchGetPlayersLeagues = async (): Promise<LeaguePlayers[]> => {
 
 export const fetchCreateLeague = async (league: League): Promise<boolean> => {
     try {
-        const response = await api.post(`Session/create-league`, league);
+        const response = await api.post(`League/create-league`, league);
         return response.data;
     }
     catch (error) {
@@ -49,7 +49,7 @@ export const fetchCreateLeague = async (league: League): Promise<boolean> => {
 
 export const fetchEditLeague = async (league: League): Promise<boolean> => {
     try {
-        const response = await api.post(`Session/edit-league`, league);
+        const response = await api.put(`League/edit-league`, league);
         return response.data;
     }
     catch (error) {
@@ -60,7 +60,7 @@ export const fetchEditLeague = async (league: League): Promise<boolean> => {
 
 export const fetchDeleteLeague = async (id: number): Promise<boolean> => {
     try {
-        let response = await api.delete(`Session/delete-league`, {
+        let response = await api.delete(`League/delete-league`, {
             params: { id: id }
         });
         return response.data;

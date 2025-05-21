@@ -58,7 +58,6 @@ namespace CodeBattleArena.Server.Services.DBServices
             {
                 var targetRoles = await GetRolesAsync(targetId);
                 playerDto.Roles = targetRoles;
-                playerDto.Email = player.Email;
             }
 
             return Result.Success<(PlayerDto, bool), ErrorResponse>((playerDto, isEdit));

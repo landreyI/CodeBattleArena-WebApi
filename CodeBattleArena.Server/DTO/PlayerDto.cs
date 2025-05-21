@@ -11,7 +11,6 @@ namespace CodeBattleArena.Server.DTO
         [Required(ErrorMessage = "Player Username is required.")]
         [MinLength(2, ErrorMessage = "Username must be at least 2 characters long.")]
         public string Username { get; set; }
-        public string? Email { get; set; }
         public string? PhotoUrl { get; set; }
         public IList<string?>? Roles { get; set; }
         public int Victories { get; set; }

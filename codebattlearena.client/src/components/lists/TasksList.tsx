@@ -1,5 +1,6 @@
 import { TaskProgramming } from "@/models/dbModels";
 import { TaskProgrammingMiniCard } from "../cards/TaskProgrammingMiniCard";
+import { motion } from "framer-motion";
 interface Props {
     tasks: TaskProgramming[],
     cardWrapperClassName?: string;
@@ -8,7 +9,12 @@ interface Props {
 export function TasksList({ tasks, cardWrapperClassName, onDelete }: Props) {
 
     return (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+        <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 10 }}
+            transition={{ duration: 0.3 }}
+            className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
             {tasks.map((task) => (
                 <TaskProgrammingMiniCard
                     key={task.idTaskProgramming}
@@ -18,7 +24,7 @@ export function TasksList({ tasks, cardWrapperClassName, onDelete }: Props) {
                 >
                 </TaskProgrammingMiniCard>
             ))}
-        </div>
+        </motion.div>
     );
 }
 

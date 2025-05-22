@@ -386,14 +386,14 @@ export function TaskForm({ task, onClose, onUpdate, submitLabel }: Props) {
                                     answer: "",
                                 })
                             }
-                            className="btn-outline btn-animation"
+                            className="btn-animation"
                         >
                             Add Test Case
                         </Button>
                         <Button
                             type="button"
                             onClick={reloadInputDatas}
-                            className="btn-outline btn-animation"
+                            className="btn-animation"
                         >
                             Reload input data
                         </Button>
@@ -401,7 +401,7 @@ export function TaskForm({ task, onClose, onUpdate, submitLabel }: Props) {
                         <Button
                             type="button"
                             onClick={openInputDataModal}
-                            className="btn-outline btn-animation"
+                            className="btn-animation"
                         >
                             Add by Ready
                         </Button>

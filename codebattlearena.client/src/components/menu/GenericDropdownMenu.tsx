@@ -47,7 +47,11 @@ export function GenericDropdownMenu({ triggerContent, menuLabel, actions }: Gene
                                 </DropdownMenuItem>
                             ) : (
                                 <DropdownMenuItem
-                                    onClick={action.onClick ? (e) => action.onClick!(e) : undefined}
+                                        onClick={
+                                            action.onClick
+                                                ? (e) => setTimeout(() => action.onClick!(e), 0)
+                                                : undefined
+                                        }
                                 >
                                     {action.label}
                                     {action.shortcut && <DropdownMenuShortcut>{action.shortcut}</DropdownMenuShortcut>}

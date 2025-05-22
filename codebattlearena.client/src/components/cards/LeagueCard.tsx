@@ -100,7 +100,7 @@ export function LeagueCard({ league, players, className, isEdit, handleDeletLeag
                     )}
                 </div>
             </div>
-            {showEditLeague && league && (
+            {league && (
                 <EditLeagueModal open={showEditLeague} league={league} onClose={() => setShowEditLeague(false)} />
             )}
         </>

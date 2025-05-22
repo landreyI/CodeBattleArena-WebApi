@@ -174,6 +174,9 @@ namespace CodeBattleArena.Server.Services.DBServices
             Session session = new Session();
             _mapper.Map(dto, session);
 
+            if (dto.TimePlay == 0)
+                session.TimePlay = null;
+
             var addResult = await AddSessionInDbAsync(session, ct);
             if (!addResult.IsSuccess)
                 return Result.Failure<Session, ErrorResponse>(addResult.Failure);

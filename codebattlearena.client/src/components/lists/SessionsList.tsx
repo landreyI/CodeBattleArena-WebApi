@@ -1,29 +1,30 @@
 import { Session } from "@/models/dbModels";
 import { SessionMiniCard } from "@/components/cards/SessionMiniCard";
-
+import { motion } from "framer-motion";
 interface Props {
     sessions: Session[],
     cardWrapperClassName?: string;
-    columns?: number;
+    className?: string;
 }
 
-export function SessionList({ sessions, cardWrapperClassName, columns=3 }: Props) {
-    const columnClasses: Record<number, string> = {
-        1: "grid-cols-1",
-        2: "grid-cols-2",
-        3: "grid-cols-3",
-        4: "grid-cols-4",
-        5: "grid-cols-5",
-    };
-
-    const gridCols = columnClasses[columns] || "grid-cols-1";
+export function SessionList({ sessions, cardWrapperClassName, className }: Props) {
 
     return (
-        <div className={`grid ${gridCols} gap-3`}>
+        <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 10 }}
+            transition={{ duration: 0.3 }}
+            className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 ${className}`}
+        >
             {sessions.map((session) => (
-                <SessionMiniCard key={session.idSession} session={session} className={cardWrapperClassName} />
+                <SessionMiniCard
+                    key={session.idSession}
+                    session={session}
+                    className={cardWrapperClassName}
+                />
             ))}
-        </div>
+        </motion.div>
     );
 }
 export default SessionList;

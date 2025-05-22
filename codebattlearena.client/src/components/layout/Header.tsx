@@ -42,9 +42,9 @@ export function Header() {
                 <nav className="max-w-screen-xl mx-auto flex justify-between items-center">
                     {/* Left section */}
                     <div className="flex items-center gap-4">
-                        <NavLink href="/home" label="Code Battle Arena" className="text-2xl font-bold text-green-400"/>
+                        <NavLink href="/home" label="Code Battle Arena" className="text-2xl font-bold"/>
                         <button className="md:hidden" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
-                            {isMobileMenuOpen ? <X className="text-white" /> : <Menu className="text-white" />}
+                            {isMobileMenuOpen ? <X /> : <Menu />}
                         </button>
                         <div className="hidden md:flex items-center gap-8 ml-6">
                             <NavLink href="/info" label="Info" />
@@ -59,8 +59,8 @@ export function Header() {
                     <div className="hidden md:flex items-center gap-4">
                         {!isAuthenticated ? (
                             <>
-                                <button onClick={() => setShowAuthorization(true)} className="text-green-400 nav-link">Sign In</button>
-                                <button onClick={() => setShowRegistration(true)} className="text-green-400 nav-link">Sign Up</button>
+                                <button onClick={() => setShowAuthorization(true)} className="text-primary nav-link">Sign In</button>
+                                <button onClick={() => setShowRegistration(true)} className="text-primary nav-link">Sign Up</button>
                             </>
                         ) : (
                                 <UserMenu user={user} handleLogout={handleLogout}></UserMenu>
@@ -79,8 +79,8 @@ export function Header() {
                         {isEdit && <EditMenu setShowAddTask={setShowAddTask} />}
                         {!isAuthenticated ? (
                             <>
-                                <button onClick={() => { setShowAuthorization(true); setIsMobileMenuOpen(false); }} className="text-green-400 nav-link">Sign In</button>
-                                <button onClick={() => { setShowRegistration(true); setIsMobileMenuOpen(false); }} className="text-green-400 nav-link">Sign Up</button>
+                                <button onClick={() => { setShowAuthorization(true); setIsMobileMenuOpen(false); }} className="text-primary nav-link">Sign In</button>
+                                <button onClick={() => { setShowRegistration(true); setIsMobileMenuOpen(false); }} className="text-primary nav-link">Sign Up</button>
                             </>
                         ) : (
                                 <UserMenu user={user} handleLogout={handleLogout}></UserMenu>
@@ -91,15 +91,9 @@ export function Header() {
             </header>
             <SessionActiveMenu></SessionActiveMenu>
             {/* Модалки */}
-            {showRegistration && (
-                <RegistrationModal open={showRegistration} onClose={() => setShowRegistration(false)} />
-            )}
-            {showAuthorization && (
-                <AuthorizationModal open={showAuthorization} onClose={() => setShowAuthorization(false)} />
-            )}
-            {showAddTask && (
-                <EditTaskModal open={showAddTask} onClose={() => setShowAddTask(false)} />
-            )}
+            <RegistrationModal open={showRegistration} onClose={() => setShowRegistration(false)} />
+            <AuthorizationModal open={showAuthorization} onClose={() => setShowAuthorization(false)} />
+            <EditTaskModal open={showAddTask} onClose={() => setShowAddTask(false)} />
         </>
     );
 };

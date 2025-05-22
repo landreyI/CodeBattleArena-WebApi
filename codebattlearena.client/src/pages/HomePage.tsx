@@ -17,12 +17,12 @@ export function HomePage() {
                 {/* Центр контента */}
                 <div className="z-10">
                     <div className="glow-box text-center">
-                        <div className="mb-4 text-md sm:text-lg font-mono text-green-400 whitespace-pre-line">
+                        <div className="mb-4 text-md sm:text-lg font-mono text-primary whitespace-pre-line">
                             Love to code and play? <br /> Start playing with friends in any programming language!
                         </div>
                         <a
                             href="/session/create-session"
-                            className="inline-block mt-4 px-6 py-2 btn-green btn-animation"
+                            className="inline-block mt-4 px-6 py-2 bg-primary btn-animation"
                         >
                             Start
                         </a>

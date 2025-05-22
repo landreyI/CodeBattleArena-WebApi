@@ -156,7 +156,7 @@ export function PlayerCodePage() {
                         }`}
                 >
                     <div className="h-full flex flex-col">
-                        <div className="flex items-center justify-between p-2 border border-green rounded-xl bg-muted">
+                        <div className="flex items-center justify-between p-2 border border-primary rounded-xl bg-muted">
                             <Badge className="bg-gray text-base">
                                 {playerSession?.session?.langProgramming?.nameLang}
                             </Badge>
@@ -176,7 +176,7 @@ export function PlayerCodePage() {
                                 />
                             </div>
                         </div>
-                        <div className="flex-grow border border-green rounded-xl">
+                        <div className="flex-grow border border-primary rounded-xl">
                             <CodeViewer
                                 code={code}
                                 onChange={(val) => setCode(val)}
@@ -186,8 +186,8 @@ export function PlayerCodePage() {
                             />
                         </div>
                         {isEdit && (
-                            <div className="p-2 border border-green rounded-xl bg-muted flex justify-between">
-                                <Button onClick={handleSubmit} className="btn-green btn-animation">
+                            <div className="p-2 border border-primary rounded-xl bg-muted flex justify-between">
+                                <Button onClick={handleSubmit} className="btn-primary btn-animation">
                                     Check
                                 </Button>
                                 <Button onClick={handleFinish} className="btn-green btn-animation">
@@ -203,7 +203,7 @@ export function PlayerCodePage() {
                     className={`transition-all duration-300 ${fullScreenPanel === 'code' ? 'hidden' : fullScreenPanel === 'task' ? 'w-full' : 'w-1/2'}`}
                 >
                     <div className="h-full flex flex-col">
-                        <div className="flex items-center justify-between p-2 border border-green rounded-xl bg-muted">
+                        <div className="flex items-center justify-between p-2 border border-primary rounded-xl bg-muted">
                             <Badge className={`${getDifficultyColor(task.difficulty)} text-base`}>
                                 {task.difficulty}
                             </Badge>
@@ -212,7 +212,7 @@ export function PlayerCodePage() {
                                 onClick={() => setFullScreenPanel(fullScreenPanel === 'task' ? null : 'task')}
                             />
                         </div>
-                        <div className="break-words whitespace-pre-wrap overflow-y-auto border border-green rounded-xl p-4 bg-muted">
+                        <div className="break-words whitespace-pre-wrap overflow-y-auto border border-primary rounded-xl p-4 bg-muted">
                             {task.textTask || "No description"}
                         </div>
                     </div>

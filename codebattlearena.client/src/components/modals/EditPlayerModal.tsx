@@ -23,13 +23,13 @@ export function EditPlayerModal({ open, player, onUpdate, onClose }: Props) {
       <Dialog open={open} onOpenChange={(val) => !val && onClose()}>
           <DialogContent className="w-full sm:max-w-md max-h-[90vh] overflow-y-auto border">
               <DialogHeader>
-                  <DialogTitle className="text-white text-center">Edit Player</DialogTitle>
+                  <DialogTitle className="text-center">Edit Player</DialogTitle>
               </DialogHeader>
 
               <EditPlayerForm player={player} onClose={onClose} onUpdate={onUpdate}></EditPlayerForm>
 
               <DialogFooter>
-                  <DialogDescription className="text-zinc-400 font-mono">
+                  <DialogDescription className="font-mono">
                   </DialogDescription>
               </DialogFooter>
           </DialogContent>

@@ -19,7 +19,7 @@ export function PlayerMiniCard({ player, number, onDelete, className, onPlayerSe
                 {number}
                 <Avatar className="w-10 h-10 sm:w-12 sm:h-12">
                     <AvatarImage src={player.photoUrl || undefined} />
-                    <AvatarFallback className="text-green-400">
+                    <AvatarFallback className="text-primary">
                         {player.username.charAt(0).toUpperCase()}
                     </AvatarFallback>
                 </Avatar>
@@ -32,7 +32,7 @@ export function PlayerMiniCard({ player, number, onDelete, className, onPlayerSe
                 <div className="flex ml-auto items-center gap-2">
                     <Trophy size={16} />
                     <p className="text-sm font-mono">Victories:</p>
-                    <p className="text-lg text-green-400 font-bold">{player.victories}</p>
+                    <p className="text-lg text-primary font-bold">{player.victories}</p>
                 </div>
 
                 {onDelete && (

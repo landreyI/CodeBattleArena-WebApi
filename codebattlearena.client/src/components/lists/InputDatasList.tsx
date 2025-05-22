@@ -32,7 +32,7 @@ export function InputDatasList({ inputDatas, cardWrapperClassName = "" }: Props)
                         </div>
                         <div>
                             <label className="text-muted-foreground text-sm">Expected Output =</label>
-                            <pre className="bg-muted rounded-md p-4 mt-1 whitespace-pre-wrap break-words text-green-400 font-mono">
+                            <pre className="bg-muted rounded-md p-4 mt-1 whitespace-pre-wrap break-words text-primary font-mono">
                                 {item.answer || "—"}
                             </pre>
                         </div>

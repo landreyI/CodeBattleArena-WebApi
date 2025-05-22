@@ -146,7 +146,7 @@ export function SessionFilter({ filter, onChange, handleSearch }: Props) {
                 </div>
 
                 <Button
-                    className="w-full md:w-auto btn-green btn-animation px-4 py-2"
+                    className="w-full md:w-auto btn-animation px-4 py-2"
                     onClick={handleSearch}
                 >
                     Search

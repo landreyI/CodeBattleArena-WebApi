@@ -9,26 +9,27 @@ export default {
     theme: {
         extend: {
             animation: {
-                fadeIn: 'fadeIn 0.15s ease-out',
+                fadeIn: 'fadeIn 0.3s ease-out forwards',
             },
             keyframes: {
                 fadeIn: {
-                    '0%': { opacity: 0, transform: 'translateY(-4px)' },
+                    '0%': { opacity: 0, transform: 'translateY(10px)' },
                     '100%': { opacity: 1, transform: 'translateY(0)' },
                 },
             },
             colors: {
                 background: 'var(--color-background)',
                 foreground: 'var(--color-foreground)',
+                primary: 'var(--color-primary)',
+                primaryPressed: 'var(--color-primary-pressed)',
 
                 blue: 'var(--color-blue)',
-                'blue-foreground': 'var(--color-primary-foreground)',
-
                 green: 'var(--color-green)',
                 red: 'var(--color-red)',
                 yellow: 'var(--color-yellow)',
                 violet: 'var(--color-violet)',
                 gray: 'var(--color-gray)',
+
             },
         },
     },

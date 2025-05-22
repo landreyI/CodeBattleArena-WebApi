@@ -129,7 +129,7 @@ export function SessionInfo() {
                 <div className="max-w-3xl mx-auto">
                     {/* Заголовок страницы */}
                     <div className="flex items-center justify-between mb-6">
-                        <h1 className="text-4xl font-bold text-green font-mono">
+                        <h1 className="text-4xl font-bold text-primary font-mono">
                             Session - details
                         </h1>
                         {isEdit && (
@@ -142,7 +142,7 @@ export function SessionInfo() {
 
                     {bestResult && (
                         <div className="bg-muted p-4 rounded-xl shadow-md mb-4">
-                            <h3 className="text-lg font-semibold text-green mb-2">
+                            <h3 className="text-lg font-semibold text-primary mb-2">
                                 🏆 Best Result: <span className="text-foreground">{bestResult?.player?.username}</span>
                             </h3>
 
@@ -161,7 +161,7 @@ export function SessionInfo() {
                     {/* Карточка сессии */}
                     <SessionCard session={session}></SessionCard>
 
-                    <div className="my-3 text-2xl font-bold text-green">Task:</div>
+                    <div className="my-3 text-2xl font-bold text-primary">Task:</div>
 
                     {session.taskProgramming && (
                         <TaskProgrammingMiniCard
@@ -171,7 +171,7 @@ export function SessionInfo() {
                     )}
 
                     {count !== undefined && isStarted && !isFinished && (
-                        <h3 className="text-lg font-semibold text-green my-3">
+                        <h3 className="text-lg font-semibold text-primary my-3">
                             Completed task: <span className="text-foreground">{count}/{session.amountPeople}</span>
                         </h3>
                     )}
@@ -180,7 +180,7 @@ export function SessionInfo() {
                         {isEdit && !isStarted && !isFinished && (
                             <>
                                 <Button
-                                    className="btn-green btn-animation flex items-center justify-center"
+                                    className="btn-primary btn-animation flex items-center justify-center"
                                     onClick={goToTaskList}
                                 >
                                     {session.taskProgramming ? "Change task" : "Select task"}
@@ -195,7 +195,7 @@ export function SessionInfo() {
                                     </Button>
                                 )}
 
-                                <Button className="btn-green btn-animation flex items-center justify-center">
+                                <Button className="btn-primary btn-animation flex items-center justify-center">
                                     Invite friend
                                 </Button>
                             </>
@@ -226,7 +226,7 @@ export function SessionInfo() {
                                 </Button>
                                 {isStarted && (
                                     <Button
-                                        className="btn-green btn-animation flex items-center justify-center"
+                                            className="btn-primary btn-animation flex items-center justify-center"
                                             onClick={() => handlePlayerSessionInfo(user?.id)}
                                     >
                                         My code
@@ -267,7 +267,7 @@ export function SessionInfo() {
                     </div>
                 </div>
             </div>
-            {showEditSession && session && (
+            {session && (
                 <EditSessionModal open={showEditSession} session={session} onClose={() => setShowEditSession(false)} onUpdate={handleUpdateSession} />
             )}
         </>

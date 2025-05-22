@@ -13,6 +13,7 @@
     --color-background: var(--background);
     --color-foreground: var(--foreground);
     --color-primary: var(--primary);
+    --color-primary-pressed: var(--primary-pressed);
     --color-primary-foreground: var(--primary-foreground);
     --color-secondary: var(--secondary);
     --color-secondary-foreground: var(--secondary-foreground);
@@ -86,7 +87,8 @@
 
     --background: #f7fafc; 
     --foreground: #1a202c; 
-    --primary: #22c55e; 
+    --primary: #32db71;
+    --primary-pressed: #1eba58;
     --primary-foreground: #1a202c;
     --secondary: #4ade80; 
     --secondary-foreground: #1a202c;
@@ -164,6 +166,7 @@
     --background: #1a1a1a; 
     --foreground: #e2e8f0;
     --primary: #16a34a;
+    --primary-pressed: #0d8c3c;
     --primary-foreground: #050505;
     --secondary: #4ade80; 
     --secondary-foreground: #e2e8f0;

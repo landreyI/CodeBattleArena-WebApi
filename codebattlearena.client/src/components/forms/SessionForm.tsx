@@ -35,7 +35,10 @@ export const formSchema = z
         state: z.nativeEnum(SessionState, {
             errorMap: () => ({ message: "Invalid session state" }),
         }),
-        timePlay: z.coerce.number().min(5, { message: "Minimum 5 minutes" }).max(60, { message: "Maximum 60 minutes" }),
+        timePlay: z.coerce.number()
+            .refine(val => val === 0 || (val >= 5 && val <= 60), {
+                message: "Enter 0 or a number between 5 and 60",
+            }),
         password: z.string().nullable(),
     })
     .superRefine((data, ctx) => {
@@ -246,7 +249,10 @@ export function SessionForm({ session, onClose, onUpdate, submitLabel }: Props) 
                     name="timePlay"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Time to complete the task</FormLabel>
+                            <FormLabel>
+                                Time to complete the task <br /> <br />
+                                (To play without time, enter 0)
+                            </FormLabel>
                             <FormControl>
                                 <Input type="number" placeholder="Time (5-60)" {...field} />
                             </FormControl>

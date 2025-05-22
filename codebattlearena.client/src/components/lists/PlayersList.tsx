@@ -1,6 +1,6 @@
 import { Player } from "@/models/dbModels";
 import PlayerMiniCard from "../cards/PlayerMiniCard";
-
+import { motion } from "framer-motion";
 interface Props {
     players: Player[],
     onDelete?: (playerId: string) => void;
@@ -26,17 +26,22 @@ export function PlayersList({ players, onDelete, cardWrapperClassName, onPlayerS
     };
 
     return (
-        <div className="grid gap-2">
+        <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 10 }}
+            transition={{ duration: 0.3 }}
+            className="grid gap-2">
             {sortedPlayers.map((player, index) => (
                 <PlayerMiniCard
                     key={player.id}
                     player={player}
-                    number={isNumbered ? index+1 : undefined}
+                    number={isNumbered ? index + 1 : undefined}
                     onDelete={onDelete}
                     onPlayerSessionInfo={onPlayerSessionInfo}
                     className={`${cardWrapperClassName ?? ""} ${getBorderClass(index)} rounded-xl`}
                 />
             ))}
-        </div>
+        </motion.div >
     );
 }

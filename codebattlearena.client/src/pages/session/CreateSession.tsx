@@ -6,7 +6,7 @@ export function CreateSession() {
       <div className="glow-box">
           <div className="max-w-3xl mx-auto">
               <div className="flex items-center justify-between mb-6">
-                  <h1 className="text-4xl font-bold text-green-400 font-mono">
+                  <h1 className="text-4xl font-bold text-primary font-mono">
                       Create Session
                   </h1>
               </div>

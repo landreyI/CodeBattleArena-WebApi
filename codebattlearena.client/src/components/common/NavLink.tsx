@@ -9,7 +9,7 @@ interface Props {
 
 export function NavLink({ href, label, className }: Props) {
     return (
-        <Link to={href} className={`nav-link text-green-400 ${className}`}>
+        <Link to={href} className={`nav-link text-primary ${className}`}>
             {label}
         </Link>
     );

@@ -18,7 +18,7 @@ export function MessageComponent({ message, isUser }: MessageProps) {
             {!isUser && (
                 <Avatar className="w-10 h-10 sm:w-12 sm:h-12">
                     <AvatarImage className="rounded-full" src={message?.sender?.photoUrl ?? undefined} />
-                    <AvatarFallback className="text-green-400">
+                    <AvatarFallback className="text-primary">
                         {message?.sender?.username.charAt(0).toUpperCase()}
                     </AvatarFallback>
                 </Avatar>
@@ -46,7 +46,7 @@ export function MessageComponent({ message, isUser }: MessageProps) {
             {isUser && (
                 <Avatar className="w-10 h-10 sm:w-12 sm:h-12">
                     <AvatarImage className="rounded-full" src={message?.sender?.photoUrl ?? undefined} />
-                    <AvatarFallback className="text-green-400">
+                    <AvatarFallback className="text-primary">
                         {message?.sender?.username.charAt(0).toUpperCase()}
                     </AvatarFallback>
                 </Avatar>

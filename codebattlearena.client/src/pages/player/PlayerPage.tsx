@@ -1,7 +1,6 @@
 ﻿import React from "react";
 import { useParams } from "react-router-dom";
 
-import { DropdownMenu, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuContent } from "@/components/ui/dropdown-menu";
 import { usePlayer } from "@/hooks/player/usePlayer";
 import { useState } from "react";
 import { Player } from "@/models/dbModels";
@@ -46,10 +45,9 @@ export function PlayerPage() {
     return (
         <>
             <div className="glow-box">
-                <div className="max-w-3xl mx-auto">
-                    {/* Заголовок страницы */}
+                <div className="md:w-[40vw] sm:w-[100vw] mx-auto">
                     <div className="flex items-center justify-between mb-6">
-                        <h1 className="text-4xl font-bold text-green-400 font-mono">
+                        <h1 className="text-4xl font-bold text-primary font-mono">
                             Player Profile
                         </h1>
                         {isEdit && (
@@ -57,13 +55,12 @@ export function PlayerPage() {
                         )}
                     </div>
 
-                    {/* Карточка профиля */}
-                    <PlayerCard player={player} isEdit={isEdit}></PlayerCard>
+                    <PlayerCard player={player}></PlayerCard>
 
                     {(isEdit) && (
                         <div className="space-y-4 rounded-2xl px-4 py-3 border shadow-sm mt-3">
                             <div className="flex items-center justify-between">
-                                <h2 className="text-xl font-mono text-green-400">Sessions</h2>
+                                <h2 className="text-xl font-mono text-primary">Sessions</h2>
                                 <Button
                                     variant="ghost"
                                     size="icon"
@@ -79,14 +76,13 @@ export function PlayerPage() {
                                 <SessionList
                                     sessions={sessions}
                                     cardWrapperClassName="hover:scale-[1.02] transition"
-                                    columns={2}
                                 />
                             )}
                         </div>
                     )}
                 </div>
             </div>
-            {showEditPlayer && player && (
+            {player && (
                 <EditPlayerModal open={showEditPlayer} player={player} onClose={() => setShowEditPlayer(false)} onUpdate={handleUpdatePlayer} />
             )}
         </>

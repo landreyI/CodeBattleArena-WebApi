@@ -59,10 +59,10 @@ export function SessionActiveMenu() {
             return;
         }
 
-        console.log(activeSession);
-
         const interval = setInterval(() => {
-            const startTime = new Date(activeSession.dateStartGame + "Z").getTime();
+            const dateString = activeSession.dateStartGame ?? new Date;
+            const isoString = dateString.toString().endsWith("Z") ? dateString : dateString + "Z";
+            const startTime = new Date(isoString).getTime();
             const now = Date.now();
             const durationMs = (activeSession.timePlay ?? 5) * 60 * 1000;
 
@@ -144,7 +144,7 @@ export function SessionActiveMenu() {
                     key={`countdown-${countdown}`}
                     message={`Game starts in ${countdown} seconds...`}
                     position="top"
-                    className="bg-green-600 text-white"
+                    className="bg-primary"
                     duration={1000}
                     fadeDuration={100}
                 />
@@ -153,7 +153,7 @@ export function SessionActiveMenu() {
             <div className="w-full p-4 header" style={{ zIndex: 1 }}>
                 <div className="flex flex-nowrap justify-between items-center w-full">
                     <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
-                        <span className="font-semibold text-green-500">
+                        <span className="font-semibold text-primary">
                             {activeSession.name} ({activeSession.state})
                         </span>
                         <SeparatorVertical />
@@ -169,7 +169,7 @@ export function SessionActiveMenu() {
                         {sessionTimeLeft !== null && (
                             <>
                                 <SeparatorVertical />
-                                <div className="font-mono text-yellow-500 select-none">
+                                <div className="font-mono text-yellow select-none">
                                     Time left: {formatTime(sessionTimeLeft)}
                                 </div>
                             </>
@@ -181,7 +181,7 @@ export function SessionActiveMenu() {
                         <ChatSheet
                             trigger={
                                 <div className="relative cursor-pointer" onClick={toggleChat}>
-                                    <MessageCircle className="hover:text-green-400" size={28} />
+                                    <MessageCircle className="hover:text-primary" size={28} />
                                     {unreadCount > 0 && (
                                         <div className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
                                             {unreadCount}
@@ -192,7 +192,7 @@ export function SessionActiveMenu() {
                             messages={messages}
                         />
 
-                        <Link to={`/session/info-session/${activeSession.idSession}`} className="hover:text-green-400 mx-4">
+                        <Link to={`/session/info-session/${activeSession.idSession}`} className="hover:text-primary mx-4">
                             <ExternalLink size={28} />
                         </Link>
                         <Button onClick={leaveSession} className="btn-red btn-animation">

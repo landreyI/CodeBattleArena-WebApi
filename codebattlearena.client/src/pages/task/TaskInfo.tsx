@@ -75,7 +75,7 @@ export function TaskInfo() {
                                 Select to play
                             </Button>
                         )}
-                        <h1 className="text-4xl font-bold text-green-400 font-mono">
+                        <h1 className="text-4xl font-bold text-primary font-mono">
                             Task - details
                         </h1>
                         {(user && isEditRole(user.roles)) && (
@@ -89,7 +89,7 @@ export function TaskInfo() {
                     <TaskProgrammingCard task={task} isEditRole={isEditRole(user?.roles ?? [])} />
                 </div>
             </div>
-            {showEditTask && task && (
+            {task && (
                 <EditTaskModal open={showEditTask} task={task} onClose={() => setShowEditTask(false)} onUpdate={handleUpdateTask} />
             )}
         </>

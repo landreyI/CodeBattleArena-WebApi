@@ -31,17 +31,18 @@ export function TaskFilter({ filter, onChange, handleSearch }: Props) {
     const [selectedDifficulty, setSelectedDifficulty] = useState<string>(
         filter.difficulty || "all"
     );
-    const [selectedLang, setSelectedLang] = useState<string>(filter.lang || "all");
+    const [selectedLang, setSelectedLang] = useState<string>(filter.idLang?.toString() || "all");
 
     // Синхронизация локального состояния с пропсом filter
     useEffect(() => {
         setSelectedDifficulty(filter.difficulty || "all");
-        setSelectedLang(filter.lang || "all");
-    }, [filter.difficulty, filter.lang]);
+        setSelectedLang(filter.idLang?.toString() || "all");
+    }, [filter.difficulty, filter.idLang]);
 
     const handleLangChange = (value: string) => {
         setSelectedLang(value);
-        onChange({ ...filter, lang: value === "all" ? undefined : value });
+        const id = Number(value);
+        onChange({ ...filter, idLang: isNaN(id) ? undefined : id });
     };
 
     const handleDifficultyChange = (value: string) => {
@@ -78,7 +79,7 @@ export function TaskFilter({ filter, onChange, handleSearch }: Props) {
                             <SelectContent>
                                 <SelectItem value="all">All languages</SelectItem>
                                 {langsProgramming.map((lang) => (
-                                    <SelectItem key={lang.codeNameLang} value={lang.codeNameLang}>
+                                    <SelectItem key={lang.idLang} value={lang.idLang.toString()}>
                                         {lang.nameLang}
                                     </SelectItem>
                                 ))}

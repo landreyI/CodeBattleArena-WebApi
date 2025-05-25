@@ -3,6 +3,8 @@ using CodeBattleArena.Server.Enums;
 using CodeBattleArena.Server.Filters;
 using CodeBattleArena.Server.IRepositories;
 using CodeBattleArena.Server.Models;
+using CodeBattleArena.Server.Specifications;
+using CodeBattleArena.Server.Specifications.SessionSpec;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
@@ -61,14 +63,11 @@ namespace CodeBattleArena.Server.Repositories
 
             if (taskProgramming != null && session != null) session.TaskId = idTask;
         }
-        public async Task<Session> GetSessionAsync(int id, CancellationToken cancellationToken)
+        public async Task<Session> GetSessionAsync(ISpecification<Session> spec, CancellationToken cancellationToken)
         {
-            return await _context.Sessions
-                .Include(s => s.PlayerSessions)
-                .ThenInclude(p => p.Player)
-                .Include(s => s.TaskProgramming)
-                .Include(s => s.LangProgramming)
-                .FirstOrDefaultAsync(s => s.IdSession == id, cancellationToken);
+            var query = _context.Sessions.AsQueryable();
+            query = SpecificationEvaluator.GetQuery(query, spec);
+            return await query.FirstOrDefaultAsync(cancellationToken);
         }
         public async Task ChangePasswordSessionAsync(int idSession, string password, CancellationToken cancellationToken)
         {
@@ -101,52 +100,32 @@ namespace CodeBattleArena.Server.Repositories
         {
             return await _context.PlayersSession.CountAsync(p => p.IdSession == idSession, cancellationToken);
         }
-        public async Task<List<Session>> GetListSessionAsync(IFilter<Session>? filter, CancellationToken cancellationToken)
+        public async Task<List<Session>> GetListSessionAsync(ISpecification<Session> spec, CancellationToken cancellationToken)
         {
             var query = _context.Sessions
-                .Include(t => t.TaskProgramming)
                 .AsQueryable();
 
-            if (filter != null)
-                query = filter.ApplyTo(query);
-
-            return await query
-                .Include(s => s.LangProgramming)
-                .Include(t => t.PlayerSessions)
+            return await SpecificationEvaluator.GetQuery(query, spec)
                 .ToListAsync(cancellationToken);
         }
         public async Task<List<int>> DeleteExpiredSessionsAsync(DateTime dateTime, CancellationToken cancellationToken)
         {
             // Выборка сессий, которые существуют более одного дня
-            var listSessionsExpired = await _context.Sessions
-                .Where(s => s.WinnerId == null && dateTime > s.DateCreating.AddDays(1))
-                .Select(s => s.IdSession)
+            var query = _context.Sessions.AsQueryable();
+            var listSessionsExpired = await SpecificationEvaluator
+                .GetQuery(query, new SessionsByDaySpec(1, dateTime))
                 .ToListAsync(cancellationToken);
 
             if (listSessionsExpired.Any())
-            {
-                var playerSessions = _context.PlayersSession
-                    .Where(ps => listSessionsExpired.Contains(ps.IdSession));
+                _context.Sessions.RemoveRange(listSessionsExpired);
 
-                _context.PlayersSession.RemoveRange(playerSessions);
-
-                var sessionsToDelete = _context.Sessions
-                    .Where(s => listSessionsExpired.Contains(s.IdSession));
-
-                _context.Sessions.RemoveRange(sessionsToDelete);
-            }
-
-            return listSessionsExpired;
+            return listSessionsExpired.Select(s => s.IdSession).ToList();
         }
         public async Task<List<int>> FinishExpiredSessionsAsync(DateTime dateTime, CancellationToken cancellationToken)
         {
-            var expiredSessions = await _context.Sessions
-                .Where(s =>
-                    !s.IsFinish &&
-                    s.DateStartGame != null &&
-                    s.TimePlay != null &&
-                    s.DateStartGame.Value.AddMinutes((double)s.TimePlay.Value) <= dateTime
-                )
+            var query = _context.Sessions.AsQueryable();
+            var expiredSessions = await SpecificationEvaluator
+                .GetQuery(query, new SessionsFinishExpiredSpec(dateTime))
                 .ToListAsync(cancellationToken);
 
             foreach (var session in expiredSessions)

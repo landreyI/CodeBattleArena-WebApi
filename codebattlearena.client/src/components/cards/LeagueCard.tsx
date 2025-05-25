@@ -21,9 +21,10 @@ interface Props {
     className?: string;
     isEdit?: boolean
     handleDeletLeague: (e: any) => void;
+    handleUpdateLeague: (leagueUpdate: League) => void;
 }
 
-export function LeagueCard({ league, players, className, isEdit, handleDeletLeague }: Props) {
+export function LeagueCard({ league, players, className, isEdit, handleDeletLeague, handleUpdateLeague }: Props) {
     const [showPlayers, setShowPlayers] = useState(true);
     const name = league?.name ?? "unknown";
     const [showEditLeague, setShowEditLeague] = useState(false);
@@ -101,7 +102,7 @@ export function LeagueCard({ league, players, className, isEdit, handleDeletLeag
                 </div>
             </div>
             {league && (
-                <EditLeagueModal open={showEditLeague} league={league} onClose={() => setShowEditLeague(false)} />
+                <EditLeagueModal open={showEditLeague} league={league} onClose={() => setShowEditLeague(false)} onUpdate={handleUpdateLeague} />
             )}
         </>
     );

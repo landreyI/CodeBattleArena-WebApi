@@ -1,4 +1,3 @@
-import React, { useEffect, useState } from 'react';
 import "./App.css";
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import HomePage from './pages/HomePage';
@@ -15,7 +14,7 @@ import TasksList from '@/pages/task/TasksList';
 import TaskInfo from '@/pages/task/TaskInfo';
 import PlayersListPage from '@/pages/player/PlayersListPage';
 import { ThemeProvider } from './contexts/ThemeContext';
-import { SessionProvider } from './contexts/SessionContext';
+import { ActiveSessionProvider } from './contexts/ActiveSessionContext';
 import { SignalRSessionHubProvider } from './contexts/SignalRSessionHubContext';
 import { SignalRTaskHubProvider } from './contexts/SignalRTaskHubContext';
 import PlayerCodePage from './pages/session/PlayerCodePage';
@@ -32,7 +31,7 @@ const App = () => {
                     <SignalRTaskHubProvider>
                         <ThemeProvider>
                             <Bubbles />
-                            <SessionProvider>
+                            <ActiveSessionProvider>
                                 <Header />
                                 <main className="app-main" style={{ zIndex: 1 }}>
                                     <Routes>
@@ -54,7 +53,7 @@ const App = () => {
                                     </Routes>
                                 </main>
                                 <Footer />
-                            </SessionProvider>
+                            </ActiveSessionProvider>
                         </ThemeProvider>
                     </SignalRTaskHubProvider>
                 </SignalRSessionHubProvider>

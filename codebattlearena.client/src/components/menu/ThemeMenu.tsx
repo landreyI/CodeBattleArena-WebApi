@@ -1,4 +1,4 @@
-import { BubblesColors, useTheme } from "@/contexts/ThemeContext";
+import { BubblesColors, BasicColor, useTheme } from "@/contexts/ThemeContext";
 import { Button } from "@/components/ui/button";
 import { Sun, Moon, SunMoon, CheckCircle, XCircle } from "lucide-react";
 import {
@@ -18,7 +18,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 export const ThemeMenu = () => {
-    const { isDarkMode, toggleTheme, bubblesEnabled, toggleBubbles, bubblesColors, setBubblesColors } = useTheme();
+    const { isDarkMode, toggleTheme,
+            bubblesEnabled, toggleBubbles,
+            bubblesColors, setBubblesColors,
+            basicColor, setBasicColor
+        } = useTheme();
 
 
     return (
@@ -38,6 +42,27 @@ export const ThemeMenu = () => {
                         )}
                         Chenge theme
                     </DropdownMenuItem>
+                    <DropdownMenuSub>
+                        <DropdownMenuSubTrigger>
+                            Chenge basic color
+                        </DropdownMenuSubTrigger>
+                        <DropdownMenuPortal>
+                            <DropdownMenuSubContent>
+                                <DropdownMenuRadioGroup
+                                    value={basicColor}
+                                    onValueChange={(value) => setBasicColor(value as BasicColor)}
+                                >
+                                    {Object.values(BasicColor).map((color) => (
+                                        <DropdownMenuRadioItem key={color} value={color}>
+                                            <div
+                                                className={`w-4 h-4 rounded bg-${color.toLowerCase()}`}
+                                            />
+                                        </DropdownMenuRadioItem>
+                                    ))}
+                                </DropdownMenuRadioGroup>
+                            </DropdownMenuSubContent>
+                        </DropdownMenuPortal>
+                    </DropdownMenuSub>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
                 <DropdownMenuLabel>Bubbles</DropdownMenuLabel>
@@ -68,7 +93,9 @@ export const ThemeMenu = () => {
                                 >
                                     {Object.values(BubblesColors).map((color) => (
                                         <DropdownMenuRadioItem key={color} value={color}>
-                                            {color.charAt(0).toUpperCase() + color.slice(1)}
+                                            <div
+                                                className={`w-4 h-4 rounded bg-${color.toLowerCase()}`}
+                                            />
                                         </DropdownMenuRadioItem>
                                     ))}
                                 </DropdownMenuRadioGroup>

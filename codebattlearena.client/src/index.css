@@ -3,7 +3,7 @@
 
 @custom-variant dark (&:is(.dark *));
 
-@theme inline {
+@theme {
 
     --radius-sm: calc(var(--radius) - 4px);
     --radius-md: calc(var(--radius) - 2px);
@@ -13,7 +13,7 @@
     --color-background: var(--background);
     --color-foreground: var(--foreground);
     --color-primary: var(--primary);
-    --color-primary-pressed: var(--primary-pressed);
+    --color-primary-pressed: color-mix(in srgb, var(--color-primary), black 20%);
     --color-primary-foreground: var(--primary-foreground);
     --color-secondary: var(--secondary);
     --color-secondary-foreground: var(--secondary-foreground);
@@ -23,7 +23,7 @@
     --color-muted-foreground: var(--muted-foreground);
     --color-border: var(--border);
     --color-input: var(--input);
-    --color-ring: var(--ring);
+    --color-ring: var(--color-primary);
 
     --color-red: var(--destructive);
     --color-red-pressed: var(--destructive-pressed);
@@ -35,8 +35,9 @@
     --color-gray-pressed: var(--gray-pressed);
     --color-blue: var(--blue);
     --color-blue-pressed: var(--blue-pressed);
-    --color-violet: var(--violet);
-    --color-violet-pressed: var(--violet-pressed);
+    --color-purple: var(--purple);
+    --color-purple-pressed: var(--purple-pressed);
+    --color-bronze: var(--color-bronze);
     --color-bubbles: var(--bubbles);
     --color-bubbles-pressed: var(--bubbles-pressed);
 
@@ -88,7 +89,6 @@
     --background: #f7fafc; 
     --foreground: #1a202c; 
     --primary: #32db71;
-    --primary-pressed: #1eba58;
     --primary-foreground: #1a202c;
     --secondary: #4ade80; 
     --secondary-foreground: #1a202c;
@@ -98,27 +98,35 @@
     --muted-foreground: #4a5568;
     --border: #e2e8f0;
     --input: #e2e8f0;
-    --ring: #4ade80;
    
+    --primary-green: var(--primary);
+    --primary-red: #f74f4f;
+    --primary-yellow: #fad543;
+    --primary-blue: #649dfa;
+    --primary-purple: #bb77fc;
+
     --destructive: #fc5353; 
     --destructive-pressed: #e34444;
     --success: #30db6f; 
     --success-pressed: #2bc262;
-    --yellow: #facc15; 
+    --yellow: #ffd42b; 
     --yellow-pressed: #ca8a04;
     --gray: #b6c0d6; 
     --gray-pressed: #9ea7ba;
     --blue: #3b82f6; 
     --blue-pressed: #1d4ed8;
-    --violet: #a855f7; 
-    --violet-pressed: #7e22ce;
-    --bubbles-green: #8bf092;
+    --purple: #a855f7; 
+    --purple-pressed: #7e22ce;
+    --color-bronze: #ffa24d;
+
+    --bubbles: #8bf092;
+    --bubbles-green: var(--bubbles);
     --bubbles-red: #f74f4f;
     --bubbles-yellow: #fad543;
     --bubbles-blue: #649dfa;
     --bubbles-purple: #bb77fc;
     
-    --bronze: #ffa24d; 
+    --bronze: #ff8f45; 
     --silver: #d4d4d4; 
     --gold: #ffdd29; 
     --platinum: #f0f0f0; 
@@ -166,7 +174,6 @@
     --background: #1a1a1a; 
     --foreground: #e2e8f0;
     --primary: #16a34a;
-    --primary-pressed: #0d8c3c;
     --primary-foreground: #050505;
     --secondary: #4ade80; 
     --secondary-foreground: #e2e8f0;
@@ -176,7 +183,12 @@
     --muted-foreground: #9ca3af;
     --border: #3f3f46;
     --input: #585861;
-    --ring: #4ade80;
+
+    --primary-green: var(--primary);
+    --primary-red: #eb2a2a;
+    --primary-yellow: #eab308;
+    --primary-blue: #2563eb;
+    --primary-purple: #9333ea;
 
     --destructive: #eb2a2a; 
     --destructive-pressed: #d62424;
@@ -184,13 +196,16 @@
     --success-pressed: #12873d;
     --yellow: #eab308; 
     --yellow-pressed: #c79806;
-    --gray: #6b7280; 
+    --gray: #6b7280;
     --gray-pressed: #4f545e;
     --blue: #2563eb;
     --blue-pressed: #2054c7;
-    --violet: #9333ea; 
-    --violet-pressed: #7d2cc7;
-    --bubbles-green: #15803d;
+    --purple: #9333ea; 
+    --purple-pressed: #7d2cc7;
+    --color-bronze: #de7c23;
+
+    --bubbles: #15803d;
+    --bubbles-green: var(--bubbles);
     --bubbles-red: #eb2a2a;
     --bubbles-yellow: #eab308;
     --bubbles-blue: #2563eb;

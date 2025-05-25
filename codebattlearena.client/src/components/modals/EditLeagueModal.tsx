@@ -1,6 +1,7 @@
 import {
     Dialog,
     DialogContent,
+    DialogDescription,
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
@@ -26,6 +27,7 @@ export function EditLeagueModal({ open, league, onUpdate, onClose }: Props) {
 
               <LeagueForm league={league} onClose={onClose} onUpdate={onUpdate} submitLabel="Save"></LeagueForm>
           </DialogContent>
+          <DialogDescription className="font-mono"></DialogDescription>
       </Dialog>
   );
 }

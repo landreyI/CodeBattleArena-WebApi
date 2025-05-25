@@ -15,14 +15,14 @@ export function SessionsList() {
     const location = useLocation();
     const queryParams = new URLSearchParams(location.search);
 
-    const lang = queryParams.get('lang') ?? '';
+    const idLang = queryParams.get('idLang') ? Number(queryParams.get('idLang')) : undefined;
     const maxPeople = Number(queryParams.get('maxPeople') ?? "10");
     const sessionState = parseEnumParam(queryParams.get('sessionState'), SessionState, SessionState.Public);
     const isStart = Boolean(queryParams.get('isStart') ?? "");
     const isFinish = Boolean(queryParams.get('isFinish') ?? "");
 
     const filterReceived: SessionFilters = {
-        lang,
+        idLang,
         maxPeople,
         sessionState,
         isStart,

@@ -1,4 +1,3 @@
-import React from 'react';
 
 export function InfoPage() {
     return (
@@ -30,7 +29,7 @@ export function InfoPage() {
                     Are you up for the challenge?
                 </p>
 
-                <div className="bg-gradient-to-r from-primary via-primary to-primary p-6 rounded-lg shadow-lg transform transition duration-300 hover:scale-105">
+                <div className="bg-gradient-to-r bg-primary p-6 rounded-lg shadow-lg transform transition duration-300 hover:scale-105">
                     <p className="text-lg font-bold mb-4 text-center">Key Features:</p>
                     <ul className="list-disc pl-8 text-left text-lg">
                         <li>Compete in time-based coding challenges</li>

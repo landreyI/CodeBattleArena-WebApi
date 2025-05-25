@@ -24,7 +24,7 @@ namespace CodeBattleArena.Server.Helpers
 
         private static string CombineCodeParts(string userCode, string verificationCode)
         {
-            // Тут можно вставить доп. парсинг или рефакторинг (например, корректно собрать C#)
+            //Тут можно вставить доп. парсинг или рефакторинг (например, корректно собрать C#)
             return $"{userCode}\n{verificationCode}";
         }
     }

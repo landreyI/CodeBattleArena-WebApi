@@ -25,7 +25,7 @@ namespace CodeBattleArena.Server.Services.DBServices
         public async Task<List<PlayersLeague>> GetPlayersLeagues(CancellationToken cancellationToken)
         {
             var players = await _unitOfWork.PlayerRepository.GetPlayersAsync(cancellationToken);
-            var leagues = await _unitOfWork.LeagueRepository.GetLeaguesAsync(cancellationToken);
+            var leagues = await GetLeaguesAsync(cancellationToken);
             var playersLeagues = leagues
                 .Select(l => new PlayersLeague(
                     league: _mapper.Map<LeagueDto>(l),
@@ -43,7 +43,8 @@ namespace CodeBattleArena.Server.Services.DBServices
         }
         public async Task<List<League>> GetLeaguesAsync(CancellationToken cancellationToken)
         {
-            return await _unitOfWork.LeagueRepository.GetLeaguesAsync(cancellationToken);
+            var leagues = await _unitOfWork.LeagueRepository.GetLeaguesAsync(cancellationToken);
+            return leagues.OrderBy(l => l.MinWins).ToList();
         }
         public async Task<Result<Unit, ErrorResponse>> AddLeagueInDbAsync(League league, CancellationToken cancellationToken)
         {

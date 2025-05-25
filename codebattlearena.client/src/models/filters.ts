@@ -1,12 +1,12 @@
 import { Difficulty, SessionState } from "./dbModels";
 
 export interface TaskProgrammingFilters {
-    lang?: string;
+    idLang?: number;
     difficulty?: Difficulty;
 }
 
 export interface SessionFilters {
-    lang?: string;
+    idLang?: number;
     maxPeople?: number;
     sessionState?: SessionState;
     isStart?: boolean;

@@ -1,6 +1,7 @@
-import { Player } from "@/models/dbModels";
+﻿import { Player } from "@/models/dbModels";
 import PlayerMiniCard from "../cards/PlayerMiniCard";
 import { motion } from "framer-motion";
+
 interface Props {
     players: Player[],
     onDelete?: (playerId: string) => void;
@@ -10,18 +11,30 @@ interface Props {
     isNumbered?: boolean;
 }
 
-export function PlayersList({ players, onDelete, cardWrapperClassName, onPlayerSessionInfo, isTop = false, isNumbered = false }: Props) {
+export function PlayersList({
+    players,
+    onDelete,
+    cardWrapperClassName,
+    onPlayerSessionInfo,
+    isTop = false,
+    isNumbered = false
+}: Props) {
     const sortedPlayers = isTop
         ? [...players].sort((a, b) => (b.victories ?? 0) - (a.victories ?? 0))
         : players;
 
-    const getBorderClass = (index: number) => {
+    const getTopStyle = (index: number) => {
         if (!isTop) return "";
+
         switch (index) {
-            case 0: return "border-4 border-yellow-300";
-            case 1: return "border-4 border-zinc-300";
-            case 2: return "border-4 border-amber-600";
-            default: return "";
+            case 0:
+                return "border-3 border-yellow";
+            case 1:
+                return "border-3 border-gray";
+            case 2:
+                return "border-3 border-bronze";
+            default:
+                return "";
         }
     };
 
@@ -31,17 +44,24 @@ export function PlayersList({ players, onDelete, cardWrapperClassName, onPlayerS
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 10 }}
             transition={{ duration: 0.3 }}
-            className="grid gap-2">
+            className="grid gap-2"
+        >
             {sortedPlayers.map((player, index) => (
-                <PlayerMiniCard
-                    key={player.id}
-                    player={player}
-                    number={isNumbered ? index + 1 : undefined}
-                    onDelete={onDelete}
-                    onPlayerSessionInfo={onPlayerSessionInfo}
-                    className={`${cardWrapperClassName ?? ""} ${getBorderClass(index)} rounded-xl`}
-                />
+                <div key={player.id} className={`relative rounded-xl overflow-hidden ${cardWrapperClassName ?? ""}`}>
+                    {isTop && index < 3 && (
+                        <div className="absolute top-1 left-2 bg-primary bg-opacity-60 text-xs px-2 py-0.5 rounded-md z-10">
+                            TOP {index + 1}
+                        </div>
+                    )}
+                    <PlayerMiniCard
+                        player={player}
+                        number={isNumbered ? index + 1 : undefined}
+                        onDelete={onDelete}
+                        onPlayerSessionInfo={onPlayerSessionInfo}
+                        className={`${getTopStyle(index)}`}
+                    />
+                </div>
             ))}
-        </motion.div >
+        </motion.div>
     );
 }

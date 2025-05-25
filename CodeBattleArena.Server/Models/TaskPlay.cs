@@ -13,7 +13,8 @@ namespace CodeBattleArena.Server.Models
 
         [StringLength(40)]
         public string Type { get; set; }
-        public int Reward { get; set; }
+        public int? Experience { get; set; }
+        public int? Reward { get; set; }
         public bool IsRepeatable { get; set; }
 
         public int? TaskPlayParamId { get; set; }

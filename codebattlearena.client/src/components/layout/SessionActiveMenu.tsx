@@ -1,7 +1,7 @@
 ﻿import { useCallback, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ExternalLink, MessageCircle, SeparatorVertical, Users } from "lucide-react";
-import { useActiveSession } from "@/contexts/SessionContext";
+import { useActiveSession } from "@/contexts/ActiveSessionContext";
 import { Button } from "@/components/ui/button";
 import InlineNotification from "@/components/common/InlineErrorNotification";
 import { useSessionEventsHub } from "@/hooks/hubs/session/useSessionEventsHub";

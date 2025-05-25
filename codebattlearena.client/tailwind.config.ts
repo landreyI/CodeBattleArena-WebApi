@@ -21,15 +21,15 @@ export default {
                 background: 'var(--color-background)',
                 foreground: 'var(--color-foreground)',
                 primary: 'var(--color-primary)',
-                primaryPressed: 'var(--color-primary-pressed)',
+                "primary-pressed": 'var(--color-primary-pressed)',
 
                 blue: 'var(--color-blue)',
                 green: 'var(--color-green)',
                 red: 'var(--color-red)',
                 yellow: 'var(--color-yellow)',
-                violet: 'var(--color-violet)',
+                purple: 'var(--color-purple)',
                 gray: 'var(--color-gray)',
-
+                bronze: 'var(--color-bronze)',
             },
         },
     },

@@ -104,7 +104,7 @@ export function EditPlayerForm({ player, onUpdate, onClose }: Props) {
                         </FormItem>
                     )}
                 />
-                <Button type="submit" disabled={isLoading} className="inline-block mt-4 px-6 py-2 btn-green btn-animation">
+                <Button type="submit" disabled={isLoading} className="inline-block mt-4 px-6 py-2 btn-animation">
                     {isLoading ? "Saving..." : "Save"}
                 </Button>
             </form>

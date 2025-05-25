@@ -7,7 +7,7 @@ export function EditMenu({ setShowAddTask }: Props) {
 
     return (
         <GenericDropdownMenu
-            triggerContent={<button className="text-green-400 nav-link">Edit</button>}
+            triggerContent={<button className="nav-link">Edit</button>}
             menuLabel="Actions with edits"
             actions={[
                 { label: "Add Task", onClick: setShowAddTask, shortcut: "+⌘T" },

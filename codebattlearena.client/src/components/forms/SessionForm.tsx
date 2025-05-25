@@ -23,7 +23,7 @@ import { useState } from "react";
 import InputPassword from "../common/InputPassword";
 import { useCreateSession } from "@/hooks/session/useCreateSession";
 import { useUpdateSession } from "@/hooks/session/useUpdateSession";
-import { useActiveSession } from "@/contexts/SessionContext";
+import { useActiveSession } from "@/contexts/ActiveSessionContext";
 
 
 // Определяем схему валидации формы
@@ -277,7 +277,7 @@ export function SessionForm({ session, onClose, onUpdate, submitLabel }: Props) 
                     />
                 )}
 
-                <Button type="submit" disabled={isLoading} className="w-full btn-green btn-animation">
+                <Button type="submit" disabled={isLoading} className="w-full btn-animation">
                     {isLoading ? "Saving..." : submitLabel}
                 </Button>
             </form>

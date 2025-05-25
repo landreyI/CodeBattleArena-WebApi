@@ -49,7 +49,7 @@ export function TaskProgrammingCard({ task, isEditRole, className }: Props) {
                     </div>
                     {isEditRole && (
                         <>
-                            <div className="flex items-start gap-3 w-full">
+                            <div className="flex items-start gap-3">
                                 <Terminal size={16} className="mt-1 shrink-0" />
                                 <div className="flex flex-col w-full">
                                     <div className="font-mono text-muted-foreground">Preparation:</div>
@@ -57,7 +57,7 @@ export function TaskProgrammingCard({ task, isEditRole, className }: Props) {
                                 </div>
                             </div>
 
-                            <div className="flex items-start gap-3 w-full">
+                            <div className="flex items-start gap-3">
                                 <Terminal size={16} className="mt-1 shrink-0" />
                                 <div className="flex flex-col w-full">
                                     <div className="font-mono text-muted-foreground">Verification Code:</div>

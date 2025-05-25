@@ -58,15 +58,22 @@ namespace CodeBattleArena.Server.Services.Judge0
         private ExecutionResult ParseResult(JsonDocument doc)
         {
             var root = doc.RootElement;
-            var status = root.GetProperty("status").GetProperty("id").GetInt32();
+            var statusElement = root.GetProperty("status");
+            int statusId = statusElement.GetProperty("id").GetInt32();
+            string statusDescription = statusElement.GetProperty("description").GetString() ?? "";
 
-            if (status == 3) // Accepted
+            string? stdout = root.TryGetProperty("stdout", out var stdoutProp) ? stdoutProp.GetString() : null;
+            string[] outputValues = stdout?.Split(' ', StringSplitOptions.RemoveEmptyEntries) ?? Array.Empty<string>();
+
+            if (statusId == 3) // Accepted
             {
-                string time = root.TryGetProperty("time", out var timeProp) ? timeProp.GetString() : "N/A";
+                string? time = root.TryGetProperty("time", out var timeProp) ? timeProp.GetString() : "N/A";
                 int? memory = root.TryGetProperty("memory", out var memoryProp) ? memoryProp.GetInt32(): null;
 
                 return new ExecutionResult
                 {
+                    Status = statusDescription,
+                    Stdout = outputValues,
                     Time = time,
                     Memory = memory,
                     CompileOutput = null
@@ -74,14 +81,16 @@ namespace CodeBattleArena.Server.Services.Judge0
             }
             else
             {
-                string error = root.TryGetProperty("stderr", out var stderrProp) ? stderrProp.GetString() : "No stderr output";
-                string compileOutput = root.TryGetProperty("compile_output", out var compileOutputProp) ? compileOutputProp.GetString() : "No compile output";
+                string? error = root.TryGetProperty("stderr", out var stderrProp) ? stderrProp.GetString() : "No stderr output";
+                string? compileOutput = root.TryGetProperty("compile_output", out var compileOutputProp) ? compileOutputProp.GetString() : "No compile output";
 
                 return new ExecutionResult
                 {
+                    Status = statusDescription,
+                    Stdout = outputValues,
                     Time = null,
                     Memory = null,
-                    CompileOutput = $"Error: {error}\nCompile Output: {compileOutput}"
+                    CompileOutput = $"Error: {error ?? "-"}\nCompile Output: {compileOutput ?? "-"}"
                 };
             }
         }

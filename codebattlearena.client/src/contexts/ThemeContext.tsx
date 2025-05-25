@@ -13,6 +13,13 @@ export enum BubblesColors {
     Blue = "blue",
     Purple = "purple",
 }
+export enum BasicColor {
+    Green = "green",
+    Red = "red",
+    Yellow = "yellow",
+    Blue = "blue",
+    Purple = "purple",
+}
 interface ThemeContextType {
     isDarkMode: boolean;
     toggleTheme: () => void;
@@ -22,6 +29,9 @@ interface ThemeContextType {
 
     bubblesColors: BubblesColors;
     setBubblesColors: (color: BubblesColors) => void;
+
+    basicColor: BasicColor;
+    setBasicColor: (color: BasicColor) => void;
 }
 
 export const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
@@ -30,6 +40,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     const [isDarkMode, setIsDarkMode] = useState(false);
     const [bubblesEnabled, setBubblesEnabled] = useState(true);
     const [bubblesColors, setBubblesColorsState] = useState<BubblesColors>(BubblesColors.Green);
+    const [basicColor, setBasicColorState] = useState<BasicColor>(BasicColor.Green);
 
     // Load theme from localStorage
     useEffect(() => {
@@ -85,6 +96,22 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
         document.documentElement.style.setProperty("--color-bubbles", `var(--bubbles-${color})`);
     };
 
+    // Load basic color
+    useEffect(() => {
+        const savedColor = localStorage.getItem("basicColor") as BasicColor | null;
+        if (savedColor && Object.values(BasicColor).includes(savedColor as BasicColor)) {
+            setBasicColorState(savedColor as BasicColor);
+            document.documentElement.style.setProperty("--color-primary", `var(--primary-${savedColor})`);
+        }
+    }, []);
+
+    // Save basic color
+    const setBasicColor = (color: BasicColor) => {
+        setBasicColorState(color);
+        localStorage.setItem("basicColor", color);
+        document.documentElement.style.setProperty("--color-primary", `var(--primary-${color})`);
+    };
+
     return (
         <ThemeContext.Provider
             value={{
@@ -94,6 +121,8 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
                 toggleBubbles,
                 bubblesColors,
                 setBubblesColors,
+                basicColor,
+                setBasicColor,
             }}
         >
             {children}

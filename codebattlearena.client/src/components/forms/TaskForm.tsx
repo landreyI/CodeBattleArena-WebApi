@@ -410,7 +410,7 @@ export function TaskForm({ task, onClose, onUpdate, submitLabel }: Props) {
 
 
 
-                <Button type="submit" disabled={isLoading} className="w-full btn-green btn-animation">
+                <Button type="submit" disabled={isLoading} className="w-full btn-animation">
                     {isLoading ? "Saving..." : submitLabel}
                 </Button>
             </form>

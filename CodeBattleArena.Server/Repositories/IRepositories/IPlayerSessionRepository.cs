@@ -1,13 +1,13 @@
 ﻿using CodeBattleArena.Server.Models;
+using CodeBattleArena.Server.Specifications;
 
 namespace CodeBattleArena.Server.IRepositories
 {
     public interface IPlayerSessionRepository
     {
         Task AddPlayerSessionAsync(PlayerSession playerSession, CancellationToken cancellationToken);
-        Task<PlayerSession> GetPlayerSessionAsync(int idSession, string idPlayer, CancellationToken cancellationToken);
-        Task<List<PlayerSession>> GetPlayerSessionByIdPlayerAsync(string idPlayer, CancellationToken cancellationToken);
-        Task<List<PlayerSession>> GetPlayerSessionByIdSessionAsync(int idSession, CancellationToken cancellationToken);
+        Task<PlayerSession> GetPlayerSessionAsync(ISpecification<PlayerSession> spec, CancellationToken cancellationToken);
+        Task<List<PlayerSession>> GetListPlayerSessionByIdAsync(ISpecification<PlayerSession> spec, CancellationToken cancellationToken);
 
         void UpdatePlayerSession(PlayerSession playerSession);
         Task FinishTaskAsync(int idSession, string idPlayer, CancellationToken cancellationToken);

@@ -19,11 +19,11 @@ export function TasksListPage() {
     const location = useLocation();
     const queryParams = new URLSearchParams(location.search);
 
-    const lang = queryParams.get('lang') ?? '';
+    const idLang = queryParams.get('idLang') ? Number(queryParams.get('idLang')) : undefined;
     const difficulty = parseEnumParam(queryParams.get('difficulty'), Difficulty, Difficulty.Easy);
 
     const filterReceived: TaskProgrammingFilters = {
-        lang,
+        idLang,
         difficulty,
     };
 
@@ -47,9 +47,8 @@ export function TasksListPage() {
 
     const handleDeletTask = async (taskId: number) => {
         const success = await deleteTask(taskId);
-        if (success) {
+        if (success)
             setTasks((prevTasks) => prevTasks.filter((task) => task.idTaskProgramming !== taskId));
-        }
     };
 
     const handleChangeFilter = (filter: TaskProgrammingFilters) => {
@@ -61,7 +60,7 @@ export function TasksListPage() {
 
     return (
         <>
-            {deleteError && <InlineNotification message={deleteError.message} position="top" className="bg-red" />} {/* не прерывая рендер */}
+            {deleteError && <InlineNotification message={deleteError.message} position="top" className="bg-red" />}
 
             <TaskFilter filter={filter} onChange={handleChangeFilter} handleSearch={reloadTasks}></TaskFilter>
 

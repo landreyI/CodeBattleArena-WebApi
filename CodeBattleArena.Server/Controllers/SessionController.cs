@@ -1,20 +1,14 @@
 ﻿using AutoMapper;
 using CodeBattleArena.Server.DTO;
-using CodeBattleArena.Server.Enums;
 using CodeBattleArena.Server.Filters;
-using CodeBattleArena.Server.Helpers;
-using CodeBattleArena.Server.Hubs;
-using CodeBattleArena.Server.Infrastructure.Attributes;
 using CodeBattleArena.Server.Models;
 using CodeBattleArena.Server.Services.DBServices;
 using CodeBattleArena.Server.Services.Notifications.INotifications;
+using CodeBattleArena.Server.Specifications.SessionSpec;
 using CodeBattleArena.Server.Untils;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.SignalR;
-using System.Threading;
 
 namespace CodeBattleArena.Server.Controllers
 {
@@ -51,7 +45,7 @@ namespace CodeBattleArena.Server.Controllers
             if (!resultStart.IsSuccess)
                 return UnprocessableEntity(resultStart.Failure);
 
-            var session = await _sessionService.GetSessionAsync(idSession.Value, cancellationToken);
+            var session = await _sessionService.GetSessionInDbAsync(idSession.Value, cancellationToken);
             var dto = _mapper.Map<SessionDto>(session);
 
             await _sessionNotificationService.NotifyStartGameAsync(idSession.Value);
@@ -72,7 +66,7 @@ namespace CodeBattleArena.Server.Controllers
             if (!resultFinish.IsSuccess)
                 return UnprocessableEntity(resultFinish.Failure);
 
-            var session = await _sessionService.GetSessionAsync(idSession.Value, cancellationToken);
+            var session = await _sessionService.GetSessionInDbAsync(idSession.Value, cancellationToken);
             var dto = _mapper.Map<SessionDto>(session);
 
             await _sessionNotificationService.NotifyFinishGameAsync(idSession.Value);
@@ -113,7 +107,7 @@ namespace CodeBattleArena.Server.Controllers
         {
             if (id == null) return BadRequest(new ErrorResponse { Error = "Session ID not specified." });
 
-            var session = await _sessionService.GetSessionAsync(id.Value, cancellationToken);
+            var session = await _sessionService.GetSessionInDbAsync(id.Value, cancellationToken);
             if (session == null) return NotFound(new ErrorResponse { Error = "Session not found." });
 
             SessionDto sessionDto = new SessionDto();
@@ -257,7 +251,7 @@ namespace CodeBattleArena.Server.Controllers
             if (!resultUpdate.IsSuccess)
                 return UnprocessableEntity(resultUpdate.Failure);
 
-            var session = await _sessionService.GetSessionAsync(sessionDto.IdSession.Value, cancellationToken);
+            var session = await _sessionService.GetSessionAsync(new SessionByIdSpec(sessionDto.IdSession.Value), cancellationToken);
             var dto = _mapper.Map<SessionDto>(session);
 
             await _sessionNotificationService.NotifySessionUpdatedGroupAsync(dto);

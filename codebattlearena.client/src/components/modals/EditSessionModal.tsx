@@ -22,7 +22,7 @@ export function EditSessionModal({ open, session, onUpdate, onClose }: Props) {
 
   return (
       <Dialog open={open} onOpenChange={(val) => !val && onClose()}>
-          <DialogContent className="w-full sm:max-w-md max-h-[90vh] overflow-y-auto border">
+          <DialogContent className="md:w-[40vw] sm:w-[100vw] mx-auto max-h-[90vh] overflow-y-auto border">
               <DialogHeader>
                   <DialogTitle className="text-center">Edit Session</DialogTitle>
               </DialogHeader>

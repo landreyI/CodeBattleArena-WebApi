@@ -5,7 +5,7 @@ namespace CodeBattleArena.Server.Filters
 {
     public class SessionFilter : IFilter<Session>
     {
-        public string? Lang { get; set; }
+        public int? IdLang { get; set; }
         public int? MaxPeople { get; set; }
         public SessionState? SessionState { get; set; }
         public bool? IsStart { get; set; }
@@ -20,8 +20,8 @@ namespace CodeBattleArena.Server.Filters
             if(MaxPeople.HasValue)
                 query = query.Where(x => x.MaxPeople <= MaxPeople.Value);
 
-            if (!string.IsNullOrWhiteSpace(Lang))
-                query = query.Where(x => x.LangProgramming.CodeNameLang == Lang);
+            if (IdLang.HasValue)
+                query = query.Where(x => x.LangProgrammingId == IdLang);
 
             if (IsStart.HasValue)
                 query = query.Where(x => x.IsStart == IsStart);

@@ -1,6 +1,7 @@
 import {
     Dialog,
     DialogContent,
+    DialogDescription,
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
@@ -26,6 +27,7 @@ export function EditTaskModal({ open, task, onUpdate, onClose }: Props) {
 
                 <TaskForm task={task} onClose={onClose} onUpdate={onUpdate} submitLabel="Save"></TaskForm>
             </DialogContent>
+            <DialogDescription className="font-mono"></DialogDescription>
         </Dialog>
     );
 }

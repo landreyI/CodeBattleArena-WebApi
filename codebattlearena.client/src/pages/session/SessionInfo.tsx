@@ -16,7 +16,7 @@ import { useDeleteSession } from "@/hooks/session/useDeleteSession";
 import { Button } from "@/components/ui/button";
 import { TaskProgrammingFilters } from "@/models/filters";
 import { useSessionJoin } from "@/hooks/playerSession/useSessionJoin";
-import { useActiveSession } from "@/contexts/SessionContext";
+import { useActiveSession } from "@/contexts/ActiveSessionContext";
 import InputPassword from "@/components/common/InputPassword";
 import { Users } from "lucide-react";
 import { useSessionEventsHub } from "@/hooks/hubs/session/useSessionEventsHub";
@@ -96,7 +96,7 @@ export function SessionInfo() {
 
     const goToTaskList = () => {
         const filter: TaskProgrammingFilters = {
-            lang: session?.langProgramming?.codeNameLang ?? '',
+            idLang: session?.langProgrammingId ?? undefined,
             difficulty: Difficulty.Easy,
         };
 
@@ -126,7 +126,7 @@ export function SessionInfo() {
             )}
 
             <div className="glow-box">
-                <div className="max-w-3xl mx-auto">
+                <div className="md:w-[50vw] sm:w-[100vw] mx-auto">
                     {/* Заголовок страницы */}
                     <div className="flex items-center justify-between mb-6">
                         <h1 className="text-4xl font-bold text-primary font-mono">

@@ -16,9 +16,9 @@ export function PlayerCard({ player, className }: Props) {
     return (
         <Card className={`shadow-lg flex flex-col md:flex-row p-0 rounded-xl ${className}`}>
             <div className="flex flex-col items-center bg-primary rounded-xl p-5 justify-between">
-                <div className="font-semibold">
+                <Badge className="font-semibold bg-primary-pressed rounded-xl text-white">
                     LEVEL
-                </div>
+                </Badge>
 
                 <Avatar className="w-30 h-30 my-4">
                     <AvatarImage src={player.photoUrl || undefined} alt={player.username} className="hover:scale-[1.3] transition" />
@@ -27,11 +27,11 @@ export function PlayerCard({ player, className }: Props) {
                     </AvatarFallback>
                 </Avatar>
 
-                <div className="flex items-center gap-2">
+                <Badge className="flex items-center gap-2 bg-primary-pressed rounded-xl text-white">
                     <Trophy size={16} />
                     <p className="text-sm font-mono font-semibold">VICTORIES</p>
                     <p className="text-lg font-bold">{player.victories}</p>
-                </div>
+                </Badge>
             </div>
             <div className="flex flex-col gap-4 justify-between items-center w-full p-5">
                 <div>

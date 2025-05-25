@@ -9,7 +9,7 @@ export function ErrorMessage({ error }: Props) {
     const [showDetails, setShowDetails] = useState(false);
     
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen text-red px-4 py-8">
+        <div className="flex flex-col items-center justify-center h-auto text-red px-4 py-8">
             <p className="text-xl font-mono mb-4">Error: {error.message}</p>
 
             {(error.code != null || (error.fieldErrors && Object.keys(error.fieldErrors).length > 0)) && (

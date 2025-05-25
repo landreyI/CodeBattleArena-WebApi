@@ -13,7 +13,7 @@ import { useDeleteTask } from "@/hooks/task/useDeleteTask";
 import { useAuth } from "@/contexts/AuthContext";
 import { isEditRole } from "@/untils/businessRules";
 import { Button } from "@/components/ui/button";
-import { useActiveSession } from "@/contexts/SessionContext";
+import { useActiveSession } from "@/contexts/ActiveSessionContext";
 import { useSelectTaskForSession } from "@/hooks/session/useSelectTaskForSession";
 import { useTaskEventsHub } from "@/hooks/hubs/task/useTaskEventsHub";
 
@@ -65,7 +65,7 @@ export function TaskInfo() {
             )}
 
             <div className="glow-box">
-                <div className="max-w-3xl mx-auto">
+                <div className="md:w-[60vw] sm:w-[100vw] mx-auto">
                     <div className="flex items-center justify-between mb-6">
                         {activeSession && (
                             <Button

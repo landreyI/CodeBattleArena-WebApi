@@ -36,7 +36,7 @@ export const getRoleColor = (role: string): string => {
         case Role.Manager:
             return "bg-blue";
         case Role.Moderator:
-            return "bg-violet";
+            return "bg-purple";
         case Role.Banned:
             return "bg-red";
         case Role.User:

@@ -396,6 +396,9 @@ namespace CodeBattleArena.Server.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("Experience")
+                        .HasColumnType("int");
+
                     b.Property<bool>("IsRepeatable")
                         .HasColumnType("bit");
 
@@ -404,7 +407,7 @@ namespace CodeBattleArena.Server.Migrations
                         .HasMaxLength(40)
                         .HasColumnType("nvarchar(40)");
 
-                    b.Property<int>("Reward")
+                    b.Property<int?>("Reward")
                         .HasColumnType("int");
 
                     b.Property<int?>("TaskPlayParamId")

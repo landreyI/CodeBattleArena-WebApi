@@ -24,14 +24,14 @@ interface Props {
 export function SessionFilter({ filter, onChange, handleSearch }: Props) {
     const { langsProgramming, loading, error: langsError } = useLangsProgramming();
 
-    const [selectedLang, setSelectedLang] = useState<string>(filter.lang || "all");
+    const [selectedLang, setSelectedLang] = useState<string>(filter.idLang?.toString() || "all");
     const [selectedState, setSelectedState] = useState<string>(filter.sessionState || "all");
     const [maxPeople, setMaxPeople] = useState<string>(filter.maxPeople?.toString() || "");
     const [isStart, setIsStart] = useState<boolean>(filter.isStart || false);
     const [isFinish, setIsFinish] = useState<boolean>(filter.isFinish || false);
 
     useEffect(() => {
-        setSelectedLang(filter.lang || "all");
+        setSelectedLang(filter.idLang?.toString() || "all");
         setSelectedState(filter.sessionState || "all");
         setMaxPeople(filter.maxPeople?.toString() || "");
         setIsStart(filter.isStart || false);
@@ -40,7 +40,8 @@ export function SessionFilter({ filter, onChange, handleSearch }: Props) {
 
     const handleLangChange = (value: string) => {
         setSelectedLang(value);
-        onChange({ ...filter, lang: value === "all" ? undefined : value });
+        const id = Number(value);
+        onChange({ ...filter, idLang: isNaN(id) ? undefined : id });
     };
 
     const handleStateChange = (value: string) => {
@@ -87,7 +88,7 @@ export function SessionFilter({ filter, onChange, handleSearch }: Props) {
                         <SelectContent>
                             <SelectItem value="all">All languages</SelectItem>
                             {langsProgramming.map((lang) => (
-                                <SelectItem key={lang.codeNameLang} value={lang.codeNameLang}>
+                                <SelectItem key={lang.idLang} value={lang.idLang.toString()}>
                                     {lang.nameLang}
                                 </SelectItem>
                             ))}

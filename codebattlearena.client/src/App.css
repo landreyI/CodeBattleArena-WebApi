@@ -215,7 +215,7 @@ h1, h2, h3 {
     background-color: var(--color-glow-box);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-md);
-    box-shadow: 0 0 10px rgba(34, 197, 94, 0.2);
+    box-shadow: 0 0 5px var(--color-primary);
     transition: box-shadow 0.3s ease;
     padding: 1.5rem 2.5rem;
     display: inline-block;
@@ -223,7 +223,7 @@ h1, h2, h3 {
 }
 
     .glow-box:hover {
-        box-shadow: 0 0 15px rgba(34, 197, 94, 0.3);
+        box-shadow: 0 0 15px var(--color-primary);
     }
 
 /* -------------------- КНОПКИ -------------------- */
@@ -265,6 +265,14 @@ h1, h2, h3 {
         background-color: var(--color-red-pressed);
     }
 
+.btn-yellow {
+    background-color: var(--color-yellow);
+    color: var(--color-primary-foreground);
+}
+
+    .btn-yellow:hover {
+        background-color: var(--color-yellow-pressed);
+    }
 
 .league-bronze {
     background-color: var(--bronze);

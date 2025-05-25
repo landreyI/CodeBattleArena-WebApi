@@ -5,6 +5,7 @@ using CodeBattleArena.Server.Models;
 using CodeBattleArena.Server.Services.DBServices;
 using CodeBattleArena.Server.Services.Judge0;
 using CodeBattleArena.Server.Services.Notifications.INotifications;
+using CodeBattleArena.Server.Specifications.PlayerSessionSpec;
 using CodeBattleArena.Server.Untils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -63,7 +64,7 @@ namespace CodeBattleArena.Server.Controllers
                 if (!accessCheck.Success)
                     return UnprocessableEntity(new ErrorResponse { Error = "You do not have sufficient rights to view this player." });
 
-                session = await _sessionService.GetSessionAsync(sessionId.Value, cancellationToken);
+                session = await _sessionService.GetSessionInDbAsync(sessionId.Value, cancellationToken);
             }
 
             if (session == null)
@@ -77,7 +78,7 @@ namespace CodeBattleArena.Server.Controllers
                 return NotFound(new ErrorResponse { Error = "You can't view your opponent's code :)" });
             }
 
-            var playerSession = await _playerSessionService.GetPlayerSessionAsync(session.IdSession, targetPlayerId, cancellationToken);
+            var playerSession = await _playerSessionService.GetPlayerSessionAsync(new PlayerSessionByIdSpec(session.IdSession, targetPlayerId), cancellationToken);
             if (playerSession == null)
                 return NotFound(new ErrorResponse { Error = "Player Session not found." });
 

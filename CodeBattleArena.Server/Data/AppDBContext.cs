@@ -22,18 +22,35 @@ namespace CodeBattleArena.Server.Data
         public DbSet<TaskPlay> TasksPlay { get; set; }
         public DbSet<TaskPlayParam> TaskPlayParams { get; set; }
         public DbSet<PlayerTaskPlay> PlayerTaskPlays { get; set; }
+        public DbSet<Reward> Rewards { get; set; }
+        public DbSet<TaskPlayReward> TaskPlayRewards { get; set; }
+        public DbSet<Item> Items { get; set; }
+        public DbSet<PlayerItem> PlayerItems { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
+            // enum => string
             modelBuilder.Entity<Session>()
                 .Property(g => g.State)
-                .HasConversion<string>(); // enum => string
+                .HasConversion<string>(); 
 
             modelBuilder.Entity<TaskProgramming>()
                 .Property(g => g.Difficulty)
-                .HasConversion<string>(); // enum => string
+                .HasConversion<string>();
+
+            modelBuilder.Entity<Item>()
+                .Property(i => i.Type)
+                .HasConversion<string>();
+
+            modelBuilder.Entity<TaskPlay>()
+                .Property(i => i.Type)
+                .HasConversion<string>();
+
+            modelBuilder.Entity<TaskPlayParam>()
+                .Property(i => i.ParamKey)
+                .HasConversion<string>();
 
 
             modelBuilder.Entity<PlayerSession>()
@@ -81,14 +98,16 @@ namespace CodeBattleArena.Server.Data
                 .HasForeignKey(ti => ti.IdInputDataTask);
 
 
-            modelBuilder.Entity<TaskPlay>()
-                    .HasOne(t => t.TaskPlayParam)
-                    .WithOne(p => p.TaskPlay)    
-                    .HasForeignKey<TaskPlay>(t => t.TaskPlayParamId);
 
             modelBuilder.Entity<TaskPlayParam>()
-                .HasIndex(p => p.TaskPlayId)
+                .HasIndex(p => new { p.TaskPlayId, p.ParamKey })
                 .IsUnique();
+
+            modelBuilder.Entity<TaskPlayParam>()
+                .HasOne(p => p.TaskPlay)
+                .WithMany(t => t.TaskPlayParams)
+                .HasForeignKey(p => p.TaskPlayId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<PlayerTaskPlay>()
                 .HasKey(b => b.IdPlayerTaskPlay);
@@ -102,6 +121,67 @@ namespace CodeBattleArena.Server.Data
                 .HasOne(b => b.TaskPlay)
                 .WithMany(p => p.PlayerTaskPlays)
                 .HasForeignKey(b => b.TaskPlayId);
+
+            modelBuilder.Entity<TaskPlayReward>()
+                .HasKey(x => new { x.TaskPlayId, x.RewardId });
+
+            modelBuilder.Entity<TaskPlayReward>()
+                .HasOne(tr => tr.TaskPlay)
+                .WithMany(t => t.TaskPlayRewards)
+                .HasForeignKey(tr => tr.TaskPlayId);
+
+            modelBuilder.Entity<TaskPlayReward>()
+                .HasOne(tr => tr.Reward)
+                .WithMany()
+                .HasForeignKey(tr => tr.RewardId);
+
+
+            // Конфигурация активных предметов в Player
+            modelBuilder.Entity<Player>()
+                .HasOne(p => p.ActiveBackground)
+                .WithMany() // Item не имеет обратной коллекции для ActiveBackground
+                .HasForeignKey(p => p.ActiveBackgroundId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            modelBuilder.Entity<Player>()
+                .HasOne(p => p.ActiveAvatar)
+                .WithMany()
+                .HasForeignKey(p => p.ActiveAvatarId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            modelBuilder.Entity<Player>()
+                .HasOne(p => p.ActiveBadge)
+                .WithMany()
+                .HasForeignKey(p => p.ActiveBadgeId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            modelBuilder.Entity<Player>()
+                .HasOne(p => p.ActiveBorder)
+                .WithMany()
+                .HasForeignKey(p => p.ActiveBorderId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            modelBuilder.Entity<Player>()
+                .HasOne(p => p.ActiveTitle)
+                .WithMany()
+                .HasForeignKey(p => p.ActiveTitleId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+
+            modelBuilder.Entity<PlayerItem>()
+                .HasKey(f => new { f.IdPlayer, f.IdItem });
+
+            modelBuilder.Entity<PlayerItem>()
+                .HasOne(i => i.Item)
+                .WithMany(i => i.PlayerItems)
+                .HasForeignKey(i => i.IdItem)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<PlayerItem>()
+                .HasOne(i => i.Player)
+                .WithMany(i => i.PlayerItems)
+                .HasForeignKey(i => i.IdPlayer)
+                .OnDelete(DeleteBehavior.NoAction);
 
 
             modelBuilder.Entity<Friend>()

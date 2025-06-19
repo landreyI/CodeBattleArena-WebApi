@@ -44,7 +44,7 @@ export function PlayersList({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 10 }}
             transition={{ duration: 0.3 }}
-            className="grid gap-2"
+            className="grid gap-3"
         >
             {sortedPlayers.map((player, index) => (
                 <div key={player.id} className={`relative rounded-xl overflow-hidden ${cardWrapperClassName ?? ""}`}>

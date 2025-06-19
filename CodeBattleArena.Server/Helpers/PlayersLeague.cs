@@ -1,5 +1,4 @@
 ﻿using CodeBattleArena.Server.DTO;
-using CodeBattleArena.Server.Models;
 
 namespace CodeBattleArena.Server.Helpers
 {

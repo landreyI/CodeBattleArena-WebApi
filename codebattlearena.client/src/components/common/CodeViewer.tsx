@@ -9,6 +9,7 @@ interface Props {
     maxHeight?: number;
     readonly?: boolean;
     autoResize?: boolean;
+    className?: string;
 }
 
 export function CodeViewer({
@@ -18,6 +19,7 @@ export function CodeViewer({
     maxHeight = 400,
     readonly = true,
     autoResize,
+    className,
 }: Props) {
     const { isDarkMode } = useTheme();
     const editorRef = useRef<any>(null);
@@ -48,7 +50,7 @@ export function CodeViewer({
 
     return (
         <div
-            className="rounded-xl overflow-hidden shadow-sm border border-muted"
+            className={`overflow-hidden shadow-sm ${className}`}
             style={{
                 maxHeight: autoResize ? maxHeight : undefined,
                 height: autoResize ? undefined : "100%",

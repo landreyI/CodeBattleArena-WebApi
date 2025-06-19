@@ -1,19 +1,18 @@
 ﻿using AutoMapper;
 using CodeBattleArena.Server.DTO;
+using CodeBattleArena.Server.Enums;
 using CodeBattleArena.Server.Helpers;
 using CodeBattleArena.Server.Models;
 using CodeBattleArena.Server.Services.DBServices;
 using CodeBattleArena.Server.Services.Judge0;
 using CodeBattleArena.Server.Services.Notifications.INotifications;
+using CodeBattleArena.Server.Specifications;
 using CodeBattleArena.Server.Specifications.PlayerSessionSpec;
+using CodeBattleArena.Server.Specifications.QuestSpec;
 using CodeBattleArena.Server.Untils;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using System.Reflection.Emit;
-using System.Runtime.CompilerServices;
-using System.Threading;
 
 namespace CodeBattleArena.Server.Controllers
 {
@@ -78,7 +77,12 @@ namespace CodeBattleArena.Server.Controllers
                 return NotFound(new ErrorResponse { Error = "You can't view your opponent's code :)" });
             }
 
-            var playerSession = await _playerSessionService.GetPlayerSessionAsync(new PlayerSessionByIdSpec(session.IdSession, targetPlayerId), cancellationToken);
+            var spec = Specification<PlayerSession>.Combine(
+                new PlayerSessionDefaultIncludesSpec(),
+                new PlayerSessionByIdSpec(session.IdSession, targetPlayerId)
+            );
+
+            var playerSession = await _playerSessionService.GetPlayerSessionAsync(spec, cancellationToken);
             if (playerSession == null)
                 return NotFound(new ErrorResponse { Error = "Player Session not found." });
 
@@ -218,7 +222,11 @@ namespace CodeBattleArena.Server.Controllers
         [HttpGet("player-sessions")]
         public async Task<IActionResult> GetPlayerSessions(string id, CancellationToken cancellationToken)
         {
-            var playerSessions = await _playerSessionService.GetPlayerSessionByIdPlayerAsync(id, cancellationToken);
+            var spec = Specification<PlayerSession>.Combine(
+                new PlayerSessionDefaultIncludesSpec(),
+                new PlayerSessionByIdSpec(idPlayer: id)
+            );
+            var playerSessions = await _playerSessionService.GetListPlayerSessionAsync(spec, cancellationToken);
 
             var playerSessionsDto = _mapper.Map<List<PlayerSessionDto>>(playerSessions);
 

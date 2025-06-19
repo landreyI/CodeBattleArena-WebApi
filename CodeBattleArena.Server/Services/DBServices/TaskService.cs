@@ -4,10 +4,7 @@ using CodeBattleArena.Server.Filters;
 using CodeBattleArena.Server.IRepositories;
 using CodeBattleArena.Server.Models;
 using CodeBattleArena.Server.Untils;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
+
 
 namespace CodeBattleArena.Server.Services.DBServices
 {
@@ -24,7 +21,7 @@ namespace CodeBattleArena.Server.Services.DBServices
         }
 
         public async Task<Result<TaskProgramming, ErrorResponse>> CreateTaskProgrammingAsync
-            (TaskProgrammingDto dto, CancellationToken ct)
+            (TaskProgrammingDto dto, CancellationToken ct, bool commit = true)
         {
             TaskProgramming taskProgramming = new TaskProgramming();
             _mapper.Map(dto, taskProgramming);
@@ -45,7 +42,7 @@ namespace CodeBattleArena.Server.Services.DBServices
                 }
             }
 
-            var addResult = await AddTaskProgrammingInDbAsync(taskProgramming, ct);
+            var addResult = await AddTaskProgrammingInDbAsync(taskProgramming, ct, commit);
             if (!addResult.IsSuccess)
                 return Result.Failure<TaskProgramming, ErrorResponse>(addResult.Failure);
 
@@ -53,7 +50,7 @@ namespace CodeBattleArena.Server.Services.DBServices
         }
 
         public async Task<Result<Unit, ErrorResponse>> UpdateTaskProgrammingAsync
-     (TaskProgrammingDto dto, CancellationToken ct)
+     (TaskProgrammingDto dto, CancellationToken ct, bool commit = true)
         {
             var task = await GetTaskProgrammingAsync(dto.IdTaskProgramming.Value, ct);
             if (task == null)
@@ -111,7 +108,7 @@ namespace CodeBattleArena.Server.Services.DBServices
             // Обновляем список task.TaskInputData
             task.TaskInputData = updatedTaskInputData;
 
-            var resultUpdate = await UpdateTaskProgrammingInDbAsync(task, ct);
+            var resultUpdate = await UpdateTaskProgrammingInDbAsync(task, ct, commit);
             if (!resultUpdate.IsSuccess)
                 return Result.Failure<Unit, ErrorResponse>(resultUpdate.Failure);
 
@@ -120,12 +117,15 @@ namespace CodeBattleArena.Server.Services.DBServices
 
 
         //DATABASE
-        public async Task<Result<Unit, ErrorResponse>> AddTaskProgrammingInDbAsync(TaskProgramming taskProgramming, CancellationToken cancellationToken)
+        public async Task<Result<Unit, ErrorResponse>> AddTaskProgrammingInDbAsync
+            (TaskProgramming taskProgramming, CancellationToken cancellationToken, bool commit = true)
         {
             try
             {
                 await _unitOfWork.TaskRepository.AddTaskProgrammingAsync(taskProgramming, cancellationToken);
-                await _unitOfWork.CommitAsync(cancellationToken); // Сохранение изменений
+                if (commit)
+                    await _unitOfWork.CommitAsync(cancellationToken);
+
                 return Result.Success<Unit, ErrorResponse>(Unit.Value);
             }
             catch (Exception ex)
@@ -137,12 +137,15 @@ namespace CodeBattleArena.Server.Services.DBServices
                 });
             }
         }
-        public async Task<Result<Unit, ErrorResponse>> AddInputDataInDbAsync(string data, CancellationToken cancellationToken)
+        public async Task<Result<Unit, ErrorResponse>> AddInputDataInDbAsync
+            (string data, CancellationToken cancellationToken, bool commit = true)
         {
             try
             {
                 await _unitOfWork.TaskRepository.AddInputDataAsync(data, cancellationToken);
-                await _unitOfWork.CommitAsync(cancellationToken);
+                if (commit)
+                    await _unitOfWork.CommitAsync(cancellationToken);
+
                 return Result.Success<Unit, ErrorResponse>(Unit.Value);
             }
             catch (Exception ex)
@@ -154,12 +157,15 @@ namespace CodeBattleArena.Server.Services.DBServices
                 });
             }
         }
-        public async Task<Result<Unit, ErrorResponse>> AddTaskInputDataInDbAsync(TaskInputData taskInputData, CancellationToken cancellationToken)
+        public async Task<Result<Unit, ErrorResponse>> AddTaskInputDataInDbAsync
+            (TaskInputData taskInputData, CancellationToken cancellationToken, bool commit = true)
         {
             try
             {
                 await _unitOfWork.TaskRepository.AddTaskInputDataAsync(taskInputData, cancellationToken);
-                await _unitOfWork.CommitAsync(cancellationToken);
+                if (commit)
+                    await _unitOfWork.CommitAsync(cancellationToken);
+
                 return Result.Success<Unit, ErrorResponse>(Unit.Value);
             }
             catch (Exception ex)
@@ -187,12 +193,15 @@ namespace CodeBattleArena.Server.Services.DBServices
         {
             return await _unitOfWork.TaskRepository.GetTaskProgrammingAsync(id, cancellationToken);
         }
-        public async Task<Result<Unit, ErrorResponse>> UpdateTaskProgrammingInDbAsync(TaskProgramming taskProgramming, CancellationToken cancellationToken)
+        public async Task<Result<Unit, ErrorResponse>> UpdateTaskProgrammingInDbAsync
+            (TaskProgramming taskProgramming, CancellationToken cancellationToken, bool commit = true)
         {
             try
             {
                 _unitOfWork.TaskRepository.UpdateTaskProgrammingAsync(taskProgramming);
-                await _unitOfWork.CommitAsync(cancellationToken);
+                if (commit)
+                    await _unitOfWork.CommitAsync(cancellationToken);
+
                 return Result.Success<Unit, ErrorResponse>(Unit.Value);
             }
             catch (Exception ex)
@@ -204,12 +213,15 @@ namespace CodeBattleArena.Server.Services.DBServices
                 });
             }
         }
-        public async Task<Result<Unit, ErrorResponse>> DeleteTaskInputDataInDbAsync(int idTaskProgramming, int idInputData, CancellationToken cancellationToken)
+        public async Task<Result<Unit, ErrorResponse>> DeleteTaskInputDataInDbAsync
+            (int idTaskProgramming, int idInputData, CancellationToken cancellationToken, bool commit = true)
         {
             try
             {
                 await _unitOfWork.TaskRepository.DeleteTaskInputDataAsync(idTaskProgramming, idInputData, cancellationToken);
-                await _unitOfWork.CommitAsync(cancellationToken);
+                if (commit)
+                    await _unitOfWork.CommitAsync(cancellationToken);
+
                 return Result.Success<Unit, ErrorResponse>(Unit.Value);
             }
             catch (Exception ex)
@@ -221,12 +233,15 @@ namespace CodeBattleArena.Server.Services.DBServices
                 });
             }
         }
-        public async Task<Result<Unit, ErrorResponse>> DeleteTaskProgrammingInDbAsync(int id, CancellationToken cancellationToken)
+        public async Task<Result<Unit, ErrorResponse>> DeleteTaskProgrammingInDbAsync
+            (int id, CancellationToken cancellationToken, bool commit = true)
         {
             try
             {
                 await _unitOfWork.TaskRepository.DeleteTaskProgrammingAsync(id, cancellationToken);
-                await _unitOfWork.CommitAsync(cancellationToken);
+                if (commit)
+                    await _unitOfWork.CommitAsync(cancellationToken);
+
                 return Result.Success<Unit, ErrorResponse>(Unit.Value);
             }
             catch (Exception ex)

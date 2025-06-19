@@ -13,7 +13,7 @@ export function ToggleSizeButton ({ fullScreen, onClick }: ToggleSizeButtonProps
             size="icon"
             variant="ghost"
             title={fullScreen ? "Collapse" : "Expand"}
-            className="btn-gray"
+            className="btn-gray size-6"
         >
             {fullScreen ? <Minimize size={16} /> : <Maximize size={16} />}
         </Button>

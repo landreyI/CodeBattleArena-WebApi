@@ -22,7 +22,7 @@ export function usePlayerSessions(playerId?: string, enabled: boolean = true) {
     useEffect(() => {
         loadSessions();
 
-    }, [playerId, enabled, loadSessions]);
+    }, [enabled, loadSessions]);
 
     return { sessions, setSessions, loading, error }
 }

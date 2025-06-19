@@ -31,14 +31,14 @@ export const formSchema = z
     .object({
         name: z.string().min(2, { message: "Session name must be at least 2 characters." }),
         maxPeople: z.coerce.number().min(1, { message: "Minimum 1 person" }).max(10, { message: "Maximum 10 people" }),
-        idLangProgramming: z.number().min(0, { message: "Select language" }),
+        idLangProgramming: z.number().min(1, { message: "Select language" }),
         state: z.nativeEnum(SessionState, {
             errorMap: () => ({ message: "Invalid session state" }),
         }),
-        timePlay: z.coerce.number()
-            .refine(val => val === 0 || (val >= 5 && val <= 60), {
-                message: "Enter 0 or a number between 5 and 60",
-            }),
+        timePlay: z.preprocess(
+            (val) => (val === "" || val == null ? undefined : Number(val)),
+            z.number().min(5, { message: "Minimum 0" }).max(60, { message: "Maximum 60" }).optional()
+        ),
         password: z.string().nullable(),
     })
     .superRefine((data, ctx) => {
@@ -251,7 +251,7 @@ export function SessionForm({ session, onClose, onUpdate, submitLabel }: Props) 
                         <FormItem>
                             <FormLabel>
                                 Time to complete the task <br /> <br />
-                                (To play without time, enter 0)
+                                (To play without time, leave the field blank)
                             </FormLabel>
                             <FormControl>
                                 <Input type="number" placeholder="Time (5-60)" {...field} />

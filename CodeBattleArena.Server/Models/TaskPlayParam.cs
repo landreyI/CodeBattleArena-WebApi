@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using CodeBattleArena.Server.Enums;
+using System.ComponentModel.DataAnnotations;
 
 namespace CodeBattleArena.Server.Models
 {
@@ -11,9 +12,10 @@ namespace CodeBattleArena.Server.Models
         public virtual TaskPlay? TaskPlay { get; set; }
 
         [StringLength(40)]
-        public string ParamKey { get; set; }
+        public TaskParamKey ParamKey { get; set; }
 
         [StringLength(40)]
         public string ParamValue { get; set; }
+        public bool IsPrimary { get; set; }
     }
 }

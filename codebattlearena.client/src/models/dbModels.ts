@@ -2,10 +2,28 @@ export interface Player {
     id: string;
     username: string;
     photoUrl: string | null;
+    coin?: number | null;
+    experience?: number | null;
     roles: string[] | null;
     victories: number;
     additionalInformation: string | null;
     createdAt: Date;
+    countGames: number | null;
+
+    activeBackgroundId?: number;
+    activeBackground?: Item | null;
+
+    activeAvatarId?: number;
+    activeAvatar?: Item | null;
+
+    activeBadgeId?: number;
+    activeBadge?: Item | null;
+
+    activeBorderId?: number;
+    activeBorder?: Item | null;
+
+    activeTitleId?: number;
+    activeTitle?: Item | null;
 }
 
 export interface Session {
@@ -83,6 +101,7 @@ export interface LangProgramming {
 export interface League {
     idLeague: number | null;
     name: string;
+    photoUrl?: string;
     minWins: number;
     maxWins: number | null;
 }
@@ -94,6 +113,7 @@ export interface Chat {
     idPlayer2: number;
     player2: Player | null;
 }
+
 export interface Message {
     idMessage: number | null;
     idChat: number | null;
@@ -102,6 +122,70 @@ export interface Message {
     sender: Player | null;
     messageText: string;
     sentDateTime: Date;
+}
+
+export interface Item {
+    idItem: number | null;
+    name: string;
+    type: TypeItem;
+    priceCoin: number | null;
+    cssClass: string | null;
+    imageUrl: string | null;
+    description: string | null;
+}
+
+export interface PlayerItem {
+    idPlayer: string;
+    player: Player | null;
+    idItem: number;
+    item: Item | null;
+}
+
+export interface Reward {
+    idReward: number | null;
+    itemId: number | null;
+    item: Item | null;
+    amount: number | null;
+    rewardType: string;
+}
+
+export interface TaskPlay {
+    idTask?: number | null;
+    name: string;
+    description: string;
+    type: TaskType;
+    experience: number | null;
+    rewardCoin: number | null;
+    isRepeatable: boolean;
+    repeatAfterDays?: number | null;
+    taskPlayParams: TaskPlayParam[] | null;
+}
+
+export interface TaskPlayParam {
+    idParam?: number | null;
+    taskPlayId?: number | null;
+    paramKey: TaskParamKey;
+    paramValue: string;
+    isPrimary?: boolean;
+}
+
+export interface TaskPlayReward {
+    taskPlayId: number;
+    taskPlay: TaskPlay | null;
+    rewardId: number;
+    reward: Reward | null;
+}
+
+export interface PlayerTaskPlay {
+    idPlayerTaskPlay: number | null;
+    playerId: string;
+    player: Player | null;
+    taskPlayId: number;
+    taskPlay: TaskPlay | null;
+    isCompleted: boolean;
+    completedAt?: Date | null;
+    isGet: boolean;
+    progressValue: string | null;
 }
 
 export interface LeaguePlayers {
@@ -113,7 +197,6 @@ export enum SessionState {
     Public = "Public",
     Private = "Private"
 }
-
 export enum Role {
     Admin = "Admin",
     User = "User",
@@ -121,7 +204,6 @@ export enum Role {
     Moderator = "Moderator",
     Banned = "Banned"
 }
-
 export enum Difficulty {
     Hard = "Hard",
     Medium = "Medium",
@@ -133,4 +215,26 @@ export enum LeagueEnum {
     Gold = "Gold",
     Platinum = "Platinum",
     Diamond = "Diamond"
+}
+export enum TypeItem {
+    Background = "Background",
+    Avatar = "Avatar",
+    Badge = "Badge",
+    Border = "Border",
+    Title = "Title",
+}
+export enum TaskType {
+    WinCount = "WinCount",
+    Login = "Login",
+    DailyMatch = "DailyMatch",
+    LeagueAdvance = "LeagueAdvance",
+}
+export enum TaskParamKey {
+    MinWins = "MinWins",                    // Минимум побед для выполнения
+    ResetOnLoss = "ResetOnLoss",            // Сброс прогресса при поражении
+    RequiredLeague = "RequiredLeague",      // Переход в нужную лигу
+    RequiredId = "RequiredId",              // На случай, если название будет изменяться
+    MatchesPerDay = "MatchesPerDay",        // Матчей в день для прогресса
+    DaysInRow = "DaysInRow",                // Кол-во дней подряд
+    LoginRequired = "LoginRequired",        // Зайти в игру
 }

@@ -25,7 +25,7 @@ export function useBestResult(sessionId: number | undefined) {
 
         loadBestResult();
 
-    }, [sessionId, loadBestResult]);
+    }, [loadBestResult]);
 
     return { playerSession, loading, error, reloadBestResult: loadBestResult };
 }

@@ -6,7 +6,7 @@ import LoadingScreen from "@/components/common/LoadingScreen";
 import TaskProgrammingCard from "@/components/cards/TaskProgrammingCard";
 import InlineNotification from "@/components/common/InlineErrorNotification";
 import { useState } from "react";
-import SettingTaskMenu from "@/components/menu/SettingTaskMenu";
+import SettingMenu from "@/components/menu/SettingMenu";
 import EditTaskModal from "@/components/modals/EditTaskModal";
 import { TaskProgramming } from "@/models/dbModels";
 import { useDeleteTask } from "@/hooks/task/useDeleteTask";
@@ -52,7 +52,7 @@ export function TaskInfo() {
 
     if (taskLoad) return <LoadingScreen />
     if (taskError) return <ErrorMessage error={taskError} />;
-    if (!task) return <EmptyState message="Session not found" />;
+    if (!task) return <EmptyState message="Task not found" />;
 
     const error = deleteError || selectTaskError;
 
@@ -79,9 +79,9 @@ export function TaskInfo() {
                             Task - details
                         </h1>
                         {(user && isEditRole(user.roles)) && (
-                            <SettingTaskMenu
-                                setShowEditTask={setShowEditTask}
-                                handleDeletTask={handleDeletTask}
+                            <SettingMenu
+                                setShowEdit={setShowEditTask}
+                                handleDelet={handleDeletTask}
                             />
                         )}
                     </div>

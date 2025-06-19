@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using CodeBattleArena.Server.Enums;
+using System.ComponentModel.DataAnnotations;
 
 namespace CodeBattleArena.Server.Models
 {
@@ -12,13 +13,14 @@ namespace CodeBattleArena.Server.Models
         public string Description { get; set; }
 
         [StringLength(40)]
-        public string Type { get; set; }
+        public TaskType Type { get; set; }
         public int? Experience { get; set; }
-        public int? Reward { get; set; }
+        public int? RewardCoin {  get; set; }
         public bool IsRepeatable { get; set; }
+        public int? RepeatAfterDays { get; set; }
 
-        public int? TaskPlayParamId { get; set; }
-        public virtual TaskPlayParam? TaskPlayParam { get; set; }
+        public virtual ICollection<TaskPlayParam>? TaskPlayParams { get; set; }
+        public virtual ICollection<TaskPlayReward>? TaskPlayRewards { get; set; }
         public virtual ICollection<PlayerTaskPlay>? PlayerTaskPlays { get; set; }
     }
 }

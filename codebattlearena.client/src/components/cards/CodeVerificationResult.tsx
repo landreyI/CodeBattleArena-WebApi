@@ -43,7 +43,7 @@ export function CodeVerificationResult({ executionResult, className }: Props) {
                         </div>
                         <div>
                             <span className="font-medium">Out:</span>
-                            <div>{stdout ?? "-"}</div>
+                            <div>{stdout?.join(' ') ?? "-"}</div>
                         </div>
                     </div>
                     <div>

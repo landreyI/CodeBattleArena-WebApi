@@ -1,6 +1,7 @@
 ﻿using CodeBattleArena.Server.IRepositories;
 using CodeBattleArena.Server.Models;
 using Microsoft.EntityFrameworkCore;
+using static Azure.Core.HttpHeader;
 
 namespace CodeBattleArena.Server.Services.DBServices
 {
@@ -15,13 +16,16 @@ namespace CodeBattleArena.Server.Services.DBServices
             _logger = logger;
         }
 
-        public async Task<bool> AddFriendAsync(string playerId1, string playerId2, CancellationToken cancellationToken)
+        public async Task<bool> AddFriendAsync
+            (string playerId1, string playerId2, CancellationToken cancellationToken, bool commit = true)
         {
             if (string.IsNullOrEmpty(playerId1) || string.IsNullOrEmpty(playerId2)) return false;
             try
             {
                 await _unitOfWork.FriendRepository.AddFriendAsync(playerId1, playerId2, cancellationToken);
-                await _unitOfWork.CommitAsync(cancellationToken); // Сохранение изменений
+                if (commit)
+                    await _unitOfWork.CommitAsync(cancellationToken);
+
                 return true;
             }
             catch (Exception ex)
@@ -30,13 +34,15 @@ namespace CodeBattleArena.Server.Services.DBServices
                 return false;
             }
         }
-        public async Task<bool> DeleteFriendAsync(string playerId1, string playerId2, CancellationToken cancellationToken)
+        public async Task<bool> DeleteFriendAsync
+            (string playerId1, string playerId2, CancellationToken cancellationToken, bool commit = true)
         {
             if (string.IsNullOrEmpty(playerId1) || string.IsNullOrEmpty(playerId2)) return false;
             try
             {
                 await _unitOfWork.FriendRepository.DeleteFriendAsync(playerId1, playerId2, cancellationToken);
-                await _unitOfWork.CommitAsync(cancellationToken);
+                if (commit)
+                    await _unitOfWork.CommitAsync(cancellationToken);
                 return true;
             }
             catch (Exception ex)

@@ -4,9 +4,7 @@ using CodeBattleArena.Server.Helpers;
 using CodeBattleArena.Server.IRepositories;
 using CodeBattleArena.Server.Models;
 using CodeBattleArena.Server.Untils;
-using Microsoft.EntityFrameworkCore;
-using System.Numerics;
-using System.Threading;
+
 
 namespace CodeBattleArena.Server.Services.DBServices
 {
@@ -24,7 +22,7 @@ namespace CodeBattleArena.Server.Services.DBServices
 
         public async Task<List<PlayersLeague>> GetPlayersLeagues(CancellationToken cancellationToken)
         {
-            var players = await _unitOfWork.PlayerRepository.GetPlayersAsync(cancellationToken);
+            var players = await _unitOfWork.PlayerRepository.GetPlayersAsync(null,cancellationToken);
             var leagues = await GetLeaguesAsync(cancellationToken);
             var playersLeagues = leagues
                 .Select(l => new PlayersLeague(
@@ -37,6 +35,10 @@ namespace CodeBattleArena.Server.Services.DBServices
 
             return playersLeagues;
         }
+        public async Task<League> GetLeagueByPlayerAsync(string idPlayer, CancellationToken cancellationToken)
+        {
+            return await _unitOfWork.LeagueRepository.GetLeagueByPlayerAsync(idPlayer,cancellationToken);
+        }
         public async Task<League> GetLeagueAsync(int id, CancellationToken cancellationToken)
         {
             return await _unitOfWork.LeagueRepository.GetLeagueAsync(id, cancellationToken);
@@ -46,12 +48,15 @@ namespace CodeBattleArena.Server.Services.DBServices
             var leagues = await _unitOfWork.LeagueRepository.GetLeaguesAsync(cancellationToken);
             return leagues.OrderBy(l => l.MinWins).ToList();
         }
-        public async Task<Result<Unit, ErrorResponse>> AddLeagueInDbAsync(League league, CancellationToken cancellationToken)
+        public async Task<Result<Unit, ErrorResponse>> AddLeagueInDbAsync
+            (League league, CancellationToken cancellationToken, bool commit = true)
         {
             try
             {
                 await _unitOfWork.LeagueRepository.AddLeagueAsync(league, cancellationToken);
-                await _unitOfWork.CommitAsync(cancellationToken);
+                if (commit)
+                    await _unitOfWork.CommitAsync(cancellationToken);
+
                 return Result.Success<Unit, ErrorResponse>(Unit.Value);
             }
             catch (Exception ex)
@@ -63,12 +68,15 @@ namespace CodeBattleArena.Server.Services.DBServices
                 });
             }
         }
-        public async Task<Result<Unit, ErrorResponse>> DeleteLeagueInDbAsync(int id, CancellationToken cancellationToken)
+        public async Task<Result<Unit, ErrorResponse>> DeleteLeagueInDbAsync
+            (int id, CancellationToken cancellationToken, bool commit = true)
         {
             try
             {
                 await _unitOfWork.LeagueRepository.DeleteLeagueAsync(id, cancellationToken);
-                await _unitOfWork.CommitAsync(cancellationToken);
+                if (commit)
+                    await _unitOfWork.CommitAsync(cancellationToken);
+
                 return Result.Success<Unit, ErrorResponse>(Unit.Value);
             }
             catch (Exception ex)
@@ -80,12 +88,15 @@ namespace CodeBattleArena.Server.Services.DBServices
                 });
             }
         }
-        public async Task<Result<Unit, ErrorResponse>> UpdateLeagueInDbAsync(League league, CancellationToken cancellationToken)
+        public async Task<Result<Unit, ErrorResponse>> UpdateLeagueInDbAsync
+            (League league, CancellationToken cancellationToken, bool commit = true)
         {
             try
             {
                 _unitOfWork.LeagueRepository.UpdateLeague(league);
-                await _unitOfWork.CommitAsync(cancellationToken);
+                if (commit)
+                    await _unitOfWork.CommitAsync(cancellationToken);
+
                 return Result.Success<Unit, ErrorResponse>(Unit.Value);
             }
             catch (Exception ex)

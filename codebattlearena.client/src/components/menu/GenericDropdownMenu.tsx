@@ -12,7 +12,7 @@ import {
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
-interface MenuAction {
+export interface MenuAction {
     label: string;
     shortcut?: string;
     href?: string;

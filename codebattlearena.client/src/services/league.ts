@@ -25,6 +25,19 @@ export const fetchGetListLeagues = async (): Promise<League[]> => {
     }
 }
 
+export const fetchGetLeagueByPlayer = async (idPlayer?: string): Promise<League> => {
+    try {
+        let response = await api.get(`League/league-by-player`, {
+            params: { idPlayer: idPlayer }
+        });
+        return response.data;
+    }
+    catch (error) {
+        console.error(error);
+        throw error;
+    }
+}
+
 export const fetchGetPlayersLeagues = async (): Promise<LeaguePlayers[]> => {
     try {
         let response = await api.get(`League/players-in-leagues`);

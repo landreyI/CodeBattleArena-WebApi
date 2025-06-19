@@ -9,7 +9,7 @@ import ErrorMessage from "@/components/common/ErrorMessage";
 import EmptyState from "@/components/common/EmptyState";
 import EditSessionModal from "@/components/modals/EditSessionModal";
 import { useSessionPlayers } from "@/hooks/session/useSessionPlayers";
-import SettingSessionMenu from "@/components/menu/SettingSessionMenu";
+import SettingMenu from "@/components/menu/SettingMenu";
 import TaskProgrammingMiniCard from "@/components/cards/TaskProgrammingMiniCard";
 import InlineNotification from "@/components/common/InlineErrorNotification";
 import { useDeleteSession } from "@/hooks/session/useDeleteSession";
@@ -126,16 +126,16 @@ export function SessionInfo() {
             )}
 
             <div className="glow-box">
-                <div className="md:w-[50vw] sm:w-[100vw] mx-auto">
+                <div className="md:w-[40vw] sm:w-[100vw] mx-auto">
                     {/* Заголовок страницы */}
                     <div className="flex items-center justify-between mb-6">
                         <h1 className="text-4xl font-bold text-primary font-mono">
                             Session - details
                         </h1>
                         {isEdit && (
-                            <SettingSessionMenu
-                                setShowEditSession={setShowEditSession}
-                                handleDeletSession={handleDeletSession}
+                            <SettingMenu
+                                setShowEdit={setShowEditSession}
+                                handleDelet={handleDeletSession}
                             />
                         )}
                     </div>
@@ -256,7 +256,7 @@ export function SessionInfo() {
                             <PlayersList
                                 players={players}
                                 cardWrapperClassName="hover:scale-[1.02] transition"
-                                onDelete={handleDeletPlayer}
+                                onDelete={!isFinished ? handleDeletPlayer : undefined}
                                 onPlayerSessionInfo={
                                     session.isStart
                                         ? handlePlayerSessionInfo

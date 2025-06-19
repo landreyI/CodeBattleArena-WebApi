@@ -8,7 +8,9 @@ namespace CodeBattleArena.Helpers
     {
         public PlayerMappingProfile()
         {
-            CreateMap<PlayerDto, Player>();
+            CreateMap<PlayerDto, Player>()
+                .ForMember(dest => dest.Id, opt => opt.Ignore())
+                .ForAllMembers(opt => opt.Condition((src, dest, srcMember) => srcMember != null)); // Обновляем только ненулевые поля;
             CreateMap<Player, PlayerDto>();
         }
     }

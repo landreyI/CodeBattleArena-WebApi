@@ -4,21 +4,18 @@ using CodeBattleArena.Server.Models;
 using CodeBattleArena.Server.Repositories;
 using CodeBattleArena.Server.Services;
 using CodeBattleArena.Server.Services.DBServices;
-using Microsoft.AspNetCore.Authentication.Google;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using System.Text;
 using Travel_Agency.Service;
 using System.Text.Json.Serialization;
-using System.Text.Json;
 using CodeBattleArena.Server.Enums;
 using CodeBattleArena.Server.Hubs;
 using CodeBattleArena.Server.Services.Notifications;
 using CodeBattleArena.Server.Services.Notifications.INotifications;
 using CodeBattleArena.Server.Services.Judge0;
+using CodeBattleArena.Server.QuestSystem;
+using CodeBattleArena.Server.QuestSystem.Dispatcher;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -107,10 +104,16 @@ builder.Services.AddScoped<PlayerSessionService>();
 builder.Services.AddScoped<TaskService>();
 builder.Services.AddScoped<LangProgrammingService>();
 builder.Services.AddScoped<LeagueService>();
+builder.Services.AddScoped<ItemService>();
+builder.Services.AddScoped<QuestService>();
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 builder.Services.AddHostedService<SessionObserverService>();
+
+//------ QUEST ------
+builder.Services.AddScoped<QuestHandlerContext>();
+builder.Services.AddScoped<GameEventDispatcher>();
 
 //------ SIGNALR ------
 builder.Services.AddScoped<ISessionNotificationService, SessionNotificationService>();

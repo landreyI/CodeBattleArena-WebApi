@@ -4,6 +4,8 @@ using CodeBattleArena.Server.Filters;
 using CodeBattleArena.Server.Models;
 using CodeBattleArena.Server.Services.DBServices;
 using CodeBattleArena.Server.Services.Notifications.INotifications;
+using CodeBattleArena.Server.Specifications.PlayerSessionSpec;
+using CodeBattleArena.Server.Specifications;
 using CodeBattleArena.Server.Specifications.SessionSpec;
 using CodeBattleArena.Server.Untils;
 using Microsoft.AspNetCore.Authorization;
@@ -128,12 +130,11 @@ namespace CodeBattleArena.Server.Controllers
         public async Task<IActionResult> GetSessionsList([FromQuery] SessionFilter? filter, CancellationToken cancellationToken)
         {
             var sessions = await _sessionService.GetListSessionAsync(filter, cancellationToken);
-            var sessionDtos = _mapper.Map<List<SessionDto>>(sessions);
-            return Ok(sessionDtos);
+            return Ok(_mapper.Map<List<SessionDto>>(sessions));
         }
 
         [HttpGet("session-players")]
-        public async Task<IActionResult> GetSessionPLayers(int? id, CancellationToken cancellationToken)
+        public async Task<IActionResult> GetSessionPlayers(int? id, CancellationToken cancellationToken)
         {
             if (id == null)
             {
@@ -149,8 +150,12 @@ namespace CodeBattleArena.Server.Controllers
 
             if(!result.Success)
                 return NoContent();
- 
-            var playerSessions = await _playerSessionService.GetPlayerSessionByIdSessionAsync(id.Value, cancellationToken);
+
+            var spec = Specification<PlayerSession>.Combine(
+                new PlayerSessionDefaultIncludesSpec(),
+                new PlayerSessionByIdSpec(id.Value)
+            );
+            var playerSessions = await _playerSessionService.GetListPlayerSessionAsync(spec, cancellationToken);
 
             var playerSessionsDto = _mapper.Map<List<PlayerSessionDto>>(playerSessions);
 

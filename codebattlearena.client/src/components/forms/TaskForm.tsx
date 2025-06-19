@@ -318,10 +318,10 @@ export function TaskForm({ task, onClose, onUpdate, submitLabel }: Props) {
                                 ))}
                             </div>
                             <DialogFooter>
-                                <Button variant="outline" onClick={closeInputDataModal}>
+                                <Button className="btn-animation" variant="outline" onClick={closeInputDataModal}>
                                     Cancel
                                 </Button>
-                                <Button onClick={handleSaveSelected}>Save</Button>
+                                <Button className="btn-animation" onClick={handleSaveSelected}>Save</Button>
                             </DialogFooter>
                         </DialogContent>
                     </Dialog>

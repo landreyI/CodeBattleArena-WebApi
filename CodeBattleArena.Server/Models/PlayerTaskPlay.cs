@@ -14,6 +14,8 @@ namespace CodeBattleArena.Server.Models
         public virtual TaskPlay? TaskPlay { get; set; }
 
         public bool IsCompleted { get; set; }
+        public DateTime? CompletedAt { get; set; }
+        public bool IsGet { get; set; }
         public string? ProgressValue { get; set; }
     }
 }

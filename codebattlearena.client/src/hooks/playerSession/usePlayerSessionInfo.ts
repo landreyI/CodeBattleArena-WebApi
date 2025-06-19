@@ -21,7 +21,7 @@ export function usePlayerSessionInfo(playerId?: string, sessionId?: number) {
 
     useEffect(() => {
         loadPlayerSessionInfo();
-    }, [playerId, sessionId, loadPlayerSessionInfo])
+    }, [loadPlayerSessionInfo])
 
     return { playerSession, setPlayerSession, loadPlayerSessionInfo, loading, error }
 }

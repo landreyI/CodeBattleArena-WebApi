@@ -23,7 +23,7 @@ namespace CodeBattleArena.Server.Services.DBServices
         }
 
         public async Task<Result<PlayerSession, ErrorResponse>> CreatPlayerSession
-            (string idPlayer, int idSession, CancellationToken ct)
+            (string idPlayer, int idSession, CancellationToken ct, bool commit = true)
         {
             PlayerSession playerSession = new PlayerSession
             {
@@ -33,7 +33,7 @@ namespace CodeBattleArena.Server.Services.DBServices
 
             try
             {
-                var sessions = await GetPlayerSessionByIdPlayerAsync(idPlayer, ct);
+                var sessions = await GetListPlayerSessionAsync(new PlayerSessionByIdSpec(idPlayer: idPlayer), ct);
                 bool isActive = sessions.Any(s => !s.Session.IsFinish);
                 if (isActive)
                     return Result.Failure<PlayerSession, ErrorResponse>(new ErrorResponse 
@@ -60,7 +60,7 @@ namespace CodeBattleArena.Server.Services.DBServices
                         Error = "This session has the maximum number of participants."
                     });
 
-                var addResult = await AddPlayerSessionInDbAsync(playerSession, ct);
+                var addResult = await AddPlayerSessionInDbAsync(playerSession, ct, commit);
                 if(!addResult.IsSuccess)
                     return Result.Failure<PlayerSession, ErrorResponse>(addResult.Failure);
             }
@@ -81,8 +81,11 @@ namespace CodeBattleArena.Server.Services.DBServices
             var checkResult = ValidationHelper.CheckUserId<bool>(idPlayer);
             if (!checkResult.IsSuccess)
                 return null;
-
-            var sessions = await GetPlayerSessionByIdPlayerAsync(idPlayer, ct);
+            var spec = Specification<PlayerSession>.Combine(
+                new PlayerSessionDefaultIncludesSpec(),
+                new PlayerSessionByIdSpec(idPlayer: idPlayer)
+            );
+            var sessions = await GetListPlayerSessionAsync(spec, ct);
             var activeSessionId = sessions
                 .FirstOrDefault(s => !s.Session.IsFinish)?.IdSession;
 
@@ -92,9 +95,9 @@ namespace CodeBattleArena.Server.Services.DBServices
             return session;
         }
         public async Task<Result<PlayerSession, ErrorResponse>> SaveCheckCodeAsync
-            (int idSession, string idPlayer, string code, ExecutionResult executionResult, CancellationToken ct)
+            (int idSession, string idPlayer, string code, ExecutionResult executionResult, CancellationToken ct, bool commit = true)
         {
-            var playerSession = await GetPlayerSessionInDbAsync(idSession, idPlayer, ct);
+            var playerSession = await GetPlayerSessionAsync(new PlayerSessionByIdSpec(idSession, idPlayer), ct);
 
             if(playerSession.IsCompleted)
                 return Result.Failure<PlayerSession, ErrorResponse>(new ErrorResponse 
@@ -106,16 +109,16 @@ namespace CodeBattleArena.Server.Services.DBServices
             playerSession.Time = executionResult.Time;
             playerSession.CodeText = code;
 
-            var resultUpdate = await UpdatePlayerSessionInDbAsync(playerSession, ct);
+            var resultUpdate = await UpdatePlayerSessionInDbAsync(playerSession, ct, commit);
             if (!resultUpdate.IsSuccess)
                 return Result.Failure<PlayerSession, ErrorResponse>(resultUpdate.Failure);
 
             return Result.Success<PlayerSession, ErrorResponse>(playerSession);
         }
 
-        public async Task<Result<Unit, ErrorResponse>> FinishTask(int idSession, string idPlayer, CancellationToken ct)
+        public async Task<Result<Unit, ErrorResponse>> FinishTask(int idSession, string idPlayer, CancellationToken ct, bool commit = true)
         {
-            var playerSession = await GetPlayerSessionInDbAsync(idSession, idPlayer, ct);
+            var playerSession = await GetPlayerSessionAsync(new PlayerSessionByIdSpec(idSession, idPlayer), ct);
 
             if (playerSession.IsCompleted)
                 return Result.Failure<Unit, ErrorResponse>(new ErrorResponse
@@ -123,21 +126,22 @@ namespace CodeBattleArena.Server.Services.DBServices
                     Error = "You have already completed the task"
                 });
 
-            var resultFinish = await FinishTaskInDbAsync(idSession, idPlayer, ct);
+            var resultFinish = await FinishTaskInDbAsync(idSession, idPlayer, ct, commit);
             if (!resultFinish.IsSuccess)
                 return Result.Failure<Unit, ErrorResponse>(resultFinish.Failure);
 
             return Result.Success<Unit, ErrorResponse>(Unit.Value);
         }
 
-
         public async Task<Result<Unit, ErrorResponse>> AddPlayerSessionInDbAsync
-            (PlayerSession playerSession, CancellationToken ct)
+            (PlayerSession playerSession, CancellationToken ct, bool commit = true)
         {
             try
             {
                 await _unitOfWork.PlayerSessionRepository.AddPlayerSessionAsync(playerSession, ct);
-                await _unitOfWork.CommitAsync(ct); // Сохранение изменений
+                if (commit)
+                    await _unitOfWork.CommitAsync(ct);
+
                 return Result.Success<Unit, ErrorResponse>(Unit.Value);
             }
             catch (Exception ex)
@@ -146,28 +150,24 @@ namespace CodeBattleArena.Server.Services.DBServices
                 return Result.Failure<Unit, ErrorResponse>(new ErrorResponse { Error = "Database error when adding playerSession." });
             }
         }        
-        public async Task<PlayerSession> GetPlayerSessionInDbAsync(int idSession, string idPlayer, CancellationToken ct)
-        {
-            return await _unitOfWork.PlayerSessionRepository.GetPlayerSessionAsync(new PlayerSessionByIdSpec(idSession, idPlayer), ct);
-        }
         public async Task<PlayerSession> GetPlayerSessionAsync(ISpecification<PlayerSession> spec, CancellationToken ct)
         {
             return await _unitOfWork.PlayerSessionRepository.GetPlayerSessionAsync(spec, ct);
         }
-        public async Task<List<PlayerSession>> GetPlayerSessionByIdPlayerAsync(string idPlayer, CancellationToken ct)
+        public async Task<List<PlayerSession>> GetListPlayerSessionAsync(ISpecification<PlayerSession> spec, CancellationToken ct)
         {
-            return await _unitOfWork.PlayerSessionRepository.GetListPlayerSessionByIdAsync(new PlayerSessionByIdPlayerSpec(idPlayer), ct);
+            return await _unitOfWork.PlayerSessionRepository.GetListPlayerSessionByIdAsync(spec, ct);
         }
-        public async Task<List<PlayerSession>> GetPlayerSessionByIdSessionAsync(int idSession, CancellationToken ct)
-        {
-            return await _unitOfWork.PlayerSessionRepository.GetListPlayerSessionByIdAsync(new PlayerSessionByIdSessionSpec(idSession), ct);
-        }
-        public async Task<Result<Unit, ErrorResponse>> UpdatePlayerSessionInDbAsync(PlayerSession playerSession, CancellationToken ct)
+
+        public async Task<Result<Unit, ErrorResponse>> UpdatePlayerSessionInDbAsync
+            (PlayerSession playerSession, CancellationToken ct, bool commit = true)
         {
             try
             {
                 _unitOfWork.PlayerSessionRepository.UpdatePlayerSession(playerSession);
-                await _unitOfWork.CommitAsync(ct);
+                if (commit)
+                    await _unitOfWork.CommitAsync(ct);
+
                 return Result.Success<Unit, ErrorResponse>(Unit.Value);
             }
             catch (Exception ex)
@@ -176,12 +176,15 @@ namespace CodeBattleArena.Server.Services.DBServices
                 return Result.Failure<Unit, ErrorResponse>(new ErrorResponse { Error = "Database error when finish task playerSession." });
             }
         }
-        public async Task<Result<Unit, ErrorResponse>> FinishTaskInDbAsync(int idSession, string idPlayer, CancellationToken ct)
+        public async Task<Result<Unit, ErrorResponse>> FinishTaskInDbAsync
+            (int idSession, string idPlayer, CancellationToken ct, bool commit = true)
         {
             try
             {
                 await _unitOfWork.PlayerSessionRepository.FinishTaskAsync(idSession, idPlayer, ct);
-                await _unitOfWork.CommitAsync(ct);
+                if (commit)
+                    await _unitOfWork.CommitAsync(ct);
+
                 return Result.Success<Unit, ErrorResponse>(Unit.Value);
             }
             catch (Exception ex)
@@ -191,12 +194,15 @@ namespace CodeBattleArena.Server.Services.DBServices
 
             }
         }
-        public async Task<Result<Unit, ErrorResponse>> DelPlayerSessionInDbAsync(int idSession, string idPlayer, CancellationToken ct)
+        public async Task<Result<Unit, ErrorResponse>> DelPlayerSessionInDbAsync
+            (int idSession, string idPlayer, CancellationToken ct, bool commit = true)
         {
             try
             {
                 await _unitOfWork.PlayerSessionRepository.DelPlayerSessionAsync(idSession, idPlayer, ct);
-                await _unitOfWork.CommitAsync(ct);
+                if (commit)
+                    await _unitOfWork.CommitAsync(ct);
+
                 return Result.Success<Unit, ErrorResponse>(Unit.Value);
             }
             catch (Exception ex)

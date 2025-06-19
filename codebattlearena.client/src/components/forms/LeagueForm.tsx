@@ -22,6 +22,7 @@ import { useUpdateLeague } from "@/hooks/league/useUpdateLeague";
 export const formSchema = z
     .object({
         name: z.string().min(3, { message: "League name must be at least 3 characters." }),
+        photoUrl: z.string().optional(),
         minWins: z.coerce.number().min(0, { message: "Minimum 0 Wins" }),
         maxWins: z.coerce.number().min(0, { message: "Minimum 0 Wins" }).optional(),
     });
@@ -29,7 +30,7 @@ export const formSchema = z
 interface Props {
     league?: League,
     onClose?: () => void;
-    onUpdate?: (updatedSession: League) => void;
+    onUpdate?: (updatedItem: League) => void;
     submitLabel?: string;
 }
 
@@ -50,6 +51,7 @@ export function LeagueForm({ league, onClose, onUpdate, submitLabel }: Props) {
         resolver: zodResolver(formSchema),
         defaultValues: {
             name: league?.name || "",
+            photoUrl: league?.photoUrl,
             minWins: league?.minWins || 0,
             maxWins: league?.maxWins || undefined,
         },
@@ -60,6 +62,7 @@ export function LeagueForm({ league, onClose, onUpdate, submitLabel }: Props) {
             idLeague: league?.idLeague ?? null,
 
             name: values.name,
+            photoUrl: values.photoUrl,
             minWins: values.minWins,
             maxWins: values.maxWins ?? null,
         };
@@ -106,6 +109,20 @@ export function LeagueForm({ league, onClose, onUpdate, submitLabel }: Props) {
                             <FormLabel>League Name</FormLabel>
                             <FormControl>
                                 <Input placeholder="Enter league name" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+
+                <FormField
+                    control={form.control}
+                    name="photoUrl"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>League photo url</FormLabel>
+                            <FormControl>
+                                <Input placeholder="Enter url" {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>

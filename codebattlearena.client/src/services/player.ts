@@ -1,5 +1,6 @@
 import { api } from "../api/axios";
 import { Player } from "@/models/dbModels";
+import { PlayerFilters } from "../models/filters";
 
 export const fetchGetPlayer = async (id: string): Promise<{ player: Player; isEdit: boolean }> => {
     try {
@@ -14,9 +15,11 @@ export const fetchGetPlayer = async (id: string): Promise<{ player: Player; isEd
     }
 }
 
-export const fetchGetPlayersList = async (): Promise<Player[]> => {
+export const fetchGetPlayersList = async (filter?: PlayerFilters): Promise<Player[]> => {
     try {
-        let response = await api.get(`/Player/list-players`);
+        let response = await api.get(`/Player/list-players`, {
+            params: filter
+        });
         return response.data;
     }
     catch (error) {
@@ -28,6 +31,18 @@ export const fetchGetPlayersList = async (): Promise<Player[]> => {
 export const fetchEditPlayer = async (player: Player): Promise<boolean> => {
     try {
         const response = await api.put(`/Player/edit-player`, player);
+        return response.data;
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+};
+
+export const fetchChangeActiveItem = async (idPlayer?: string, idItem?: number): Promise<boolean> => {
+    try {
+        const response = await api.put(`/Player/change-active-item`, null, {
+            params: { idPlayer, idItem }
+        });
         return response.data;
     } catch (error) {
         console.error(error);

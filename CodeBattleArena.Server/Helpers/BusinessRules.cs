@@ -1,6 +1,6 @@
-﻿using CodeBattleArena.Server.Enums;
+﻿using CodeBattleArena.Server.DTO;
+using CodeBattleArena.Server.Enums;
 using CodeBattleArena.Server.Models;
-using System.Collections.Generic;
 
 namespace CodeBattleArena.Server.Helpers
 {
@@ -33,6 +33,31 @@ namespace CodeBattleArena.Server.Helpers
         public static bool IsStartetSession(Session session)
         {
             return session.IsStart;
+        }
+
+        public static PlayerDto ChangeActiveItem(PlayerDto dtoPlayer, Item item)
+        {
+            switch (item.Type)
+            {
+                case TypeItem.Background:
+                    dtoPlayer.ActiveBackgroundId = item.IdItem;
+                    break;
+                case TypeItem.Badge:
+                    dtoPlayer.ActiveBadgeId = item.IdItem;
+                    break;
+                case TypeItem.Avatar:
+                    dtoPlayer.ActiveAvatarId = item.IdItem;
+                    break;
+                case TypeItem.Border:
+                    dtoPlayer.ActiveBorderId = item.IdItem;
+                    break;
+                case TypeItem.Title:
+                    dtoPlayer.ActiveTitleId = item.IdItem;
+                    break;
+                default:
+                    throw new ArgumentException($"Unknown item type: {item.Type}");
+            }
+            return dtoPlayer;
         }
     }
 }

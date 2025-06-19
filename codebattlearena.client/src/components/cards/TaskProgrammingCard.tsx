@@ -53,7 +53,7 @@ export function TaskProgrammingCard({ task, isEditRole, className }: Props) {
                                 <Terminal size={16} className="mt-1 shrink-0" />
                                 <div className="flex flex-col w-full">
                                     <div className="font-mono text-muted-foreground">Preparation:</div>
-                                    <CodeViewer code={task.preparation} autoResize={true} language={task.langProgramming?.codeNameLang || "javascript"} />
+                                    <CodeViewer code={task.preparation} autoResize={true} language={task.langProgramming?.codeNameLang || "javascript"} className="rounded-xl"/>
                                 </div>
                             </div>
 
@@ -61,7 +61,7 @@ export function TaskProgrammingCard({ task, isEditRole, className }: Props) {
                                 <Terminal size={16} className="mt-1 shrink-0" />
                                 <div className="flex flex-col w-full">
                                     <div className="font-mono text-muted-foreground">Verification Code:</div>
-                                    <CodeViewer code={task.verificationCode} autoResize={true} language={task.langProgramming?.codeNameLang || "javascript"} />
+                                    <CodeViewer code={task.verificationCode} autoResize={true} language={task.langProgramming?.codeNameLang || "javascript"} className="rounded-xl" />
                                 </div>
                             </div>
                         </>

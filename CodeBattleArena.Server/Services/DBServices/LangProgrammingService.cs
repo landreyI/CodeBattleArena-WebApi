@@ -23,12 +23,15 @@ namespace CodeBattleArena.Server.Services.DBServices
         {
             return await _unitOfWork.LangProgrammingRepository.GetLangProgrammingListAsync(ct);
         }
-        public async Task<bool> AddLangProgrammingAsync(LangProgramming langProgramming, CancellationToken ct)
+        public async Task<bool> AddLangProgrammingAsync
+            (LangProgramming langProgramming, CancellationToken ct, bool commit = true)
         {
             try
             {
                 await _unitOfWork.LangProgrammingRepository.AddLangProgrammingAsync(langProgramming, ct);
-                await _unitOfWork.CommitAsync(ct); // Сохранение изменений
+                if (commit)
+                    await _unitOfWork.CommitAsync(ct);
+
                 return true;
             }
             catch (Exception ex)
@@ -37,12 +40,14 @@ namespace CodeBattleArena.Server.Services.DBServices
                 return false;
             }
         }
-        public async Task<bool> DeleteLangProgrammingAsync(int id, CancellationToken ct)
+        public async Task<bool> DeleteLangProgrammingAsync(int id, CancellationToken ct, bool commit = true)
         {
             try
             {
                 await _unitOfWork.LangProgrammingRepository.DeleteLangProgrammingAsync(id, ct);
-                await _unitOfWork.CommitAsync(ct);
+                if (commit)
+                    await _unitOfWork.CommitAsync(ct);
+
                 return true;
             }
             catch (Exception ex)

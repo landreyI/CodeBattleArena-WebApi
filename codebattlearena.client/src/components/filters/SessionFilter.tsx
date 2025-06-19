@@ -14,6 +14,7 @@ import { Button } from "../ui/button";
 import { Card } from "../ui/card";
 import { Input } from "../ui/input";
 import { Switch } from "../ui/switch";
+import { Label } from "../ui/label";
 
 interface Props {
     filter: SessionFilters;
@@ -40,32 +41,35 @@ export function SessionFilter({ filter, onChange, handleSearch }: Props) {
 
     const handleLangChange = (value: string) => {
         setSelectedLang(value);
-        const id = Number(value);
-        onChange({ ...filter, idLang: isNaN(id) ? undefined : id });
     };
 
     const handleStateChange = (value: string) => {
         setSelectedState(value);
-        onChange({
-            ...filter,
-            sessionState: value === "all" ? undefined : (value as SessionState),
-        });
     };
 
     const handleMaxPeopleChange = (value: string) => {
         setMaxPeople(value);
-        const num = Number(value);
-        onChange({ ...filter, maxPeople: isNaN(num) ? undefined : num });
     };
 
     const handleStartChange = (value: boolean) => {
         setIsStart(value);
-        onChange({ ...filter, isStart: value });
     };
 
     const handleFinishChange = (value: boolean) => {
         setIsFinish(value);
-        onChange({ ...filter, isFinish: value });
+    };
+
+    const handleSearchClick = () => {
+        const updatedFilter: SessionFilters = {
+            ...filter,
+            idLang: selectedLang !== "all" ? Number(selectedLang) : undefined,
+            sessionState: selectedState === "all" ? undefined : (selectedState as SessionState),
+            maxPeople: Number(maxPeople),
+            isFinish: isFinish,
+            isStart: isStart
+        };
+        onChange(updatedFilter);
+        handleSearch();
     };
 
     if (!langsProgramming || langsProgramming.length === 0) {
@@ -76,7 +80,7 @@ export function SessionFilter({ filter, onChange, handleSearch }: Props) {
         <Card className="p-2 sm:p-4">
             <div className="flex flex-col gap-4 md:flex-row md:items-center md:gap-6 flex-wrap">
                 <div className="flex flex-col gap-1">
-                    <label className="text-sm font-medium">Language</label>
+                    <Label className="text-sm font-medium">Language</Label>
                     <Select
                         value={selectedLang}
                         onValueChange={handleLangChange}
@@ -100,7 +104,7 @@ export function SessionFilter({ filter, onChange, handleSearch }: Props) {
                 </div>
 
                 <div className="flex flex-col gap-1">
-                    <label className="text-sm font-medium">Session State</label>
+                    <Label className="text-sm font-medium">Session State</Label>
                     <Select
                         value={selectedState}
                         onValueChange={handleStateChange}
@@ -120,7 +124,7 @@ export function SessionFilter({ filter, onChange, handleSearch }: Props) {
                 </div>
 
                 <div className="flex flex-col gap-1">
-                    <label className="text-sm font-medium">Max People</label>
+                    <Label className="text-sm font-medium">Max People</Label>
                     <Input
                         type="number"
                         value={maxPeople}
@@ -131,7 +135,7 @@ export function SessionFilter({ filter, onChange, handleSearch }: Props) {
                 </div>
 
                 <div className="flex flex-col gap-1">
-                    <label className="text-sm font-medium">Started</label>
+                    <Label className="text-sm font-medium">Started</Label>
                     <Switch
                         checked={isStart}
                         onCheckedChange={handleStartChange}
@@ -139,7 +143,7 @@ export function SessionFilter({ filter, onChange, handleSearch }: Props) {
                 </div>
 
                 <div className="flex flex-col gap-1">
-                    <label className="text-sm font-medium">Finished</label>
+                    <Label className="text-sm font-medium">Finished</Label>
                     <Switch
                         checked={isFinish}
                         onCheckedChange={handleFinishChange}
@@ -148,7 +152,7 @@ export function SessionFilter({ filter, onChange, handleSearch }: Props) {
 
                 <Button
                     className="w-full md:w-auto btn-animation px-4 py-2"
-                    onClick={handleSearch}
+                    onClick={handleSearchClick}
                 >
                     Search
                 </Button>

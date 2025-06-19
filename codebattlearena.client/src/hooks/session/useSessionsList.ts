@@ -10,6 +10,7 @@ export function useSessionsList(filter?: SessionFilters) {
     const { run: load, loading, error } = useAsyncTask(fetchGetSessionsList);
 
     const loadSessions = useCallback(async () => {
+
         try {
             const data = await load(filter);
             setSessions(data ?? []);
@@ -20,7 +21,7 @@ export function useSessionsList(filter?: SessionFilters) {
 
     useEffect(() => {
         loadSessions();
-    }, [loadSessions, filter]);
+    }, [loadSessions]);
 
     return { sessions, setSessions, loading, error, reloadSessions: loadSessions };
 }

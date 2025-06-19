@@ -1,19 +1,13 @@
 ﻿using AutoMapper;
 using CodeBattleArena.Server.DTO;
-using CodeBattleArena.Server.Helpers;
+using CodeBattleArena.Server.Filters;
 using CodeBattleArena.Server.Models;
 using CodeBattleArena.Server.Services.DBServices;
 using CodeBattleArena.Server.Untils;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
 using System.Data;
-using System.IdentityModel.Tokens.Jwt;
-using System.Numerics;
-using System.Security.Claims;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace CodeBattleArena.Server.Controllers
 {
@@ -34,11 +28,13 @@ namespace CodeBattleArena.Server.Controllers
         }
 
         [HttpGet("info-player")]
-        public async Task<IActionResult> GetPlayer(string id, CancellationToken cancellationToken)
+        public async Task<IActionResult> GetPlayer(string? id, CancellationToken cancellationToken)
         {
+            if (string.IsNullOrEmpty(id)) return BadRequest(new ErrorResponse { Error = "Player ID not specified." });
+
             var authUserId = _userManager.GetUserId(User);
 
-            var resultInfo = await _playerService.GetPlayerInfoAsync(id, authUserId);
+            var resultInfo = await _playerService.GetPlayerInfoAsync(id, authUserId, cancellationToken);
 
             if(!resultInfo.IsSuccess)
                 return UnprocessableEntity(resultInfo.Failure);
@@ -47,9 +43,9 @@ namespace CodeBattleArena.Server.Controllers
         }
 
         [HttpGet("list-players")]
-        public async Task<IActionResult> GetPlayers(CancellationToken cancellationToken)
+        public async Task<IActionResult> GetPlayers([FromQuery] PlayerFilter? filter, CancellationToken cancellationToken)
         {
-            var players = await _playerService.GetPlayersAsync(cancellationToken);
+            var players = await _playerService.GetPlayersAsync(filter, cancellationToken);
             var dtosPlayer = _mapper.Map<List<PlayerDto>>(players);
 
             return Ok(dtosPlayer);
@@ -76,6 +72,22 @@ namespace CodeBattleArena.Server.Controllers
             var result = await _playerService.UpdatePlayerAsync(authUserId, playerDto, cancellationToken);
             if(!result.IsSuccess)
                 return UnprocessableEntity(result.Failure);
+
+            return Ok(true);
+        }
+
+        [Authorize]
+        [HttpPut("change-active-item")]
+        public async Task<IActionResult> ChangeActiveItem(string? idPlayer, int? idItem, CancellationToken cancellationToken)
+        {
+            if (string.IsNullOrEmpty(idPlayer)) return BadRequest(new ErrorResponse { Error = "Player ID not specified." });
+            if (idItem == null) return BadRequest(new ErrorResponse { Error = "Item ID not specified." });
+
+            var authUserId = _userManager.GetUserId(User);
+
+            var resultChange = await _playerService.ChangeActiveItem(idPlayer, authUserId, idItem.Value, cancellationToken);
+            if(!resultChange.IsSuccess)
+                return UnprocessableEntity(resultChange.Failure);
 
             return Ok(true);
         }

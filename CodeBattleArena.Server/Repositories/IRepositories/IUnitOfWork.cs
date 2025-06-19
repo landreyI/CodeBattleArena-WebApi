@@ -13,6 +13,9 @@ namespace CodeBattleArena.Server.IRepositories
         IChatRepository ChatRepository { get; }
         ILangProgrammingRepository LangProgrammingRepository { get; }
         ILeagueRepository LeagueRepository { get; }
+        IItemRepository ItemRepository { get; }
+        IPlayerItemRepository PlayerItemRepository { get; }
+        IQuestRepository QuestRepository { get; }
         Task<int> CommitAsync(CancellationToken cancellationToken);
     }
 }

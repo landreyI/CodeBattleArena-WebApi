@@ -1,14 +1,12 @@
 ﻿using AutoMapper;
 using CodeBattleArena.Server.DTO;
 using CodeBattleArena.Server.Enums;
+using CodeBattleArena.Server.Filters;
 using CodeBattleArena.Server.Helpers;
 using CodeBattleArena.Server.IRepositories;
 using CodeBattleArena.Server.Models;
 using CodeBattleArena.Server.Untils;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace CodeBattleArena.Server.Services.DBServices
 {
@@ -28,9 +26,9 @@ namespace CodeBattleArena.Server.Services.DBServices
         }
 
         public async Task<Result<(PlayerDto Player, bool IsEdit), ErrorResponse>> GetPlayerInfoAsync
-            (string targetId, string requesterId)
+            (string targetId, string requesterId, CancellationToken cancellationToken)
         {
-            var player = await _userManager.FindByIdAsync(targetId);
+            var player = await GetPlayerAsync(targetId, cancellationToken);
             if (player == null)
             {
                 return Result.Failure<(PlayerDto, bool), ErrorResponse>(new ErrorResponse
@@ -63,17 +61,37 @@ namespace CodeBattleArena.Server.Services.DBServices
             return Result.Success<(PlayerDto, bool), ErrorResponse>((playerDto, isEdit));
         }
 
+        public async Task<Result<Unit, ErrorResponse>> ChangeActiveItem
+            (string targetId, string requesterId, int idItem, CancellationToken ct, bool commit = true)
+        {
+            var item = await _unitOfWork.ItemRepository.GetItemAsync(idItem, ct);
+            if (item == null)
+                return Result.Failure<Unit, ErrorResponse>(new ErrorResponse
+                {
+                    Error = "Item not found."
+                });
+
+            var user = await _userManager.FindByIdAsync(targetId);
+            var dtoPlayer = _mapper.Map<PlayerDto>(user);
+
+            dtoPlayer = BusinessRules.ChangeActiveItem(dtoPlayer, item);
+
+            var resultUpdate = await UpdatePlayerAsync(requesterId, dtoPlayer, ct);
+            if(!resultUpdate.IsSuccess)
+                return Result.Failure<Unit, ErrorResponse>(resultUpdate.Failure);
+
+            return Result.Success<Unit, ErrorResponse>(Unit.Value);
+        }
+
         public async Task<Result<Unit, ErrorResponse>> UpdatePlayerAsync
             (string authUserId, PlayerDto dto, CancellationToken ct)
         {
             var user = await _userManager.FindByIdAsync(authUserId);
             if (user == null)
-            {
-                return Result.Failure<Unit, ErrorResponse>(new ErrorResponse 
+                return Result.Failure<Unit, ErrorResponse>(new ErrorResponse
                 {
-                    Error = "Player not found." 
+                    Error = "Player not found."
                 });
-            }
 
             var role = await GetRolesAsync(user);
             bool isEdit = Helpers.BusinessRules.IsModerationRole(role);
@@ -91,25 +109,15 @@ namespace CodeBattleArena.Server.Services.DBServices
                     Error = "Username already taken."
                 });
 
-            user.UserName = dto.Username;
-            if (!string.IsNullOrEmpty(dto.AdditionalInformation))
-                user.AdditionalInformation = dto.AdditionalInformation;
+            _mapper.Map(dto, user);
 
-            var result = await _userManager.UpdateAsync(user);
-            if (!result.Succeeded)
-            {
-                var error = new ErrorResponse
-                {
-                    Error = "Error saving edited data.",
-                    Details = result.Errors
-                        .Select((e, i) => new KeyValuePair<string, string>($"db_{i}", e.Description))
-                        .ToDictionary(x => x.Key, x => x.Value)
-                };
-                return Result.Failure<Unit, ErrorResponse>(error);
-            }
+            var resultUpdate = await UpdatePlayerInDbAsync(user);
+            if (!resultUpdate.IsSuccess)
+                return Result.Failure<Unit, ErrorResponse>(resultUpdate.Failure);
 
             return Result.Success<Unit, ErrorResponse> (Unit.Value);
         }
+
 
         public async Task<bool> IsUserNameTakenAsync(string username, string id)
         {
@@ -138,17 +146,18 @@ namespace CodeBattleArena.Server.Services.DBServices
             if (string.IsNullOrEmpty(id)) return null;
             return await _unitOfWork.PlayerRepository.GetPlayerAsync(id, ct);
         }
-
-        public async Task<List<Player>> GetPlayersAsync(CancellationToken ct)
+        public async Task<List<Player>> GetPlayersAsync(IFilter<Player>? filter, CancellationToken ct)
         {
-            return await _unitOfWork.PlayerRepository.GetPlayersAsync(ct);
+            return await _unitOfWork.PlayerRepository.GetPlayersAsync(filter, ct);
         }
-        public async Task<Result<Unit, ErrorResponse>> AddVictoryPlayerInDbAsync(string id, CancellationToken ct)
+        public async Task<Result<Unit, ErrorResponse>> AddVictoryPlayerInDbAsync(string id, CancellationToken ct, bool commit = true)
         {
             try
             {
                 await _unitOfWork.PlayerRepository.AddVictoryPlayerAsync(id, ct);
-                await _unitOfWork.CommitAsync(ct); // Сохранение изменений
+                if (commit)
+                    await _unitOfWork.CommitAsync(ct);
+
                 return Result.Success<Unit, ErrorResponse>(Unit.Value);
             }
             catch (Exception ex)
@@ -161,6 +170,23 @@ namespace CodeBattleArena.Server.Services.DBServices
         {
             if (string.IsNullOrEmpty(id)) return null;
             return await _unitOfWork.PlayerRepository.MyGamesListAsync(id, ct);
+        }
+        public async Task<Result<Unit, ErrorResponse>> UpdatePlayerInDbAsync(Player player)
+        {
+            var result = await _userManager.UpdateAsync(player);
+            if (!result.Succeeded)
+            {
+                var error = new ErrorResponse
+                {
+                    Error = "Error saving edited data.",
+                    Details = result.Errors
+                        .Select((e, i) => new KeyValuePair<string, string>($"db_{i}", e.Description))
+                        .ToDictionary(x => x.Key, x => x.Value)
+                };
+                return Result.Failure<Unit, ErrorResponse>(error);
+            }
+
+            return Result.Success<Unit, ErrorResponse>(Unit.Value);
         }
     }
 }

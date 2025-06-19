@@ -39,6 +39,14 @@ namespace CodeBattleArena.Server.Controllers
             return Ok(_mapper.Map<List<LeagueDto>>(leagues));
         }
 
+        [HttpGet("league-by-player")]
+        public async Task<IActionResult> GetLeagueByPlayer(string? idPlayer, CancellationToken cancellationToken)
+        {
+            if (string.IsNullOrEmpty(idPlayer)) return BadRequest(new ErrorResponse { Error = "Player ID not specified." });
+            var league = await _leagueService.GetLeagueByPlayerAsync(idPlayer, cancellationToken);
+            return Ok(_mapper.Map<LeagueDto>(league));
+        }
+
         [HttpGet("players-in-leagues")]
         public async Task<IActionResult> GetPlayersLeagues(CancellationToken cancellationToken)
         {

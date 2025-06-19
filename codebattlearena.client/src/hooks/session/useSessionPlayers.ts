@@ -20,7 +20,7 @@ export function useSessionPlayers(sessionId?: number, enabled: boolean = true) {
     useEffect(() => {
         if (!enabled) return;
         loadPlayers();
-    }, [sessionId, enabled, loadPlayers]);
+    }, [enabled, loadPlayers]);
 
     return { players, setPlayers, loading, error, reloadPlayers: loadPlayers };
 }

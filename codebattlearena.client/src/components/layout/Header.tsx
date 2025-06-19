@@ -1,20 +1,18 @@
-import * as React from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { DropdownMenu, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuContent } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/contexts/AuthContext";
 import NavLink from "../common/NavLink";
 import { RegistrationModal } from "../modals/RegistrationModal";
 import AuthorizationModal from "../modals/AuthorizationModal";
 import { Menu, X } from "lucide-react";
-import { isEditRole } from "@/untils/businessRules";
 import SessionMenu from "../menu/SessionMenu";
-import EditMenu from "../menu/EditMenu";
 import { TaskMenu } from "../menu/TaskMenu";
 import UserMenu from "../menu/UserMenu";
 import EditTaskModal from "../modals/EditTaskModal";
 import SessionActiveMenu from "./SessionActiveMenu";
 import ThemeMenu from "../menu/ThemeMenu";
+import React from "react";
+import { Link } from "react-router-dom";
 
 export function Header() {
     const { user, logout } = useAuth();
@@ -26,7 +24,6 @@ export function Header() {
     const navigate = useNavigate();
 
     const isAuthenticated = !!user;
-    const isEdit = user?.roles ? isEditRole(user.roles) : false;
 
     const handleLogout = (e: React.MouseEvent) => {
         e.preventDefault();
@@ -36,11 +33,12 @@ export function Header() {
 
     return (
         <>
-            <header className="header">
+            <header className="header z-1">
                 <nav className="max-w-screen-xl mx-auto flex justify-between items-center">
-                    {/* Left section */}
                     <div className="flex items-center gap-4">
-                        <NavLink href="/home" label="Code Battle Arena" className="text-2xl font-bold"/>
+                        <Link to="/home" title="home" className="text-2xl font-bold rounded-sm">
+                            <img src="/public/images/logo.png" alt="avatar" className="h-10 bg-contain bg-no-repeat bg-center" />
+                        </Link>
                         <button className="md:hidden" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
                             {isMobileMenuOpen ? <X /> : <Menu />}
                         </button>
@@ -48,12 +46,12 @@ export function Header() {
                             <NavLink href="/info" label="Info" />
                             {isAuthenticated && <SessionMenu />}
                             {isAuthenticated && <TaskMenu />}
-                            {isEdit && <EditMenu setShowAddTask={setShowAddTask} />}
                             <NavLink href="/league/list-leagues" label="Leagues" />
+                            <NavLink href="/item/list-items" label="Items" />
+                            <NavLink href="/quest/list-quests" label="Quests" />
                         </div>
                     </div>
 
-                    {/* Right section */}
                     <div className="hidden md:flex items-center gap-4">
                         {!isAuthenticated ? (
                             <>
@@ -74,7 +72,9 @@ export function Header() {
                         <NavLink href="/info" label="Info" />
                         {isAuthenticated && <SessionMenu />}
                         {isAuthenticated && <TaskMenu />}
-                        {isEdit && <EditMenu setShowAddTask={setShowAddTask} />}
+                        <NavLink href="/league/list-leagues" label="Leagues" />
+                        <NavLink href="/item/list-items" label="Items" />
+                        <NavLink href="/quest/list-quests" label="Quests" />
                         {!isAuthenticated ? (
                             <>
                                 <button onClick={() => { setShowAuthorization(true); setIsMobileMenuOpen(false); }} className="text-primary nav-link">Sign In</button>
@@ -88,7 +88,7 @@ export function Header() {
                 )}
             </header>
             <SessionActiveMenu></SessionActiveMenu>
-            {/* Модалки */}
+
             <RegistrationModal open={showRegistration} onClose={() => setShowRegistration(false)} />
             <AuthorizationModal open={showAuthorization} onClose={() => setShowAuthorization(false)} />
             <EditTaskModal open={showAddTask} onClose={() => setShowAddTask(false)} />

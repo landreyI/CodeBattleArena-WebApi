@@ -20,7 +20,7 @@ export function useTasksList(filter?: TaskProgrammingFilters) {
 
     useEffect(() => {
         loadTasks();
-    }, [loadTasks, filter]);
+    }, [loadTasks]);
 
     return { tasks, setTasks, loading, error, reloadTasks: loadTasks };
 }

@@ -1,18 +1,14 @@
-﻿import { GenericDropdownMenu } from "./GenericDropdownMenu";
+﻿import { itemsEdit } from "../adminPanel/PanelSheet";
+import { Button } from "../ui/button";
+import { GenericDropdownMenu } from "./GenericDropdownMenu";
 
-interface Props {
-    setShowAddTask: (e: any) => void;
-}
-export function EditMenu({ setShowAddTask }: Props) {
+export function EditMenu() {
 
     return (
         <GenericDropdownMenu
-            triggerContent={<button className="nav-link">Edit</button>}
+            triggerContent={<Button className="nav-link">Edit</Button>}
             menuLabel="Actions with edits"
-            actions={[
-                { label: "Add Task", onClick: setShowAddTask, shortcut: "+⌘T" },
-                { label: "Add League", href: "/league/create-league", shortcut: "+⌘L" },
-            ]}
+            actions={itemsEdit}
         />
     );
 }

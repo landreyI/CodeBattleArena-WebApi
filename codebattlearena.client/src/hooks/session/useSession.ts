@@ -24,7 +24,7 @@ export function useSession(sessionId: number | undefined) {
     useEffect(() => {
         loadSession();
 
-    }, [sessionId, loadSession, setError]);
+    }, [loadSession]);
 
     return { session, setSession, isEdit, loading, error, reloadSession: loadSession };
 }

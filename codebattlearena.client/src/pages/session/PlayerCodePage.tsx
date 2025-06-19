@@ -24,6 +24,7 @@ import { Card } from "@/components/ui/card";
 import { ExecutionResult } from "@/models/executionResult";
 import CodeVerificationResult from "@/components/cards/CodeVerificationResult";
 import { useFinishTaskPlayer } from "@/hooks/playerSession/useFinishTaskPlayer";
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "../../components/ui/resizable";
 
 export function PlayerCodePage() {
     const [searchParams] = useSearchParams();
@@ -43,6 +44,7 @@ export function PlayerCodePage() {
     const [code, setCode] = useState<string>("");
     const [responseCode, setResponseCode] = useState<ExecutionResult | null>(null);
     const [fullScreenPanel, setFullScreenPanel] = useState<'code' | 'task' | 'inputDatas' | null>(null);
+    const [direction, setDirection] = useState<"horizontal" | "vertical">("horizontal")
 
     const isCurrentUserPlayer = user && user.id === playerSession?.idPlayer;
     const isEdit = isCurrentUserPlayer && !playerSession.isCompleted;
@@ -61,6 +63,14 @@ export function PlayerCodePage() {
             };
             setResponseCode(codeVerification);
         }
+
+        const updateDirection = () => {
+            setDirection(window.innerWidth < 768 ? "vertical" : "horizontal")
+        }
+
+        updateDirection() // установить начальное значение
+        window.addEventListener("resize", updateDirection)
+        return () => window.removeEventListener("resize", updateDirection)
     }, [task, playerSession]);
 
     useThrottleEffect(() => {
@@ -120,27 +130,6 @@ export function PlayerCodePage() {
     };
 
 
-    const isFullScreen = (panel: string) => fullScreenPanel === panel;
-
-    const getCodePanelClass = () => {
-        if (isFullScreen('code')) return 'w-full';
-        if (isFullScreen('task') || isFullScreen('inputDatas')) return 'hidden';
-        return 'w-1/2';
-    };
-
-    const getTaskPanelClass = () => {
-        if (isFullScreen('task')) return 'w-full';
-        if (isFullScreen('code') || isFullScreen('inputDatas')) return 'hidden';
-        return 'w-1/2';
-    };
-
-    const getInputPanelHeight = () => {
-        if (isFullScreen('inputDatas')) return 'h-full';
-        if (isFullScreen('code') || isFullScreen('task')) return 'hidden';
-        return 'h-1/3';
-    };
-
-
     if (infoLoad || taskLoad) return <LoadingScreen />
 
     const error = infoError || taskError;
@@ -171,92 +160,105 @@ export function PlayerCodePage() {
                     <span>{observers}</span>
                 </Card>
             </div>
-            <div className="flex flex-col h-screen">
-                <div className="flex w-full h-screen overflow-hidden">
-                    <div
-                        className={`transition-all duration-300 ${getCodePanelClass()}`}
-                    >
-                        <div className="h-full flex flex-col">
-                            <div className="flex items-center justify-between p-2 border-2 border-primary rounded-xl bg-muted">
-                                <Badge className="bg-gray text-base">
-                                    {playerSession?.session?.langProgramming?.nameLang}
-                                </Badge>
-                                <div className="flex gap-2">
-                                    {isEdit && (
-                                        <Button onClick={handleResetCode} className="btn-gray">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-arrow-counterclockwise" viewBox="0 0 16 16">
-                                                <path fillRule="evenodd" d="M8 3a5 5 0 1 1-4.546 2.914.5.5 0 0 0-.908-.417A6 6 0 1 0 8 2z" />
-                                                <path d="M8 4.466V.534a.25.25 0 0 0-.41-.192L5.23 2.308a.25.25 0 0 0 0 .384l2.36 1.966A.25.25 0 0 0 8 4.466" />
-                                            </svg>
-                                        </Button>
-                                    )}
 
-                                    <ToggleSizeButton
-                                        fullScreen={isFullScreen('code')}
-                                        onClick={() => setFullScreenPanel(isFullScreen('code') ? null : 'code')}
-                                    />
-                                </div>
-                            </div>
-                            <div className="flex-grow border-2 border-primary rounded-xl">
-                                <CodeViewer
-                                    code={code}
-                                    onChange={(val) => setCode(val)}
-                                    language={task.langProgramming?.codeNameLang || "javascript"}
-                                    readonly={!isEdit}
-                                    autoResize={false}
-                                />
-                            </div>
-                            {isEdit && (
-                                <div className="p-2 border-2 border-primary rounded-xl bg-muted flex justify-between">
-                                    <Button onClick={handleSubmit} className="btn-primary btn-animation">
-                                        Check
-                                    </Button>
-                                    <Button onClick={handleFinish} className="btn-green btn-animation">
-                                        Finish
-                                    </Button>
-                                </div>
-                            )}
-
-                        </div>
-                    </div>
-
-                    <div
-                        className={`transition-all duration-300 ${getTaskPanelClass()}`}
-                    >
-                        <div className="h-full flex flex-col">
-                            <div className="flex items-center justify-between p-2 border-2 border-primary rounded-xl bg-muted">
-                                <Badge className={`${getDifficultyColor(task.difficulty)} text-base`}>
+            <ResizablePanelGroup direction={direction} key={fullScreenPanel ?? 'all'} className="flex flex-col min-h-[95vh] max-h-[95vh] gap-1">
+                <ResizablePanel
+                    defaultSize={fullScreenPanel === 'task' ? 100 : fullScreenPanel ? 0 : 40}
+                    collapsible
+                >
+                    {fullScreenPanel !== 'code' && fullScreenPanel !== 'inputDatas' && (
+                        <div className="h-full flex flex-col rounded-xl bg-card">
+                            <div className="flex items-center justify-between p-2">
+                                <Badge className={`${getDifficultyColor(task.difficulty)} `}>
                                     {task.difficulty}
                                 </Badge>
                                 <ToggleSizeButton
-                                    fullScreen={isFullScreen('task')}
-                                    onClick={() => setFullScreenPanel(isFullScreen('task') ? null : 'task')}
+                                    fullScreen={fullScreenPanel === 'task'}
+                                    onClick={() => setFullScreenPanel(fullScreenPanel === 'task' ? null : 'task')}
                                 />
                             </div>
-                            <div className="break-words whitespace-pre-wrap overflow-y-auto border-2 border-primary rounded-xl p-4 bg-muted">
+                            <div className="h-full break-words whitespace-pre-wrap overflow-y-auto bg-muted rounded-b-xl p-4">
                                 {task.textTask || "No description"}
                             </div>
                         </div>
-                    </div>
-                </div>
-                <div
-                    className={`transition-all duration-300 ${getInputPanelHeight()}`}
-                >
-                    <div className="h-full flex flex-col">
-                        <div className="flex items-center justify-end p-2 border-2 border-primary rounded-xl bg-muted">
-                            <ToggleSizeButton
-                                fullScreen={isFullScreen('inputDatas')}
-                                onClick={() => setFullScreenPanel(isFullScreen('inputDatas') ? null : 'inputDatas')}
-                            />
-                        </div>
-                        <div className="flex-grow border-2 border-primary rounded-lg">
-                            {task.taskInputData && (
-                                <InputDatasList inputDatas={task.taskInputData} outDatas={responseCode?.stdout}></InputDatasList>
+                    )}
+                </ResizablePanel>
+
+                <ResizableHandle className="border border-transparent hover:border-1 hover:border-primary hover:bg-primary" withHandle />
+
+                <ResizablePanel defaultSize={(fullScreenPanel === 'code' || fullScreenPanel === 'inputDatas' ) ? 100 : fullScreenPanel ? 0 : 60} className="flex w-full  overflow-hidden">
+                    <ResizablePanelGroup direction="vertical" className="gap-1">
+                        <ResizablePanel
+                            defaultSize={fullScreenPanel === 'code' ? 100 : fullScreenPanel ? 0 : 60}
+                            collapsible
+                            minSize={fullScreenPanel === 'task' || fullScreenPanel === 'inputDatas' ? 0 : 20}
+                        >
+                            {fullScreenPanel !== 'task' && fullScreenPanel !== 'inputDatas' && (
+                                <div className="h-full flex flex-col bg-card rounded-xl">
+                                    <div className="flex items-center justify-between p-2">
+                                        <Badge className="bg-gray text-base size-6">
+                                            {playerSession?.session?.langProgramming?.nameLang}
+                                        </Badge>
+                                        <div className="flex gap-2">
+                                            {isEdit && (
+                                                <Button onClick={handleResetCode} className="btn-gray size-6">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-arrow-counterclockwise" viewBox="0 0 16 16">
+                                                        <path fillRule="evenodd" d="M8 3a5 5 0 1 1-4.546 2.914.5.5 0 0 0-.908-.417A6 6 0 1 0 8 2z" />
+                                                        <path d="M8 4.466V.534a.25.25 0 0 0-.41-.192L5.23 2.308a.25.25 0 0 0 0 .384l2.36 1.966A.25.25 0 0 0 8 4.466" />
+                                                    </svg>
+                                                </Button>
+                                            )}
+                                            <ToggleSizeButton
+                                                fullScreen={fullScreenPanel === 'code'}
+                                                onClick={() => setFullScreenPanel(fullScreenPanel === 'code' ? null : 'code')}
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="h-full overflow-y-auto">
+                                        <CodeViewer
+                                            code={code}
+                                            onChange={(val) => setCode(val)}
+                                            language={task.langProgramming?.codeNameLang || "javascript"}
+                                            readonly={!isEdit}
+                                            autoResize={false}
+                                        />
+                                    </div>
+                                    {isEdit && (
+                                        <div className="p-2 flex justify-between">
+                                            <Button onClick={handleSubmit} className="btn-primary btn-animation">Check</Button>
+                                            <Button onClick={handleFinish} className="btn-green btn-animation">Finish</Button>
+                                        </div>
+                                    )}
+                                </div>
                             )}
-                        </div>
-                    </div>
-                </div>
-            </div>
+                        </ResizablePanel>
+
+                        <ResizableHandle className="border border-transparent hover:border-1 hover:border-primary hover:bg-primary" withHandle />
+
+                        <ResizablePanel
+                            defaultSize={fullScreenPanel === 'inputDatas' ? 100 : fullScreenPanel ? 0 : 40}
+                            collapsible
+                            minSize={fullScreenPanel === 'code' || fullScreenPanel === 'task' ? 0 : 20}
+                        >
+                            {fullScreenPanel !== 'code' && fullScreenPanel !== 'task' && (
+                                <div className="h-full flex flex-col rounded-lg bg-card">
+                                    <div className="flex items-center justify-end p-2">
+                                        <ToggleSizeButton
+                                            fullScreen={fullScreenPanel === 'inputDatas'}
+                                            onClick={() => setFullScreenPanel(fullScreenPanel === 'inputDatas' ? null : 'inputDatas')}
+                                        />
+                                    </div>
+                                    <div className="flex-grow flex flex-col min-h-0">
+                                        {task.taskInputData && (
+                                            <InputDatasList inputDatas={task.taskInputData} outDatas={responseCode?.stdout} />
+                                        )}
+                                    </div>
+                                </div>
+                            )}
+                        </ResizablePanel>
+                    </ResizablePanelGroup>
+                </ResizablePanel>
+            </ResizablePanelGroup>
         </>
     );
 }

@@ -6,7 +6,7 @@ export function useCountCompletedTask(idSession?: number) {
     const [count, setCount] = useState<number>();
     const { run: load, loading, error } = useAsyncTask(fetchGetCountCompletedTask);
 
-    const loadCount = useCallback(async (idSession?: number) => {
+    const loadCount = useCallback(async () => {
         if (!idSession) return;
 
         const data = await load(idSession);
@@ -18,8 +18,8 @@ export function useCountCompletedTask(idSession?: number) {
 
     useEffect(() => {
         if (!idSession) return;
-        loadCount(idSession);
-    }, [loadCount, idSession])
+        loadCount();
+    }, [loadCount])
 
     return { count, setCount, loading, error, reloadCountCompleted: loadCount }
 }

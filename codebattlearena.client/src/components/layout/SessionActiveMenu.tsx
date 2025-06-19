@@ -151,24 +151,24 @@ export function SessionActiveMenu() {
             )}
 
             <div className="w-full p-4 header" style={{ zIndex: 1 }}>
-                <div className="flex flex-nowrap justify-between items-center w-full">
-                    <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+                <div className="flex flex-col md:flex-row md:justify-between gap-3 items-start md:items-center w-full">
+                    {/* Left Block */}
+                    <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
                         <span className="font-semibold text-primary">
                             {activeSession.name} ({activeSession.state})
                         </span>
-                        <SeparatorVertical />
+                        <SeparatorVertical className="hidden md:inline" />
                         <div className="flex items-center gap-1">
                             <Users size={14} />
                             {activeSession.amountPeople ?? 0}/{activeSession.maxPeople}
                         </div>
-                        <SeparatorVertical />
+                        <SeparatorVertical className="hidden md:inline" />
                         <div className="flex items-center gap-1">
-                            Lang:
-                            {activeSession.langProgramming?.nameLang || "Unknown"}
+                            Lang: {activeSession.langProgramming?.nameLang || "Unknown"}
                         </div>
                         {sessionTimeLeft !== null && (
                             <>
-                                <SeparatorVertical />
+                                <SeparatorVertical className="hidden md:inline" />
                                 <div className="font-mono text-yellow select-none">
                                     Time left: {formatTime(sessionTimeLeft)}
                                 </div>
@@ -176,8 +176,8 @@ export function SessionActiveMenu() {
                         )}
                     </div>
 
-                    <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
-
+                    {/* Right Block */}
+                    <div className="flex flex-wrap md:flex-nowrap items-center gap-4 text-sm text-muted-foreground">
                         <ChatSheet
                             trigger={
                                 <div className="relative cursor-pointer" onClick={toggleChat}>
@@ -192,7 +192,10 @@ export function SessionActiveMenu() {
                             messages={messages}
                         />
 
-                        <Link to={`/session/info-session/${activeSession.idSession}`} className="hover:text-primary mx-4">
+                        <Link
+                            to={`/session/info-session/${activeSession.idSession}`}
+                            className="hover:text-primary"
+                        >
                             <ExternalLink size={28} />
                         </Link>
                         <Button onClick={leaveSession} className="btn-red btn-animation">

@@ -12,7 +12,7 @@ import { PlayersList } from "../lists/PlayersList";
 import clsx from "clsx";
 import { useState } from "react";
 import { Button } from "../ui/button";
-import SettingLeagueMenu from "../menu/SettingLeagueMenu";
+import SettingMenu from "../menu/SettingMenu";
 import EditLeagueModal from "../modals/EditLeagueModal";
 
 interface Props {
@@ -45,9 +45,9 @@ export function LeagueCard({ league, players, className, isEdit, handleDeletLeag
                                 <ShieldCheck size={20} className="text-primary" />
                                 <CardTitle className="font-mono">{name} League</CardTitle>
                                 {isEdit && (
-                                    <SettingLeagueMenu
-                                        setShowEditLeague={setShowEditLeague}
-                                        handleDeletLeague={handleDeletLeague}
+                                    <SettingMenu
+                                        setShowEdit={setShowEditLeague}
+                                        handleDelet={handleDeletLeague}
                                     />
                                 )}
                             </div>
@@ -73,7 +73,7 @@ export function LeagueCard({ league, players, className, isEdit, handleDeletLeag
 
                     <CardFooter className="flex justify-center px-4 pb-4 hover:scale-[1.1] transition">
                         <img
-                            src={`/images/ranks/${name.toLowerCase()}.png`}
+                            src={`${league?.photoUrl}`}
                             alt={`${name} emblem`}
                             className="object-contain select-none pointer-events-none"
                         />

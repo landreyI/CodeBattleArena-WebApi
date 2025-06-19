@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/select";
 import { Button } from "../ui/button";
 import { Card } from "../ui/card";
+import { Label } from "../ui/label";
 
 interface Props {
     filter: TaskProgrammingFilters;
@@ -37,23 +38,24 @@ export function TaskFilter({ filter, onChange, handleSearch }: Props) {
     useEffect(() => {
         setSelectedDifficulty(filter.difficulty || "all");
         setSelectedLang(filter.idLang?.toString() || "all");
-    }, [filter.difficulty, filter.idLang]);
+    }, [filter]);
 
     const handleLangChange = (value: string) => {
         setSelectedLang(value);
-        const id = Number(value);
-        onChange({ ...filter, idLang: isNaN(id) ? undefined : id });
     };
 
     const handleDifficultyChange = (value: string) => {
         setSelectedDifficulty(value);
+    };
 
-        if (value === "all") {
-            onChange({ ...filter, difficulty: undefined });
-        } else if (value in Difficulty) {
-            const difficultyKey = value as keyof typeof Difficulty;
-            onChange({ ...filter, difficulty: Difficulty[difficultyKey] });
-        }
+    const handleSearchClick = () => {
+        const updatedFilter: TaskProgrammingFilters = {
+            ...filter,
+            idLang: selectedLang !== "all" ? Number(selectedLang) : undefined,
+            difficulty: selectedDifficulty === "all" ? undefined : (selectedDifficulty as Difficulty),
+        };
+        onChange(updatedFilter);
+        handleSearch();
     };
 
     if (!langsProgramming || langsProgramming.length === 0) {
@@ -65,9 +67,9 @@ export function TaskFilter({ filter, onChange, handleSearch }: Props) {
             <div className="flex flex-col gap-4 md:flex-row md:items-center md:gap-6">
                 <div className="flex flex-col gap-4 md:flex-row md:gap-6">
                     <div className="flex flex-col gap-1">
-                        <label className="text-sm sm:text-base font-medium">
+                        <Label className="text-sm sm:text-base font-medium">
                             Language
-                        </label>
+                        </Label>
                         <Select
                             value={selectedLang}
                             onValueChange={handleLangChange}
@@ -91,9 +93,9 @@ export function TaskFilter({ filter, onChange, handleSearch }: Props) {
                     </div>
 
                     <div className="flex flex-col gap-1">
-                        <label className="text-sm sm:text-base font-medium">
+                        <Label className="text-sm sm:text-base font-medium">
                             Difficulty
-                        </label>
+                        </Label>
                         <Select
                             value={selectedDifficulty}
                             onValueChange={handleDifficultyChange}
@@ -114,7 +116,7 @@ export function TaskFilter({ filter, onChange, handleSearch }: Props) {
                 </div>
                 <Button
                     className="w-full md:w-auto btn-animation px-4 py-2"
-                    onClick={handleSearch}
+                    onClick={handleSearchClick}
                 >
                     Search
                 </Button>

@@ -1,6 +1,7 @@
 ﻿using CodeBattleArena.Server.IRepositories;
 using CodeBattleArena.Server.Models;
 using Microsoft.EntityFrameworkCore;
+using static Azure.Core.HttpHeader;
 
 namespace CodeBattleArena.Server.Services.DBServices
 {
@@ -15,13 +16,15 @@ namespace CodeBattleArena.Server.Services.DBServices
             _logger = logger;
         }
 
-        public async Task<bool> AddChatAsync(string playerId1, string playerId2, CancellationToken cancellationToken)
+        public async Task<bool> AddChatAsync
+            (string playerId1, string playerId2, CancellationToken cancellationToken, bool commit = true)
         {
             if (string.IsNullOrEmpty(playerId1) || string.IsNullOrEmpty(playerId2)) return false;
             try
             {
                 await _unitOfWork.ChatRepository.AddChatAsync(playerId1, playerId2, cancellationToken);
-                await _unitOfWork.CommitAsync(cancellationToken); // Сохранение изменений
+                if (commit)
+                    await _unitOfWork.CommitAsync(cancellationToken);
                 return true;
             }
             catch (Exception ex)
@@ -30,13 +33,15 @@ namespace CodeBattleArena.Server.Services.DBServices
                 return false;
             }
         }
-        public async Task<bool> AddMessageAsync(int chatId, string senderId, string messageText, CancellationToken cancellationToken)
+        public async Task<bool> AddMessageAsync
+            (int chatId, string senderId, string messageText, CancellationToken cancellationToken, bool commit = true)
         {
             if (string.IsNullOrEmpty(senderId) || string.IsNullOrEmpty(messageText)) return false;
             try
             {
                 await _unitOfWork.ChatRepository.AddMessageAsync(chatId, senderId, messageText, cancellationToken);
-                await _unitOfWork.CommitAsync(cancellationToken);
+                if (commit)
+                    await _unitOfWork.CommitAsync(cancellationToken);
                 return true;
             }
             catch (Exception ex)
@@ -63,12 +68,14 @@ namespace CodeBattleArena.Server.Services.DBServices
             if (string.IsNullOrEmpty(playerId)) return null;
             return await _unitOfWork.ChatRepository.GetChatsByPlayerIdAsync(playerId, cancellationToken);
         }
-        public async Task<bool> DeleteChatAsync(int idChat, CancellationToken cancellationToken)
+        public async Task<bool> DeleteChatAsync
+            (int idChat, CancellationToken cancellationToken, bool commit = true)
         {
             try
             {
                 await _unitOfWork.ChatRepository.DeleteChatAsync(idChat, cancellationToken);
-                await _unitOfWork.CommitAsync(cancellationToken);
+                if (commit)
+                    await _unitOfWork.CommitAsync(cancellationToken);
                 return true;
             }
             catch (Exception ex)
@@ -77,12 +84,13 @@ namespace CodeBattleArena.Server.Services.DBServices
                 return false;
             }
         }
-        public async Task<bool> DeleteMessageAsync(int idMessage, CancellationToken cancellationToken)
+        public async Task<bool> DeleteMessageAsync(int idMessage, CancellationToken cancellationToken, bool commit = true)
         {
             try
             {
                 await _unitOfWork.ChatRepository.DeleteMessageAsync(idMessage, cancellationToken);
-                await _unitOfWork.CommitAsync(cancellationToken);
+                if (commit)
+                    await _unitOfWork.CommitAsync(cancellationToken);
                 return true;
             }
             catch (Exception ex)

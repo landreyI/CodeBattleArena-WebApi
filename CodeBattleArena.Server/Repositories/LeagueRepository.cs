@@ -17,6 +17,19 @@ namespace CodeBattleArena.Server.Repositories
         {
             return await _context.Leagues.FirstOrDefaultAsync(l => l.IdLeague == id, cancellationToken);
         }
+
+        public async Task<League> GetLeagueByPlayerAsync(string idPlayer, CancellationToken cancellationToken)
+        {
+            var player = await _context.Users.FindAsync(idPlayer);
+            if (player == null)
+                return null;
+
+            return await _context.Leagues
+                .FirstOrDefaultAsync(p =>
+                    p.MinWins <= player.Victories &&
+                    p.MaxWins >= player.Victories, cancellationToken);
+        }
+
         public async Task<List<League>> GetLeaguesAsync(CancellationToken cancellationToken)
         {
             return await _context.Leagues.ToListAsync(cancellationToken);

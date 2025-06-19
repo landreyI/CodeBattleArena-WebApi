@@ -83,6 +83,41 @@ namespace CodeBattleArena.Server.Migrations
                     b.ToTable("InputData");
                 });
 
+            modelBuilder.Entity("CodeBattleArena.Server.Models.Item", b =>
+                {
+                    b.Property<int>("IdItem")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdItem"));
+
+                    b.Property<string>("CssClass")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ImageUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int?>("PriceCoin")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.HasKey("IdItem");
+
+                    b.ToTable("Items");
+                });
+
             modelBuilder.Entity("CodeBattleArena.Server.Models.LangProgramming", b =>
                 {
                     b.Property<int>("IdLang")
@@ -129,6 +164,9 @@ namespace CodeBattleArena.Server.Migrations
                         .HasMaxLength(30)
                         .HasColumnType("nvarchar(30)");
 
+                    b.Property<string>("PhotoUrl")
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("IdLeague");
 
                     b.ToTable("Leagues");
@@ -173,12 +211,30 @@ namespace CodeBattleArena.Server.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
 
+                    b.Property<int?>("ActiveAvatarId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ActiveBackgroundId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ActiveBadgeId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ActiveBorderId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ActiveTitleId")
+                        .HasColumnType("int");
+
                     b.Property<string>("AdditionalInformation")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("CountGames")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -231,6 +287,16 @@ namespace CodeBattleArena.Server.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ActiveAvatarId");
+
+                    b.HasIndex("ActiveBackgroundId");
+
+                    b.HasIndex("ActiveBadgeId");
+
+                    b.HasIndex("ActiveBorderId");
+
+                    b.HasIndex("ActiveTitleId");
+
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
 
@@ -240,6 +306,21 @@ namespace CodeBattleArena.Server.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
+                });
+
+            modelBuilder.Entity("CodeBattleArena.Server.Models.PlayerItem", b =>
+                {
+                    b.Property<string>("IdPlayer")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("IdItem")
+                        .HasColumnType("int");
+
+                    b.HasKey("IdPlayer", "IdItem");
+
+                    b.HasIndex("IdItem");
+
+                    b.ToTable("PlayerItems");
                 });
 
             modelBuilder.Entity("CodeBattleArena.Server.Models.PlayerSession", b =>
@@ -281,7 +362,13 @@ namespace CodeBattleArena.Server.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdPlayerTaskPlay"));
 
+                    b.Property<DateTime?>("CompletedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<bool>("IsCompleted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsGet")
                         .HasColumnType("bit");
 
                     b.Property<string>("PlayerId")
@@ -301,6 +388,32 @@ namespace CodeBattleArena.Server.Migrations
                     b.HasIndex("TaskPlayId");
 
                     b.ToTable("PlayerTaskPlays");
+                });
+
+            modelBuilder.Entity("CodeBattleArena.Server.Models.Reward", b =>
+                {
+                    b.Property<int>("IdReward")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdReward"));
+
+                    b.Property<int?>("Amount")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ItemId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("RewardType")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("IdReward");
+
+                    b.HasIndex("ItemId");
+
+                    b.ToTable("Rewards");
                 });
 
             modelBuilder.Entity("CodeBattleArena.Server.Models.Session", b =>
@@ -407,10 +520,10 @@ namespace CodeBattleArena.Server.Migrations
                         .HasMaxLength(40)
                         .HasColumnType("nvarchar(40)");
 
-                    b.Property<int?>("Reward")
+                    b.Property<int?>("RepeatAfterDays")
                         .HasColumnType("int");
 
-                    b.Property<int?>("TaskPlayParamId")
+                    b.Property<int?>("RewardCoin")
                         .HasColumnType("int");
 
                     b.Property<string>("Type")
@@ -419,10 +532,6 @@ namespace CodeBattleArena.Server.Migrations
                         .HasColumnType("nvarchar(40)");
 
                     b.HasKey("IdTask");
-
-                    b.HasIndex("TaskPlayParamId")
-                        .IsUnique()
-                        .HasFilter("[TaskPlayParamId] IS NOT NULL");
 
                     b.ToTable("TasksPlay");
                 });
@@ -434,6 +543,9 @@ namespace CodeBattleArena.Server.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdParam"));
+
+                    b.Property<bool>("IsPrimary")
+                        .HasColumnType("bit");
 
                     b.Property<string>("ParamKey")
                         .IsRequired()
@@ -450,11 +562,26 @@ namespace CodeBattleArena.Server.Migrations
 
                     b.HasKey("IdParam");
 
-                    b.HasIndex("TaskPlayId")
+                    b.HasIndex("TaskPlayId", "ParamKey")
                         .IsUnique()
                         .HasFilter("[TaskPlayId] IS NOT NULL");
 
                     b.ToTable("TaskPlayParams");
+                });
+
+            modelBuilder.Entity("CodeBattleArena.Server.Models.TaskPlayReward", b =>
+                {
+                    b.Property<int>("TaskPlayId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RewardId")
+                        .HasColumnType("int");
+
+                    b.HasKey("TaskPlayId", "RewardId");
+
+                    b.HasIndex("RewardId");
+
+                    b.ToTable("TaskPlayRewards");
                 });
 
             modelBuilder.Entity("CodeBattleArena.Server.Models.TaskProgramming", b =>
@@ -686,6 +813,63 @@ namespace CodeBattleArena.Server.Migrations
                     b.Navigation("Sender");
                 });
 
+            modelBuilder.Entity("CodeBattleArena.Server.Models.Player", b =>
+                {
+                    b.HasOne("CodeBattleArena.Server.Models.Item", "ActiveAvatar")
+                        .WithMany()
+                        .HasForeignKey("ActiveAvatarId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("CodeBattleArena.Server.Models.Item", "ActiveBackground")
+                        .WithMany()
+                        .HasForeignKey("ActiveBackgroundId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("CodeBattleArena.Server.Models.Item", "ActiveBadge")
+                        .WithMany()
+                        .HasForeignKey("ActiveBadgeId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("CodeBattleArena.Server.Models.Item", "ActiveBorder")
+                        .WithMany()
+                        .HasForeignKey("ActiveBorderId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("CodeBattleArena.Server.Models.Item", "ActiveTitle")
+                        .WithMany()
+                        .HasForeignKey("ActiveTitleId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("ActiveAvatar");
+
+                    b.Navigation("ActiveBackground");
+
+                    b.Navigation("ActiveBadge");
+
+                    b.Navigation("ActiveBorder");
+
+                    b.Navigation("ActiveTitle");
+                });
+
+            modelBuilder.Entity("CodeBattleArena.Server.Models.PlayerItem", b =>
+                {
+                    b.HasOne("CodeBattleArena.Server.Models.Item", "Item")
+                        .WithMany("PlayerItems")
+                        .HasForeignKey("IdItem")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("CodeBattleArena.Server.Models.Player", "Player")
+                        .WithMany("PlayerItems")
+                        .HasForeignKey("IdPlayer")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Item");
+
+                    b.Navigation("Player");
+                });
+
             modelBuilder.Entity("CodeBattleArena.Server.Models.PlayerSession", b =>
                 {
                     b.HasOne("CodeBattleArena.Server.Models.Player", "Player")
@@ -724,6 +908,15 @@ namespace CodeBattleArena.Server.Migrations
                     b.Navigation("TaskPlay");
                 });
 
+            modelBuilder.Entity("CodeBattleArena.Server.Models.Reward", b =>
+                {
+                    b.HasOne("CodeBattleArena.Server.Models.Item", "Item")
+                        .WithMany()
+                        .HasForeignKey("ItemId");
+
+                    b.Navigation("Item");
+                });
+
             modelBuilder.Entity("CodeBattleArena.Server.Models.Session", b =>
                 {
                     b.HasOne("CodeBattleArena.Server.Models.LangProgramming", "LangProgramming")
@@ -760,13 +953,33 @@ namespace CodeBattleArena.Server.Migrations
                     b.Navigation("TaskProgramming");
                 });
 
-            modelBuilder.Entity("CodeBattleArena.Server.Models.TaskPlay", b =>
+            modelBuilder.Entity("CodeBattleArena.Server.Models.TaskPlayParam", b =>
                 {
-                    b.HasOne("CodeBattleArena.Server.Models.TaskPlayParam", "TaskPlayParam")
-                        .WithOne("TaskPlay")
-                        .HasForeignKey("CodeBattleArena.Server.Models.TaskPlay", "TaskPlayParamId");
+                    b.HasOne("CodeBattleArena.Server.Models.TaskPlay", "TaskPlay")
+                        .WithMany("TaskPlayParams")
+                        .HasForeignKey("TaskPlayId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
-                    b.Navigation("TaskPlayParam");
+                    b.Navigation("TaskPlay");
+                });
+
+            modelBuilder.Entity("CodeBattleArena.Server.Models.TaskPlayReward", b =>
+                {
+                    b.HasOne("CodeBattleArena.Server.Models.Reward", "Reward")
+                        .WithMany()
+                        .HasForeignKey("RewardId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CodeBattleArena.Server.Models.TaskPlay", "TaskPlay")
+                        .WithMany("TaskPlayRewards")
+                        .HasForeignKey("TaskPlayId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Reward");
+
+                    b.Navigation("TaskPlay");
                 });
 
             modelBuilder.Entity("CodeBattleArena.Server.Models.TaskProgramming", b =>
@@ -841,6 +1054,11 @@ namespace CodeBattleArena.Server.Migrations
                     b.Navigation("TaskInputData");
                 });
 
+            modelBuilder.Entity("CodeBattleArena.Server.Models.Item", b =>
+                {
+                    b.Navigation("PlayerItems");
+                });
+
             modelBuilder.Entity("CodeBattleArena.Server.Models.LangProgramming", b =>
                 {
                     b.Navigation("Sessions");
@@ -860,6 +1078,8 @@ namespace CodeBattleArena.Server.Migrations
 
                     b.Navigation("Messages");
 
+                    b.Navigation("PlayerItems");
+
                     b.Navigation("PlayerSessions");
 
                     b.Navigation("PlayerTaskPlays");
@@ -873,11 +1093,10 @@ namespace CodeBattleArena.Server.Migrations
             modelBuilder.Entity("CodeBattleArena.Server.Models.TaskPlay", b =>
                 {
                     b.Navigation("PlayerTaskPlays");
-                });
 
-            modelBuilder.Entity("CodeBattleArena.Server.Models.TaskPlayParam", b =>
-                {
-                    b.Navigation("TaskPlay");
+                    b.Navigation("TaskPlayParams");
+
+                    b.Navigation("TaskPlayRewards");
                 });
 
             modelBuilder.Entity("CodeBattleArena.Server.Models.TaskProgramming", b =>

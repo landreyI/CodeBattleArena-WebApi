@@ -60,6 +60,7 @@ export function SessionsList() {
 
             <SessionList
                 sessions={sessions}
+                className="mt-4"
                 cardWrapperClassName="hover:scale-[1.02] transition"
             />
         </>

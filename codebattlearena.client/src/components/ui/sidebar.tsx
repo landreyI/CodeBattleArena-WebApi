@@ -253,30 +253,35 @@ function Sidebar({
   )
 }
 
-function SidebarTrigger({
-  className,
-  onClick,
-  ...props
-}: React.ComponentProps<typeof Button>) {
-  const { toggleSidebar } = useSidebar()
+type SidebarTriggerProps = React.ComponentProps<"button"> & {
+    iconSize?: number
+    label?: string
+}
 
-  return (
-    <Button
-      data-sidebar="trigger"
-      data-slot="sidebar-trigger"
-      variant="ghost"
-      size="icon"
-      className={cn("size-7", className)}
-      onClick={(event) => {
-        onClick?.(event)
-        toggleSidebar()
-      }}
-      {...props}
-    >
-      <PanelLeftIcon />
-      <span className="sr-only">Toggle Sidebar</span>
-    </Button>
-  )
+function SidebarTrigger({
+    className,
+    onClick,
+    iconSize = 35,
+    label = "Toggle Sidebar",
+    ...props
+}: SidebarTriggerProps) {
+    const { toggleSidebar } = useSidebar()
+
+    return (
+        <button
+            data-sidebar="trigger"
+            data-slot="sidebar-trigger"
+            className={cn("size-fit", className)}
+            onClick={(event) => {
+                onClick?.(event)
+                toggleSidebar()
+            }}
+            {...props}
+        >
+            <PanelLeftIcon size={iconSize} />
+            <span className="sr-only">{label}</span>
+        </button>
+    )
 }
 
 function SidebarRail({ className, ...props }: React.ComponentProps<"button">) {

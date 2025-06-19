@@ -6,6 +6,24 @@ export default {
         "./index.html",
         "./src/**/*.{js,ts,jsx,tsx}"
     ],
+    safelist: [
+        'scale-[1.1]',
+        'scale-[1.15]',
+        'scale-[1.2]',
+        'scale-[1.25]',
+        'scale-[1.3]',
+        'scale-[1.35]',
+        'scale-[1.4]',
+        {
+            pattern: /^rounded(-(sm|md|lg|xl|2xl|3xl))?$/, // округления
+        },
+        {
+            pattern: /^shadow(-(sm|md|lg|xl))?$/, // тени
+        },
+        {
+            pattern: /^animate-(fadeIn|spin)$/, // анимации
+        },
+    ],
     theme: {
         extend: {
             animation: {
@@ -30,6 +48,7 @@ export default {
                 purple: 'var(--color-purple)',
                 gray: 'var(--color-gray)',
                 bronze: 'var(--color-bronze)',
+                destructive: 'var(--color-red)',
             },
         },
     },

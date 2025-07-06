@@ -16,6 +16,7 @@ using CodeBattleArena.Server.Services.Notifications.INotifications;
 using CodeBattleArena.Server.Services.Judge0;
 using CodeBattleArena.Server.QuestSystem;
 using CodeBattleArena.Server.QuestSystem.Dispatcher;
+using CodeBattleArena.Server.Untils;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,6 +24,7 @@ builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()); //ENUM Сериализация
+        options.JsonSerializerOptions.Converters.Add(new UtcDateTimeConverter());
     });
 
 builder.Services.AddSignalR()
@@ -110,6 +112,7 @@ builder.Services.AddScoped<QuestService>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 builder.Services.AddHostedService<SessionObserverService>();
+builder.Services.AddHostedService<QuestObserverService>();
 
 //------ QUEST ------
 builder.Services.AddScoped<QuestHandlerContext>();
@@ -118,6 +121,7 @@ builder.Services.AddScoped<GameEventDispatcher>();
 //------ SIGNALR ------
 builder.Services.AddScoped<ISessionNotificationService, SessionNotificationService>();
 builder.Services.AddScoped<ITaskNotificationService, TaskNotificationService>();
+builder.Services.AddScoped<IPlayerNotificationService, PlayerNotificationService>();
 
 builder.Services.AddHttpClient<Judge0Client>();
 
@@ -157,6 +161,7 @@ app.UseAuthorization();
 
 app.MapHub<SessionHub>("/hubs/session");
 app.MapHub<TaskHub>("/hubs/task");
+app.MapHub<PlayerHub>("/hubs/player");
 
 app.MapControllers();
 

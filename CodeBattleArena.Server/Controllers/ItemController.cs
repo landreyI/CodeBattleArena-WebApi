@@ -8,6 +8,7 @@ using CodeBattleArena.Server.Services.DBServices;
 using CodeBattleArena.Server.Specifications.ItemSpec;
 using CodeBattleArena.Server.Untils;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CodeBattleArena.Server.Controllers
@@ -17,11 +18,13 @@ namespace CodeBattleArena.Server.Controllers
     public class ItemController : Controller
     {
         private readonly ItemService _itemService;
+        private readonly UserManager<Player> _userManager;
         private readonly IMapper _mapper;
-        public ItemController(ItemService itemService, IMapper mapper)
+        public ItemController(ItemService itemService, IMapper mapper, UserManager<Player> userManager)
         {
             _itemService = itemService;
             _mapper = mapper;
+            _userManager = userManager;
         }
 
         [HttpGet("info-item")]
@@ -128,9 +131,8 @@ namespace CodeBattleArena.Server.Controllers
         }
 
         [Authorize]
-        [RequireEditRole]
-        [HttpPost("add-player-item")]
-        public async Task<IActionResult> AddPlayerItem([FromBody] PlayerItemDto playerItemDto, CancellationToken cancellationToken)
+        [HttpPost("buy-item")]
+        public async Task<IActionResult> BuyItem([FromBody] PlayerItemDto playerItemDto, CancellationToken cancellationToken)
         {
             if (!ModelState.IsValid)
             {
@@ -143,10 +145,10 @@ namespace CodeBattleArena.Server.Controllers
 
                 return UnprocessableEntity(errors);
             }
-
-            var resultCreate = await _itemService.AddPlayerItemAsync(_mapper.Map<PlayerItem>(playerItemDto), cancellationToken);
-            if (!resultCreate.IsSuccess)
-                return UnprocessableEntity(resultCreate.Failure);
+            var authUserId = _userManager.GetUserId(User);
+            var resultBuy = await _itemService.BuyItemAsync(authUserId, _mapper.Map<PlayerItem>(playerItemDto), cancellationToken);
+            if (!resultBuy.IsSuccess)
+                return UnprocessableEntity(resultBuy.Failure);
 
             return Ok(true);
         }

@@ -10,7 +10,7 @@ import ItemFilter from "@/components/filters/ItemFilter";
 import { useItems } from "@/hooks/item/useItems";
 import ItemsList from "@/components/lists/ItemsList";
 import { usePlayerItems } from "@/hooks/item/usePlayerItems";
-import InlineNotification from "@/components/common/InlineErrorNotification";
+import InlineNotification from "@/components/common/InlineNotification";
 import { useAuth } from "@/contexts/AuthContext";
 import { PlayerProvider } from "@/contexts/PlayerContext";
 import { usePlayer } from "@/hooks/player/usePlayer";
@@ -49,7 +49,7 @@ export function ItemsListPage() {
 
     return (
         <>
-            {error && <InlineNotification message={error.message} position="top" className="bg-red" />}
+            {error && <InlineNotification message={error.message} className="bg-red" />}
 
             <ItemFilter filter={filter} onChange={handleChangeFilter} handleSearch={reloadItems}></ItemFilter>
 

@@ -6,7 +6,7 @@ import LoadingScreen from "@/components/common/LoadingScreen";
 import { useAuth } from "@/contexts/AuthContext";
 import { isEditRole } from "@/untils/businessRules";
 import { useDeleteTask } from "@/hooks/task/useDeleteTask";
-import InlineNotification from "@/components/common/InlineErrorNotification";
+import InlineNotification from "@/components/common/InlineNotification";
 import { useLocation } from "react-router-dom";
 import { useState } from "react";
 import { TaskProgrammingFilters } from "@/models/filters";
@@ -60,7 +60,7 @@ export function TasksListPage() {
 
     return (
         <>
-            {deleteError && <InlineNotification message={deleteError.message} position="top" className="bg-red" />}
+            {deleteError && <InlineNotification message={deleteError.message} className="bg-red" />}
 
             <TaskFilter filter={filter} onChange={handleChangeFilter} handleSearch={reloadTasks}></TaskFilter>
 

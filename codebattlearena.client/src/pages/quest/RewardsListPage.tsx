@@ -6,7 +6,7 @@ import { Reward } from "@/models/dbModels";
 import ErrorMessage from "@/components/common/ErrorMessage";
 import LoadingScreen from "@/components/common/LoadingScreen";
 import { useDeleteReward } from "@/hooks/quest/useDeleteReward";
-import InlineNotification from "@/components/common/InlineErrorNotification";
+import InlineNotification from "@/components/common/InlineNotification";
 import { useState } from "react";
 import EditRewardModal from "@/components/modals/EditRewardModal";
 
@@ -37,7 +37,7 @@ export function RewardsListPage() {
 
     return (
         <>
-            {error && <InlineNotification message={error.message} position="top" className="bg-red" />}
+            {error && <InlineNotification message={error.message} className="bg-red" />}
             {!rewards || rewards.length === 0 && (<EmptyState message="Rewards not found" />)}
 
             <RewardsList

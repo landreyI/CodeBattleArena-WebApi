@@ -169,13 +169,15 @@ export function ItemForm({ item, onClose, onUpdate, submitLabel }: Props) {
                     name="priceCoin"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Price coin (Optional)</FormLabel>
+                            <FormLabel className="flex flex-col items-start">Price coin
+                                <span className="text-muted-foreground">(If you want the item to be unpurchasable, leave this field blank.)</span>
+                            </FormLabel>
                             <FormControl>
-                               <Input
-          type="number"
-          placeholder="Enter price"
-          {...field}
-        />
+                                <Input
+                                    type="number"
+                                    placeholder="Enter price"
+                                    {...field}
+                                />
                             </FormControl>
                             <FormMessage />
                         </FormItem>

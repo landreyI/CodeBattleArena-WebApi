@@ -24,9 +24,10 @@ interface GenericDropdownMenuProps {
     triggerContent: React.ReactNode;
     menuLabel: string;
     actions: MenuAction[];
+    className?: string;
 }
 
-export function GenericDropdownMenu({ triggerContent, menuLabel, actions }: GenericDropdownMenuProps) {
+export function GenericDropdownMenu({ triggerContent, menuLabel, actions, className }: GenericDropdownMenuProps) {
     const navigate = useNavigate();
 
     return (
@@ -34,7 +35,7 @@ export function GenericDropdownMenu({ triggerContent, menuLabel, actions }: Gene
             <DropdownMenuTrigger asChild>
                 {triggerContent}
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="border">
+            <DropdownMenuContent align="end" className={`border ${className}`}>
                 <DropdownMenuLabel>{menuLabel}</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>

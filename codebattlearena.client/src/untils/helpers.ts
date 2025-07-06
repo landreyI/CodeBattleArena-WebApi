@@ -7,8 +7,41 @@ export const getArray = (input: any): any[] => {
     return [];
 };
 
+export function isQuestResetAvailable(
+    completedAt?: Date,
+    repeatAfterDays?: number
+): boolean {
+    if (!completedAt || !repeatAfterDays) return false;
+
+    const completedDate = new Date(completedAt);
+    const resetDate = new Date(completedDate);
+    resetDate.setDate(resetDate.getDate() + repeatAfterDays);
+
+    return new Date() >= resetDate;
+}
 export function getProgressDisplay(progress: string | null | undefined, target?: string) {
     return (progress ? `Current: ${progress}` : "No progress") + ` : ${ target }`;
+}
+
+export function getLevelData(totalExp: number) {
+    let level = 1;
+    let expForNextLevel = 100;
+    let remainingExp = totalExp;
+
+    while (remainingExp >= expForNextLevel) {
+        remainingExp -= expForNextLevel;
+        level++;
+        expForNextLevel = Math.floor(expForNextLevel * 1.2);
+    }
+
+    const progress = Math.floor((remainingExp / expForNextLevel) * 100);
+
+    return {
+        level,
+        expToNextLevel: expForNextLevel,
+        currentExp: remainingExp,
+        progressPercent: progress,
+    };
 }
 
 export const typeItemClassMap: Record<TypeItem, string> = {

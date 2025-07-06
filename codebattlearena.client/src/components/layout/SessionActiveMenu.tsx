@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { ExternalLink, MessageCircle, SeparatorVertical, Users } from "lucide-react";
 import { useActiveSession } from "@/contexts/ActiveSessionContext";
 import { Button } from "@/components/ui/button";
-import InlineNotification from "@/components/common/InlineErrorNotification";
+import InlineNotification from "@/components/common/InlineNotification";
 import { useSessionEventsHub } from "@/hooks/hubs/session/useSessionEventsHub";
 import { useAuth } from "@/contexts/AuthContext";
 import { useEffect } from "react";
@@ -80,11 +80,13 @@ export function SessionActiveMenu() {
 
     useSessionEventsHub(activeSession?.idSession ?? undefined, {
         onDelete: () => {
+            setNotification(null);
             setNotification("This session has been deleted");
             leaveSession();
         },
         onUpdate: (session) => setActiveSession(session),
         onJoin: (player) => {
+            setNotification(null);
             setNotification(`player joined: ${player.username}`);
             if (activeSession) {
                 setActiveSession({
@@ -94,12 +96,20 @@ export function SessionActiveMenu() {
             }
         },
         onLeave: (player) => {
+            setNotification(null);
             setNotification(`player leave: ${player.username}`);
             if (activeSession) {
                 setActiveSession({
                     ...activeSession,
                     amountPeople: (activeSession.amountPeople ?? 0) - 1,
                 });
+            }
+        },
+        onKickOut: (player) => {
+            setNotification(null);
+            setNotification(`player kicked: ${player.username}`);
+            if (activeSession) {
+                refreshSession();
             }
         },
         onStartGame: () => {
@@ -136,17 +146,15 @@ export function SessionActiveMenu() {
     return (
         <>
             {notification && (
-                <InlineNotification message={notification} position="top" className="bg-sky-600" />
+                <InlineNotification message={notification} className="bg-blue" />
             )}
 
             {countdown !== null && countdown > 0 && (
                 <InlineNotification
                     key={`countdown-${countdown}`}
                     message={`Game starts in ${countdown} seconds...`}
-                    position="top"
                     className="bg-primary"
                     duration={1000}
-                    fadeDuration={100}
                 />
             )}
 

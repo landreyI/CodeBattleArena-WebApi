@@ -1,12 +1,19 @@
-﻿namespace CodeBattleArena.Server.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace CodeBattleArena.Server.Models
 {
     public class Friend
     {
-        public string IdPlayer1 { get; set; }
-        public virtual Player? Player1 { get; set; }
-        public string IdPlayer2 { get; set; }
-        public virtual Player? Player2 { get; set; }
+        [Key]
+        public int IdFriend { get; set; }
+        public string RequesterId { get; set; }
+        public virtual Player Requester { get; set; }
 
-        public DateTime FriendshipDate { get; set; } = DateTime.Now;
+        public string AddresseeId { get; set; }
+        public virtual Player Addressee { get; set; }
+
+        public bool IsFriendship { get; set; }
+
+        public DateTime? FriendshipDate { get; set; }
     }
 }

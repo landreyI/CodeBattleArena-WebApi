@@ -11,6 +11,7 @@ namespace CodeBattleArena.Server.Services.Notifications.INotifications
         Task NotifySessionUpdatedAllAsync(SessionDto sessionDto);
         Task NotifySessionJoinAsync(int idSession, PlayerDto player);
         Task NotifySessionUnjoinAsync(int idSession, PlayerDto player);
+        Task NotifySessionKickOutAsync(int idSession, PlayerDto player);
         Task NotifyStartGameAsync(int idSession);
         Task NotifyFinishGameAsync(int idSession);
         Task NotifyUpdateCompletedCount(int idSession, int count);

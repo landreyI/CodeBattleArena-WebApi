@@ -7,9 +7,10 @@ import { Link } from "react-router-dom";
 interface Props {
     taskPlay: TaskPlay;
     className?: string;
+    children?: React.ReactNode;
 }
 
-export function QuestMiniCard({ taskPlay, className }: Props) {
+export function QuestMiniCard({ taskPlay, className, children }: Props) {
     return (
         <Link to={`/quest/info-quest/${taskPlay.idTask}`} title="View Quest">
             <Card className={`border rounded-2xl p-0 ${className}`}>
@@ -43,6 +44,8 @@ export function QuestMiniCard({ taskPlay, className }: Props) {
                             </div>
                         )}
                     </div>
+
+                    {children}
                 </CardContent>
             </Card>
         </Link>

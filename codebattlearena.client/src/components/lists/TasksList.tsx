@@ -1,6 +1,8 @@
 import { TaskProgramming } from "@/models/dbModels";
 import { TaskProgrammingMiniCard } from "../cards/TaskProgrammingMiniCard";
 import { motion } from "framer-motion";
+import IconButton from "../buttons/IconButton";
+import { Trash2 } from "lucide-react";
 interface Props {
     tasks: TaskProgramming[],
     cardWrapperClassName?: string;
@@ -19,9 +21,11 @@ export function TasksList({ tasks, cardWrapperClassName, onDelete }: Props) {
                 <TaskProgrammingMiniCard
                     key={task.idTaskProgramming}
                     task={task}
-                    onDelete={onDelete}
                     className={cardWrapperClassName}
                 >
+                    {onDelete && (
+                        <IconButton icon={<Trash2 className="w-4 h-4" />} onClick={() => onDelete(task.idTaskProgramming! ?? "")} />
+                    )}
                 </TaskProgrammingMiniCard>
             ))}
         </motion.div>

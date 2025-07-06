@@ -29,6 +29,10 @@ namespace CodeBattleArena.Server.Repositories
                     p.MinWins <= player.Victories &&
                     p.MaxWins >= player.Victories, cancellationToken);
         }
+        public async Task<League> GetLeagueByNameAsync(string name, CancellationToken cancellationToken)
+        {
+            return await _context.Leagues.FirstOrDefaultAsync(l => l.Name.ToLower() == name.ToLower());
+        }
 
         public async Task<List<League>> GetLeaguesAsync(CancellationToken cancellationToken)
         {

@@ -44,10 +44,7 @@ namespace CodeBattleArena.Server.QuestSystem.Handlers
                 {
                     if (QuestHelper.TryResetIfRepeatable(playerTask))
                     {
-                        playerTask.IsCompleted = false;
-                        playerTask.ProgressValue = "0";
-                        playerTask.CompletedAt = null;
-                        playerTask.IsGet = false;
+                        QuestHelper.ResetPlayerTaskPlay(playerTask, "0");
                     }
                     else
                         continue;

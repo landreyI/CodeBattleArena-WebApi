@@ -1,4 +1,4 @@
-﻿import { itemsEdit } from "../adminPanel/PanelSheet";
+﻿import { itemsEdit } from "../adminPanel/PanelSidebar";
 import { Button } from "../ui/button";
 import { GenericDropdownMenu } from "./GenericDropdownMenu";
 

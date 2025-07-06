@@ -2,7 +2,7 @@
 
 import { useSession } from "@/hooks/session/useSession";
 import { useState } from "react";
-import { Difficulty, Session, SessionState } from "@/models/dbModels";
+import { Difficulty, Friend, Session, SessionState } from "@/models/dbModels";
 import { SessionCard } from "@/components/cards/SessionCard";
 import LoadingScreen from "@/components/common/LoadingScreen";
 import ErrorMessage from "@/components/common/ErrorMessage";
@@ -11,7 +11,7 @@ import EditSessionModal from "@/components/modals/EditSessionModal";
 import { useSessionPlayers } from "@/hooks/session/useSessionPlayers";
 import SettingMenu from "@/components/menu/SettingMenu";
 import TaskProgrammingMiniCard from "@/components/cards/TaskProgrammingMiniCard";
-import InlineNotification from "@/components/common/InlineErrorNotification";
+import InlineNotification from "@/components/common/InlineNotification";
 import { useDeleteSession } from "@/hooks/session/useDeleteSession";
 import { Button } from "@/components/ui/button";
 import { TaskProgrammingFilters } from "@/models/filters";
@@ -27,6 +27,9 @@ import { useBestResult } from "@/hooks/session/useBestResult";
 import CodeVerificationResult from "@/components/cards/CodeVerificationResult";
 import { PlayersList } from "@/components/lists/PlayersList";
 import { useCountCompletedTask } from "@/hooks/session/useCountCompletedTask";
+import { useKickOutSession } from "@/hooks/playerSession/useKickOutSession";
+import { useFriendshipFriends } from "@/hooks/friend/useFriendshipFriends";
+import FriendsSelectModal from "@/components/modals/FriendsSelectModal";
 
 export function SessionInfo() {
     const { sessionId } = useParams<{ sessionId: string }>();
@@ -41,9 +44,13 @@ export function SessionInfo() {
     const { error: finishError, finishGame } = useFinishGame();
     const { playerSession: bestResult, reloadBestResult } = useBestResult(Number(sessionId));
     const { activeSession, setActiveSession, leaveSession } = useActiveSession();
+    const { kickOutSession, error: kickError } = useKickOutSession();
     const { count, setCount, error: countCompletedError, reloadCountCompleted } = useCountCompletedTask(Number(sessionId));
     const [password, setPassword] = useState<string>("");
     const { user } = useAuth();
+
+    const { friendships, loading: friendshipsLoad, error: friendshipsError, reloadFriendships } = useFriendshipFriends();
+    const [showSelectedFriends, setShowSelectedFriends] = useState(false);
 
     useSessionEventsHub(Number(sessionId), {
         onDelete: () => navigate("/home"),
@@ -55,6 +62,7 @@ export function SessionInfo() {
         },
         onJoin: () => reloadPlayers(),
         onLeave: () => reloadPlayers(),
+        onKickOut: () => reloadPlayers(),
         onFinishGame: () => reloadBestResult(),
         onUpdateCountCompleted: (count) => setCount(count), 
     });
@@ -63,9 +71,8 @@ export function SessionInfo() {
         setSession(updatedSession);
     };
 
-    const handleDeletPlayer = (playerId: string) => {
-        const newPlayers = players.filter((player) => player.id !== playerId);
-        setPlayers(newPlayers);
+    const handleDeletPlayer = async (playerId: string) => {
+        const success = await kickOutSession(playerId, Number(sessionId));
     };
 
     const handlePlayerSessionInfo = (playerId?: string) => {
@@ -105,6 +112,17 @@ export function SessionInfo() {
         navigate(`/task/list-task?${ query }`);
     };
 
+    const handlePressSelectedFriends = () => {
+        if (!friendships || friendships.length === 0)
+            reloadFriendships();
+        setShowSelectedFriends(true);
+    }
+
+    const handleSelectedFriend = async (selectedFriend?: Friend[]) => {
+        setShowSelectedFriends(false);
+        setNotification(null);
+        console.log(selectedFriend);
+    };
 
     if (sessionLoad) return <LoadingScreen />
     if (sessionError) return <ErrorMessage error={sessionError} />;
@@ -115,14 +133,14 @@ export function SessionInfo() {
     const isPrivate = session?.state === SessionState.Private;
     const isJoined = activeSession?.idSession === session?.idSession;
 
-    const error = deleteError || joinError || startError || finishError;
+    const error = deleteError || joinError || startError || finishError || kickError || countCompletedError;
 
     return (
         <>
-            {error && <InlineNotification message={error.message} position="top" className="bg-red" />}
+            {error && <InlineNotification message={error.message} className="bg-red" />}
 
             {notification && (
-                <InlineNotification message={notification} position="top" className="bg-blue" />
+                <InlineNotification message={notification} className="bg-blue" />
             )}
 
             <div className="glow-box">
@@ -195,7 +213,10 @@ export function SessionInfo() {
                                     </Button>
                                 )}
 
-                                <Button className="btn-primary btn-animation flex items-center justify-center">
+                                <Button
+                                    onClick={handlePressSelectedFriends}
+                                    className="btn-primary btn-animation flex items-center justify-center"
+                                >
                                     Invite friend
                                 </Button>
                             </>
@@ -256,7 +277,7 @@ export function SessionInfo() {
                             <PlayersList
                                 players={players}
                                 cardWrapperClassName="hover:scale-[1.02] transition"
-                                onDelete={!isFinished ? handleDeletPlayer : undefined}
+                                onDelete={(!isFinished && isEdit) ? handleDeletPlayer : undefined}
                                 onPlayerSessionInfo={
                                     session.isStart
                                         ? handlePlayerSessionInfo
@@ -269,6 +290,9 @@ export function SessionInfo() {
             </div>
             {session && (
                 <EditSessionModal open={showEditSession} session={session} onClose={() => setShowEditSession(false)} onUpdate={handleUpdateSession} />
+            )}
+            {friendships && (
+                <FriendsSelectModal open={showSelectedFriends} friends={friendships} onClose={() => setShowSelectedFriends(false)} isMultipleSelect={true} onSaveSelected={handleSelectedFriend} />
             )}
         </>
     );

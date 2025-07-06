@@ -10,12 +10,12 @@ import { usePlayer } from "@/contexts/PlayerContext";
 
 interface Props {
     item: Item;
-    onDelete?: (taskId: number) => void;
     isOwned?: boolean;
     className?: string;
+    children?: React.ReactNode;
 }
 
-export function ItemMiniCard({ item, onDelete, isOwned, className }: Props) {
+export function ItemMiniCard({ item, isOwned, className, children }: Props) {
     const player = usePlayer();
     
     return (
@@ -42,20 +42,8 @@ export function ItemMiniCard({ item, onDelete, isOwned, className }: Props) {
 
                 <ItemRenderer item={item} className={`rounded-xl mx-auto`} />
 
-                {onDelete && item.idItem != null && (
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        className="rounded-10 ml-auto transition-colors"
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            e.preventDefault();
-                            onDelete?.(item.idItem!);
-                        }}
-                    >
-                        <Trash2 className="w-4 h-4" />
-                    </Button>
-                )}
+                {children}
+
                 <div className="mt-auto bg-primary text-center text-black font-semibold rounded-xl w-auto px-2">
                     {item.name}
                 </div>

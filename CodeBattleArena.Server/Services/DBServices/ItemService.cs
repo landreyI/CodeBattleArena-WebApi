@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using CodeBattleArena.Server.DTO;
 using CodeBattleArena.Server.Filters;
 using CodeBattleArena.Server.IRepositories;
 using CodeBattleArena.Server.Models;
@@ -13,13 +14,15 @@ namespace CodeBattleArena.Server.Services.DBServices
     public class ItemService
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly PlayerService _playerService;
         private readonly ILogger<ItemService> _logger;
         private readonly IMapper _mapper;
-        public ItemService(IUnitOfWork unitOfWork, ILogger<ItemService> logger, IMapper mapper)
+        public ItemService(IUnitOfWork unitOfWork, ILogger<ItemService> logger, IMapper mapper, PlayerService playerService)
         {
             _unitOfWork = unitOfWork;
             _logger = logger;
             _mapper = mapper;
+            _playerService = playerService;
         }
 
         public async Task<Item> GetItemAsync(int id, CancellationToken cancellationToken)
@@ -40,6 +43,51 @@ namespace CodeBattleArena.Server.Services.DBServices
             (ISpecification<PlayerItem> spec, CancellationToken cancellationToken)
         {
             return await _unitOfWork.PlayerItemRepository.GetListPlayerItemAsync(spec, cancellationToken);
+        }
+
+
+        public async Task<Result<Unit, ErrorResponse>> BuyItemAsync
+            (string idAuthPlayer, PlayerItem playerItem, CancellationToken cancellationToken, bool commit = true)
+        {
+            var role = await _playerService.GetRolesAsync(idAuthPlayer);
+            bool isStaff = Helpers.BusinessRules.IsStaffRole(role);
+            if (!isStaff || playerItem.IdPlayer != idAuthPlayer) {
+                var player = await _playerService.GetPlayerAsync(idAuthPlayer, cancellationToken);
+                if (player == null)
+                    return Result.Failure<Unit, ErrorResponse>(new ErrorResponse
+                    {
+                        Error = "Player not found."
+                    });
+
+                var item = await GetItemAsync(playerItem.IdItem, cancellationToken);
+                if (item == null)
+                    return Result.Failure<Unit, ErrorResponse>(new ErrorResponse
+                    {
+                        Error = "Item not found."
+                    });
+
+                if (item.PriceCoin == null)
+                {
+                    return Result.Failure<Unit, ErrorResponse>(new ErrorResponse
+                    {
+                        Error = "The product does not have a specific price. It may not be available for purchase."
+                    });
+                }
+                if (!player.Coin.HasValue || (player.Coin < item.PriceCoin))
+                {
+                    return Result.Failure<Unit, ErrorResponse>(new ErrorResponse
+                    {
+                        Error = "You don't have enough game currency."
+                    });
+                }
+                player.Coin -= item.PriceCoin.Value;
+            }
+
+            var resultCreate = await AddPlayerItemAsync(playerItem, cancellationToken, commit);
+            if (!resultCreate.IsSuccess)
+                return resultCreate;
+
+            return Result.Success<Unit, ErrorResponse>(Unit.Value);
         }
 
         public async Task<Result<Unit, ErrorResponse>> DeleteItemAsync

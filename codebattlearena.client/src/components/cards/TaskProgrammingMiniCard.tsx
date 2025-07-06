@@ -2,17 +2,15 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { TaskProgramming } from "@/models/dbModels";
 import { getDifficultyColor } from "@/untils/helpers";
-import { Trash2 } from "lucide-react";
-import { Button } from "../ui/button";
 import { Link } from "react-router-dom";
 
 interface Props {
     task: TaskProgramming;
-    onDelete?: (taskId: number) => void;
     className?: string;
+    children?: React.ReactNode;
 }
 
-export function TaskProgrammingMiniCard({ task, onDelete, className }: Props) {
+export function TaskProgrammingMiniCard({ task, className, children }: Props) {
     return (
         <Link to={`/task/info-task/${task.idTaskProgramming}`} title="View Task" >
             <Card className={`border rounded-2xl ${className}`}>
@@ -38,20 +36,7 @@ export function TaskProgrammingMiniCard({ task, onDelete, className }: Props) {
                         </div>
                     </div>
 
-                    {onDelete && task.idTaskProgramming != null && (
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            className="rounded-10 ml-auto transition-colors"
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                e.preventDefault();
-                                onDelete?.(task.idTaskProgramming!);
-                            }}
-                        >
-                            <Trash2 className="w-4 h-4" />
-                        </Button>
-                    )}
+                    {children}
                 </CardContent>
             </Card>
         </Link>

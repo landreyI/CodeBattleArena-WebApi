@@ -1,6 +1,8 @@
 import { Item } from "@/models/dbModels";
 import { ItemMiniCard } from "../cards/ItemMiniCard";
 import { motion } from "framer-motion";
+import IconButton from "../buttons/IconButton";
+import { Trash2 } from "lucide-react";
 interface Props {
     items: Item[],
     playerItems?: Item[],
@@ -23,10 +25,13 @@ export function ItemsList({ items, playerItems, cardWrapperClassName, onDelete }
                     <div key={item.idItem} className="relative h-full">
                         <ItemMiniCard
                             item={item}
-                            onDelete={onDelete}
                             className={`h-full flex flex-col ${cardWrapperClassName ?? ''}`}
                             isOwned={isOwned}
-                        />
+                        >
+                            {onDelete && item.idItem != null && (
+                                <IconButton icon={<Trash2 className="w-4 h-4" />} onClick={() => onDelete(item.idItem! ?? "")} />
+                            )}
+                        </ItemMiniCard>
                     </div>
                 );
             })}

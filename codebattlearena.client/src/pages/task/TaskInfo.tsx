@@ -4,7 +4,7 @@ import EmptyState from "@/components/common/EmptyState";
 import ErrorMessage from "@/components/common/ErrorMessage";
 import LoadingScreen from "@/components/common/LoadingScreen";
 import TaskProgrammingCard from "@/components/cards/TaskProgrammingCard";
-import InlineNotification from "@/components/common/InlineErrorNotification";
+import InlineNotification from "@/components/common/InlineNotification";
 import { useState } from "react";
 import SettingMenu from "@/components/menu/SettingMenu";
 import EditTaskModal from "@/components/modals/EditTaskModal";
@@ -58,10 +58,10 @@ export function TaskInfo() {
 
     return (
         <>
-            {error && <InlineNotification message={error.message} position="top" className="bg-red" />}
+            {error && <InlineNotification message={error.message} className="bg-red" />}
 
             {notification && (
-                <InlineNotification message={notification} position="top" className="bg-blue" />
+                <InlineNotification message={notification} className="bg-blue" />
             )}
 
             <div className="glow-box">

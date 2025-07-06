@@ -4,7 +4,7 @@
 export function SessionMenu() {
     return (
         <GenericDropdownMenu
-            triggerContent={<button className="nav-link">Session</button>}
+            triggerContent={<button className="nav-link justify-start">Session</button>}
             menuLabel="Actions with sessions"
             actions={[
                 { label: "Sessions list", href: "/session/list-sessions", shortcut: "⌘S" },

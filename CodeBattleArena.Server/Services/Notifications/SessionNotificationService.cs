@@ -2,10 +2,7 @@
 using CodeBattleArena.Server.Hubs;
 using CodeBattleArena.Server.Models;
 using CodeBattleArena.Server.Services.Notifications.INotifications;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.SignalR;
-using System.Numerics;
-using static Org.BouncyCastle.Crypto.Engines.SM2Engine;
 
 namespace CodeBattleArena.Server.Services.Notifications
 {
@@ -51,6 +48,12 @@ namespace CodeBattleArena.Server.Services.Notifications
         {
             await _hubContext.Clients.Group($"Session-{idSession}")
                 .SendAsync("SessionLeave", player);
+        }
+
+        public async Task NotifySessionKickOutAsync(int idSession, PlayerDto player)
+        {
+            await _hubContext.Clients.Group($"Session-{idSession}")
+                .SendAsync("SessionKickOut", player);
         }
 
         public async Task NotifyStartGameAsync(int idSession)

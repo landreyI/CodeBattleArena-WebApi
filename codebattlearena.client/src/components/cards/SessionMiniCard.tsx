@@ -10,9 +10,10 @@ import ItemRenderer from "../items/ItemRenderer";
 interface Props {
     session: Session;
     className?: string;
+    children?: React.ReactNode;
 }
 
-export function SessionMiniCard({ session, className }: Props) {
+export function SessionMiniCard({ session, className, children }: Props) {
     const item = useItem();
 
     return (
@@ -64,6 +65,7 @@ export function SessionMiniCard({ session, className }: Props) {
                                 </div>
                             </div>
                         </div>
+                        {children}
                     </CardContent>
                 </Card>
             </Link>

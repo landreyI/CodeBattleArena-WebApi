@@ -22,11 +22,11 @@ namespace CodeBattleArena.Server.QuestSystem.Handlers
 
         public async Task HandleAsync(GameEventContext context, CancellationToken cancellationToken, bool commit = true)
         {
-            await _questService.EnsurePlayerTaskPlayExistsForType(context.PlayerId, TaskType.LeagueAdvance, cancellationToken);
+            await _questService.EnsurePlayerTaskPlayExistsForType(context.PlayerId, TaskType.WinCount, cancellationToken);
 
             var spec = Specification<PlayerTaskPlay>.Combine(
                 new PlayerTaskPlayIncludesPlayer(),
-                new PlayerTaskPlayByTypeSpec(TaskType.LeagueAdvance),
+                new PlayerTaskPlayByTypeSpec(TaskType.WinCount),
                 new PlayerTaskPlaySpec(idPlayer: context.PlayerId)
             );
             var playersTasks = await _questService.GetListPlayerTaskPlayAsync(spec, cancellationToken);
@@ -49,21 +49,21 @@ namespace CodeBattleArena.Server.QuestSystem.Handlers
                 var requiredIdLeague = playerTask.TaskPlay.GetIntParam(TaskParamKey.RequiredId);
                 if (!requiredIdLeague.HasValue) continue;
 
-                var progress = playerTask.ProgressValue;
+                var reqiredLeagueDbName = await _leaderService.GetLeagueByNameAsync(requiredLeague, cancellationToken);
+                var reqiredLeagueDbId = await _leaderService.GetLeagueAsync(requiredIdLeague.Value, cancellationToken);
+                if(reqiredLeagueDbName != reqiredLeagueDbId)
+                    continue;
+
                 var progressDb = await _leaderService.GetLeagueByPlayerAsync(context.PlayerId, cancellationToken);
+                playerTask.ProgressValue = progressDb.Name;
 
-                if (progressDb != null && progressDb.MaxWins < playerTask?.Player?.Victories)
+                if (reqiredLeagueDbId != null && reqiredLeagueDbId.MinWins <= playerTask?.Player?.Victories)
                 {
-                    var leagues = await _leaderService.GetLeaguesAsync(cancellationToken);
-
-                    var updateLeague = leagues.FirstOrDefault(l => l.MinWins > progressDb.MaxWins);
-                    if (updateLeague == null) continue;
-
-                    progress = updateLeague.Name;
+                    var progress = reqiredLeagueDbId.Name;
                     playerTask.ProgressValue = progress.ToString();
 
                     if (requiredLeague.ToLowerInvariant() == progress.ToLowerInvariant() 
-                            || requiredIdLeague == updateLeague.IdLeague)
+                            || requiredIdLeague == reqiredLeagueDbId.IdLeague)
                         playerTask.IsCompleted = true;
                 }
             }

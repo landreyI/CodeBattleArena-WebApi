@@ -29,7 +29,9 @@ namespace CodeBattleArena.Server.Controllers
                     id = user.Id,
                     userName = user.UserName,
                     roles = roles,
-                    photoUrl = user.PhotoUrl
+                    photoUrl = user.PhotoUrl,
+                    coin = user.Coin,
+                    experience = user.Experience
                 });
             }
             return Unauthorized();

@@ -7,7 +7,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useState, useEffect } from "react";
 import { ToggleSizeButton } from "@/components/buttons/ToggleSizeButton";
 import { useTask } from "@/hooks/task/useTask";
-import InlineNotification from "@/components/common/InlineErrorNotification";
+import InlineNotification from "@/components/common/InlineNotification";
 import CodeViewer from "@/components/common/CodeViewer";
 import InputDatasList from "@/components/lists/InputDatasList";
 import { Button } from "@/components/ui/button";
@@ -142,7 +142,7 @@ export function PlayerCodePage() {
 
     return (
         <>
-            {errorNotifi && <InlineNotification message={errorNotifi.message} position="top" className="bg-red" />}
+            {errorNotifi && <InlineNotification message={errorNotifi.message} className="bg-red" />}
 
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-4">
                 {responseCode && (

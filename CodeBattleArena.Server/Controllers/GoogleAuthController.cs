@@ -64,7 +64,7 @@ namespace Travel_Agency.Controllers
                     return BadRequest(new { message = string.Join(", ", result.Errors.Select(e => e.Description)) });
 
                 await _userManager.AddLoginAsync(player, new ExternalLoginInfo(null, "Google", infoUser.Id, null));
-                await _userManager.AddToRoleAsync(player, "User");
+                await _userManager.AddToRolesAsync(player, ["User"]);
             }
 
             var loginInfo = new ExternalLoginInfo(null, "Google", infoUser.Id, null);

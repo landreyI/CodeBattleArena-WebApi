@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CodeBattleArena.Server.Migrations
 {
     [DbContext(typeof(AppDBContext))]
-    [Migration("20250618161000_Add_RepeatAfterDays_To_TaskPlay")]
-    partial class Add_RepeatAfterDays_To_TaskPlay
+    [Migration("20250624131453_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -53,18 +53,31 @@ namespace CodeBattleArena.Server.Migrations
 
             modelBuilder.Entity("CodeBattleArena.Server.Models.Friend", b =>
                 {
-                    b.Property<string>("IdPlayer1")
+                    b.Property<int>("IdFriend")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdFriend"));
+
+                    b.Property<string>("AddresseeId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("IdPlayer2")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<DateTime>("FriendshipDate")
+                    b.Property<DateTime?>("FriendshipDate")
                         .HasColumnType("datetime2");
 
-                    b.HasKey("IdPlayer1", "IdPlayer2");
+                    b.Property<bool>("IsFriendship")
+                        .HasColumnType("bit");
 
-                    b.HasIndex("IdPlayer2");
+                    b.Property<string>("RequesterId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("IdFriend");
+
+                    b.HasIndex("AddresseeId");
+
+                    b.HasIndex("RequesterId");
 
                     b.ToTable("Friends");
                 });
@@ -232,6 +245,9 @@ namespace CodeBattleArena.Server.Migrations
                     b.Property<string>("AdditionalInformation")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("Coin")
+                        .HasColumnType("int");
+
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
@@ -248,6 +264,9 @@ namespace CodeBattleArena.Server.Migrations
 
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
+
+                    b.Property<int?>("Experience")
+                        .HasColumnType("int");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
@@ -369,6 +388,9 @@ namespace CodeBattleArena.Server.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<bool>("IsCompleted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsGet")
                         .HasColumnType("bit");
 
                     b.Property<string>("PlayerId")
@@ -777,21 +799,21 @@ namespace CodeBattleArena.Server.Migrations
 
             modelBuilder.Entity("CodeBattleArena.Server.Models.Friend", b =>
                 {
-                    b.HasOne("CodeBattleArena.Server.Models.Player", "Player1")
-                        .WithMany("Friends1")
-                        .HasForeignKey("IdPlayer1")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("CodeBattleArena.Server.Models.Player", "Player2")
+                    b.HasOne("CodeBattleArena.Server.Models.Player", "Addressee")
                         .WithMany("Friends2")
-                        .HasForeignKey("IdPlayer2")
+                        .HasForeignKey("AddresseeId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("Player1");
+                    b.HasOne("CodeBattleArena.Server.Models.Player", "Requester")
+                        .WithMany("Friends1")
+                        .HasForeignKey("RequesterId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
-                    b.Navigation("Player2");
+                    b.Navigation("Addressee");
+
+                    b.Navigation("Requester");
                 });
 
             modelBuilder.Entity("CodeBattleArena.Server.Models.Message", b =>
@@ -818,27 +840,27 @@ namespace CodeBattleArena.Server.Migrations
                     b.HasOne("CodeBattleArena.Server.Models.Item", "ActiveAvatar")
                         .WithMany()
                         .HasForeignKey("ActiveAvatarId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("CodeBattleArena.Server.Models.Item", "ActiveBackground")
                         .WithMany()
                         .HasForeignKey("ActiveBackgroundId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("CodeBattleArena.Server.Models.Item", "ActiveBadge")
                         .WithMany()
                         .HasForeignKey("ActiveBadgeId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("CodeBattleArena.Server.Models.Item", "ActiveBorder")
                         .WithMany()
                         .HasForeignKey("ActiveBorderId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("CodeBattleArena.Server.Models.Item", "ActiveTitle")
                         .WithMany()
                         .HasForeignKey("ActiveTitleId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("ActiveAvatar");
 
@@ -856,13 +878,13 @@ namespace CodeBattleArena.Server.Migrations
                     b.HasOne("CodeBattleArena.Server.Models.Item", "Item")
                         .WithMany("PlayerItems")
                         .HasForeignKey("IdItem")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("CodeBattleArena.Server.Models.Player", "Player")
                         .WithMany("PlayerItems")
                         .HasForeignKey("IdPlayer")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Item");

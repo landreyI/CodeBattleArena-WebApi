@@ -1,5 +1,5 @@
 import { useState } from "react";
-import InlineNotification from "@/components/common/InlineErrorNotification";
+import InlineNotification from "@/components/common/InlineNotification";
 import QuestForm from "@/components/forms/QuestForm";
 
 export function CreateQuest() {
@@ -13,7 +13,7 @@ export function CreateQuest() {
     return (
         <>
             {notification && (
-                <InlineNotification message={notification} position="top" className="bg-blue" />
+                <InlineNotification message={notification} className="bg-blue" />
             )}
 
             <div className="glow-box">

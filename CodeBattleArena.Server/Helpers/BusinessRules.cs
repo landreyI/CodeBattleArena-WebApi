@@ -6,13 +6,20 @@ namespace CodeBattleArena.Server.Helpers
 {
     public static class BusinessRules
     {
+        public static bool IsStaffRole(IList<string>? roles)
+        {
+            return IsModerationRole(roles) || IsEditRole(roles);
+        }
         public static bool IsModerationRole(IList<string>? roles)
         {
             return roles != null && roles
                 .Any(r => Enum.TryParse<Role>(r, true, out var parsedRole) &&
                           (parsedRole == Role.Admin || parsedRole == Role.Moderator));
         }
-
+        public static bool IsEditSession(string userId, Session session, IList<string>? roles)
+        {
+            return IsOwner(userId, session) || IsModerationRole(roles);
+        }
         public static bool IsEditRole(IList<string>? roles)
         {
             return roles != null && roles

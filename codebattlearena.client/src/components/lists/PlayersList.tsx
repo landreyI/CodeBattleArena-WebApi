@@ -1,11 +1,14 @@
 ﻿import { Player } from "@/models/dbModels";
 import PlayerMiniCard from "../cards/PlayerMiniCard";
 import { motion } from "framer-motion";
+import IconButton from "../buttons/IconButton";
+import { Terminal, Trash2 } from "lucide-react";
 
 interface Props {
     players: Player[],
     onDelete?: (playerId: string) => void;
     onPlayerSessionInfo?: (playerId: string) => void;
+    renderItemAddon?: (player: Player) => React.ReactNode;
     cardWrapperClassName?: string;
     isTop?: boolean;
     isNumbered?: boolean;
@@ -16,6 +19,7 @@ export function PlayersList({
     onDelete,
     cardWrapperClassName,
     onPlayerSessionInfo,
+    renderItemAddon,
     isTop = false,
     isNumbered = false
 }: Props) {
@@ -47,7 +51,7 @@ export function PlayersList({
             className="grid gap-3"
         >
             {sortedPlayers.map((player, index) => (
-                <div key={player.id} className={`relative rounded-xl overflow-hidden ${cardWrapperClassName ?? ""}`}>
+                <div key={player.id} className={`relative rounded-xl overflow-hidden  ${cardWrapperClassName ?? ""}`}>
                     {isTop && index < 3 && (
                         <div className="absolute top-1 left-2 bg-primary bg-opacity-60 text-xs px-2 py-0.5 rounded-md z-10">
                             TOP {index + 1}
@@ -56,10 +60,16 @@ export function PlayersList({
                     <PlayerMiniCard
                         player={player}
                         number={isNumbered ? index + 1 : undefined}
-                        onDelete={onDelete}
-                        onPlayerSessionInfo={onPlayerSessionInfo}
                         className={`${getTopStyle(index)}`}
-                    />
+                    >
+                        {onPlayerSessionInfo && (
+                            <IconButton icon={<Terminal className="w-4 h-4" />} onClick={() => onPlayerSessionInfo(player?.id ?? "")} />
+                        )}
+                        {onDelete && (
+                            <IconButton icon={<Trash2 className="w-4 h-4" />} onClick={() => onDelete(player?.id ?? "")} />
+                        )}
+                    </PlayerMiniCard>
+                    {renderItemAddon?.(player)}
                 </div>
             ))}
         </motion.div>

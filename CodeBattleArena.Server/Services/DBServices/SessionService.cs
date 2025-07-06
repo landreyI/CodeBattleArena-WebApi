@@ -89,6 +89,8 @@ namespace CodeBattleArena.Server.Services.DBServices
                 return Result.Failure<Unit, ErrorResponse>(new ErrorResponse { Error = "Session not found." });
 
             var resultAssign = await AssignBestResult(session, ct, commit: false);
+            if (!resultAssign.IsSuccess)
+                return resultAssign;
 
             var list = session.PlayerSessions.ToList();
             foreach (var playerSession in list)
@@ -108,6 +110,8 @@ namespace CodeBattleArena.Server.Services.DBServices
             }
 
             var resultAdd = await AddPlayerCountGames(list, ct, commit: false);
+            if (!resultAdd.IsSuccess)
+                return resultAdd;
 
             var resultStart = await FinishGameInDbAsync(sessionId, ct);
             if (!resultStart.IsSuccess)
@@ -231,9 +235,9 @@ namespace CodeBattleArena.Server.Services.DBServices
                 });
 
             var roles = await _playerService.GetRolesAsync(userId);
-            bool isEdit = userId == session.CreatorId || BusinessRules.IsModerationRole(roles);
+            bool isEditSession = BusinessRules.IsEditSession(userId, session, roles);
 
-            return Result.Success<bool, ErrorResponse>(isEdit);
+            return Result.Success<bool, ErrorResponse>(isEditSession);
         }
         public async Task<Result<Session, ErrorResponse>> CreateSessionAsync
             (string userId, SessionDto dto, CancellationToken ct)

@@ -1,5 +1,4 @@
 ﻿import { motion, useMotionValue, useSpring } from "framer-motion";
-import { useState } from "react";
 
 const logos = [
     { src: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/c/c-original.svg', alt: 'C' },
@@ -74,24 +73,70 @@ function OrbitingLogo({ index, total, logo }: any) {
     );
 }
 
+function WigglingLogo({ logo, index }: { logo: { src: string; alt: string }, index: number }) {
+    return (
+        <motion.div
+            className="flex flex-1 justify-center"
+            animate={{
+                rotate: [0, 3, -3, 0],
+                scale: [1, 1.05, 0.97, 1.03, 1],
+            }}
+            transition={{
+                rotate: {
+                    repeat: Infinity,
+                    duration: 4 + (index % 3),
+                    ease: 'easeInOut',
+                    delay: index * 0.2,
+                },
+                scale: {
+                    repeat: Infinity,
+                    duration: 4 + (index % 3),
+                    ease: 'easeInOut',
+                    delay: index * 0.2,
+                },
+            }}
+        >
+            <img src={logo.src} alt={logo.alt} className="h-10 object-contain" />
+        </motion.div>
+    );
+}
+
 export function HomePage() {
     return (
-        <div className="w-full h-screen flex items-center justify-center relative overflow-hidden">
-            {/* Центрований контент */}
-            <div className="glow-box z-10 text-center">
-                <div className="text-primary font-mono mb-4 text-md sm:text-lg whitespace-pre-line">
+        <div className="w-full h-auto md:h-screen flex flex-col items-center justify-center relative overflow-hidden">
+            {/* Верхняя полоса логотипов (мобилка) */}
+            <div className="md:hidden w-full">
+                <div className="flex w-full">
+                    {logos.slice(0, Math.ceil(logos.length / 2)).map((logo, idx) => (
+                        <WigglingLogo key={idx} logo={logo} index={idx} />
+                    ))}
+                </div>
+            </div>
+
+            {/* Центрированный контент */}
+            <div className="glow-box z-10 text-center my-4">
+                <div className="text-primary font-semibold mb-4 text-md sm:text-lg whitespace-pre-line">
                     Love to code and play? <br /> Start playing with friends in any programming language!
                 </div>
                 <a
                     href="/session/create-session"
-                    className="inline-block mt-4 px-6 py-2 bg-primary btn-animation rounded-lg shadow-md"
+                    className="inline-block font-semibold mt-4 px-6 py-2 bg-primary btn-animation rounded-lg shadow-md"
                 >
                     Start
                 </a>
             </div>
 
-            {/* Логотипи на орбіті */}
-            <div className="absolute w-full h-full z-0 pointer-events-none">
+            {/* Нижняя полоса логотипов (мобилка) */}
+            <div className="md:hidden w-full">
+                <div className="flex w-full">
+                    {logos.slice(Math.ceil(logos.length / 2)).map((logo, idx) => (
+                        <WigglingLogo key={idx} logo={logo} index={idx} />
+                    ))}
+                </div>
+            </div>
+
+            {/* Орбитальные иконки (только на десктопе) */}
+            <div className="hidden md:block absolute w-full h-full z-0 pointer-events-none">
                 {logos.map((logo, index) => (
                     <OrbitingLogo key={index} index={index} total={logos.length} logo={logo} />
                 ))}

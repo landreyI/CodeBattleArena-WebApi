@@ -25,10 +25,10 @@
     --color-input: var(--input);
     --color-ring: var(--color-primary);
 
-    --color-red: var(--destructive);
-    --color-red-pressed: var(--destructive-pressed);
-    --color-green: var(--success);
-    --color-green-pressed: var(--success-pressed);
+    --color-red: var(--red);
+    --color-red-pressed: var(--red-pressed);
+    --color-green: var(--green);
+    --color-green-pressed: var(--green-pressed);
     --color-yellow: var(--yellow);
     --color-yellow-pressed: var(--yellow-pressed);
     --color-gray: var(--gray);
@@ -103,21 +103,21 @@
     --input: #e2e8f0;
    
     --primary-green: var(--primary);
-    --primary-red: #fa6969;
-    --primary-yellow: #fad543;
-    --primary-blue: #649dfa;
-    --primary-purple: #c282ff;
+    --primary-red: var(--red);
+    --primary-yellow: var(--yellow);
+    --primary-blue: var(--blue);
+    --primary-purple: var(--purple);
 
-    --destructive: #fc5353; 
-    --destructive-pressed: #e34444;
-    --success: #30db6f; 
-    --success-pressed: #2bc262;
+    --red: #fc5353; 
+    --red-pressed: #e34444;
+    --green: #30db6f; 
+    --green-pressed: #2bc262;
     --yellow: #ffd42b; 
     --yellow-pressed: #ca8a04;
     --gray: #cfd7e8; 
     --gray-pressed: #b6c0d6;
-    --blue: #3b82f6; 
-    --blue-pressed: #1d4ed8;
+    --blue: #649dfa; 
+    --blue-pressed: #5293ff;
     --purple: #a855f7; 
     --purple-pressed: #7e22ce;
     --color-bronze: #ffa24d;
@@ -188,15 +188,15 @@
     --input: #585861;
 
     --primary-green: var(--primary);
-    --primary-red: #fc4e4e;
-    --primary-yellow: #fccc35;
-    --primary-blue: #4b82fa;
-    --primary-purple: #af57ff;
+    --primary-red: var(--red);
+    --primary-yellow: var(--yellow);
+    --primary-blue: var(--blue);
+    --primary-purple: var(--purple);
 
-    --destructive: #eb2a2a; 
-    --destructive-pressed: #d62424;
-    --success: #16a34a; 
-    --success-pressed: #12873d;
+    --red: #eb2a2a; 
+    --red-pressed: #d62424;
+    --green: #16a34a; 
+    --green-pressed: #12873d;
     --yellow: #eab308; 
     --yellow-pressed: #c79806;
     --gray: #6b7280;

@@ -1,7 +1,4 @@
 ﻿using CodeBattleArena.Server.Services.DBServices;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 
 namespace CodeBattleArena.Server.Services
 {

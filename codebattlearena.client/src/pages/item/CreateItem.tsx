@@ -1,6 +1,6 @@
 import ItemForm from "@/components/forms/ItemForm";
 import { useState } from "react";
-import InlineNotification from "@/components/common/InlineErrorNotification";
+import InlineNotification from "@/components/common/InlineNotification";
 
 
 export function CreateItem() {
@@ -13,7 +13,7 @@ export function CreateItem() {
     return (
       <>
             {notification && (
-                <InlineNotification message={notification} position="top" className="bg-blue" />
+                <InlineNotification message={notification} className="bg-blue" />
             )}
 
             <div className="glow-box">

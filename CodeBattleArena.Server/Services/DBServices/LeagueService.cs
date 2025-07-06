@@ -39,6 +39,10 @@ namespace CodeBattleArena.Server.Services.DBServices
         {
             return await _unitOfWork.LeagueRepository.GetLeagueByPlayerAsync(idPlayer,cancellationToken);
         }
+        public async Task<League> GetLeagueByNameAsync(string name, CancellationToken cancellationToken)
+        {
+            return await _unitOfWork.LeagueRepository.GetLeagueByNameAsync(name, cancellationToken);
+        }
         public async Task<League> GetLeagueAsync(int id, CancellationToken cancellationToken)
         {
             return await _unitOfWork.LeagueRepository.GetLeagueAsync(id, cancellationToken);

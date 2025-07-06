@@ -141,31 +141,31 @@ namespace CodeBattleArena.Server.Data
                 .HasOne(p => p.ActiveBackground)
                 .WithMany() // Item не имеет обратной коллекции для ActiveBackground
                 .HasForeignKey(p => p.ActiveBackgroundId)
-                .OnDelete(DeleteBehavior.SetNull);
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Player>()
                 .HasOne(p => p.ActiveAvatar)
                 .WithMany()
                 .HasForeignKey(p => p.ActiveAvatarId)
-                .OnDelete(DeleteBehavior.SetNull);
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Player>()
                 .HasOne(p => p.ActiveBadge)
                 .WithMany()
                 .HasForeignKey(p => p.ActiveBadgeId)
-                .OnDelete(DeleteBehavior.SetNull);
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Player>()
                 .HasOne(p => p.ActiveBorder)
                 .WithMany()
                 .HasForeignKey(p => p.ActiveBorderId)
-                .OnDelete(DeleteBehavior.SetNull);
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Player>()
                 .HasOne(p => p.ActiveTitle)
                 .WithMany()
                 .HasForeignKey(p => p.ActiveTitleId)
-                .OnDelete(DeleteBehavior.SetNull);
+                .OnDelete(DeleteBehavior.Restrict);
 
 
             modelBuilder.Entity<PlayerItem>()
@@ -175,28 +175,25 @@ namespace CodeBattleArena.Server.Data
                 .HasOne(i => i.Item)
                 .WithMany(i => i.PlayerItems)
                 .HasForeignKey(i => i.IdItem)
-                .OnDelete(DeleteBehavior.NoAction);
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<PlayerItem>()
                 .HasOne(i => i.Player)
                 .WithMany(i => i.PlayerItems)
                 .HasForeignKey(i => i.IdPlayer)
-                .OnDelete(DeleteBehavior.NoAction);
+                .OnDelete(DeleteBehavior.Restrict);
 
 
             modelBuilder.Entity<Friend>()
-            .HasKey(f => new { f.IdPlayer1, f.IdPlayer2 });
-
-            modelBuilder.Entity<Friend>()
-                .HasOne(f => f.Player1)
+                .HasOne(f => f.Requester)
                 .WithMany(p => p.Friends1)
-                .HasForeignKey(f => f.IdPlayer1)
+                .HasForeignKey(f => f.RequesterId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Friend>()
-                .HasOne(f => f.Player2)
+                .HasOne(f => f.Addressee)
                 .WithMany(p => p.Friends2)
-                .HasForeignKey(f => f.IdPlayer2)
+                .HasForeignKey(f => f.AddresseeId)
                 .OnDelete(DeleteBehavior.Restrict);
 
 

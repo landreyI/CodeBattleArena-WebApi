@@ -5,7 +5,7 @@ import { LeagueCard } from "@/components/cards/LeagueCard";
 import { usePlayersLeagues } from "@/hooks/league/usePlayersLeagues";
 import { useDeleteLeague } from "@/hooks/league/useDeleteLeague";
 import { League } from "@/models/dbModels";
-import InlineNotification from "@/components/common/InlineErrorNotification";
+import InlineNotification from "@/components/common/InlineNotification";
 
 export function LeaguesPage() {
     const { playersLeagues, setPlayersLeagues, loadPlayersLeagues, loading: playersLeaguesLoad, error: playersLeaguesError } = usePlayersLeagues();
@@ -33,7 +33,7 @@ export function LeaguesPage() {
 
     return (
         <>
-            {deleteError && <InlineNotification message={deleteError.message} position="top" className="bg-red" />}
+            {deleteError && <InlineNotification message={deleteError.message} className="bg-red" />}
 
             <div className="w-full lg:w-[65%] mx-auto">
                 {playersLeagues.map((playersLeague, index) => (

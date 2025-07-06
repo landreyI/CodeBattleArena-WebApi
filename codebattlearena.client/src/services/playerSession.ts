@@ -37,6 +37,19 @@ export const fetchLeaveSession = async (): Promise<boolean> => {
     }
 }
 
+export const fetchKickOutSession = async (idDeletePlayer?: string, idSession?: number): Promise<boolean> => {
+    try {
+        let response = await api.delete(`PlayerSession/kick-out-session`, {
+            params: { idDeletePlayer, idSession }
+        });
+        return response.data;
+    }
+    catch (error) {
+        console.error(error);
+        throw error;
+    }
+}
+
 
 export const fetchJoinSession = async (idSession: number, password?: string): Promise<boolean> => {
     try {

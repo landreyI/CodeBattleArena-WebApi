@@ -55,9 +55,9 @@ export const fetchCreateItem = async (item: Item): Promise<{ idItem: number }> =
     }
 }
 
-export const fetchCreatePlayerItem = async (playerItem: PlayerItem): Promise<boolean> => {
+export const fetchBuyItem = async (playerItem: PlayerItem): Promise<boolean> => {
     try {
-        const response = await api.post(`Item/add-player-item`, playerItem);
+        const response = await api.post(`Item/buy-item`, playerItem);
         return response.data;
     }
     catch (error) {

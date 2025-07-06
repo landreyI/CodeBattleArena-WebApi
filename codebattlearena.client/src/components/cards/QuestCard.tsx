@@ -20,7 +20,7 @@ export function QuestCard({ taskPlay, className }: Props) {
                     <Badge
                         className={`w-fit ${taskPlay.isRepeatable ? "bg-green" : "bg-red"}`}
                     >
-                        <div className="flex items-center gap-1">
+                        <div className="flex items-center gap-1 text-sm">
                             <Repeat2 className="w-4 h-4" />
                             {taskPlay.isRepeatable ? "Repeatable" : "One-time"}
                         </div>

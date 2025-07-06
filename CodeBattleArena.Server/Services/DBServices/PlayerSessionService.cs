@@ -6,6 +6,7 @@ using CodeBattleArena.Server.Specifications;
 using CodeBattleArena.Server.Specifications.PlayerSessionSpec;
 using CodeBattleArena.Server.Specifications.SessionSpec;
 using CodeBattleArena.Server.Untils;
+using System.Threading;
 
 namespace CodeBattleArena.Server.Services.DBServices
 {
@@ -14,12 +15,15 @@ namespace CodeBattleArena.Server.Services.DBServices
         private readonly IUnitOfWork _unitOfWork;
         private readonly ILogger<SessionService> _logger;
         private readonly SessionService _sessionService;
+        private readonly PlayerService _playerService;
 
-        public PlayerSessionService(IUnitOfWork unitOfWork, ILogger<SessionService> logger, SessionService sessionService)
+        public PlayerSessionService(IUnitOfWork unitOfWork, ILogger<SessionService> logger, 
+            SessionService sessionService, PlayerService playerService)
         {
             _unitOfWork = unitOfWork;
             _logger = logger;
             _sessionService = sessionService;
+            _playerService = playerService;
         }
 
         public async Task<Result<PlayerSession, ErrorResponse>> CreatPlayerSession
@@ -76,6 +80,31 @@ namespace CodeBattleArena.Server.Services.DBServices
             return Result.Success<PlayerSession, ErrorResponse>(playerSession);
         }
 
+        public async Task<Result<Unit, ErrorResponse>> KickOutSessionAsync
+            (string idAuthPlayer, int idSession, string idDeletePlayer, CancellationToken ct, bool commit = true)
+        {
+            var activeSession = await GetActiveSession(idDeletePlayer, ct);
+            if (activeSession == null)
+                return Result.Failure<Unit, ErrorResponse>(new ErrorResponse
+                {
+                    Error = "Active session not found."
+                });
+
+            var roles = await _playerService.GetRolesAsync(idAuthPlayer);
+            var isEditSession = BusinessRules.IsEditSession(idAuthPlayer, activeSession, roles);
+
+            if(!isEditSession)
+                return Result.Failure<Unit, ErrorResponse>(new ErrorResponse
+                {
+                    Error = "You do not have permission to perform this action."
+                });
+
+            var resultDeleting = await DelPlayerSessionInDbAsync(idSession, idDeletePlayer, ct, commit);
+            if (!resultDeleting.IsSuccess)
+                return resultDeleting;
+
+            return Result.Success<Unit, ErrorResponse>(Unit.Value);
+        }
         public async Task<Session> GetActiveSession(string idPlayer, CancellationToken ct)
         {
             var checkResult = ValidationHelper.CheckUserId<bool>(idPlayer);

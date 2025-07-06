@@ -9,6 +9,7 @@ interface SessionEventHandlers {
     onUpdate?: (session: Session) => void;
     onJoin?: (player: Player) => void;
     onLeave?: (player: Player) => void;
+    onKickOut?: (player: Player) => void;
     onListUpdate?: (session: Session) => void;
     onAdding?: (session: Session) => void;
     onListDelete?: (id: number) => void;
@@ -40,6 +41,10 @@ export function useSessionEventsHub(sessionId: number | undefined, handlers: Ses
 
     useSessionHubEvent<[Player]>("SessionLeave", (player: Player) => {
         handlers.onLeave?.(player);
+    });
+
+    useSessionHubEvent<[Player]>("SessionKickOut", (player: Player) => {
+        handlers.onKickOut?.(player);
     });
 
     useSessionHubEvent<[Session]>("SessionsListUpdated", (session: Session) => {

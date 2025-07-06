@@ -1,6 +1,6 @@
 import { PlayerTaskPlay } from "@/models/dbModels";
 import { CheckCircle, Clock } from "lucide-react";
-import { getProgressDisplay } from "../../untils/helpers";
+import { getProgressDisplay } from "@/untils/helpers";
 
 interface Props {
     playerProgress?: PlayerTaskPlay;
@@ -19,7 +19,7 @@ export function ProgressQuest({ playerProgress, taskPlayParamValue, className }:
             </div>
 
             <span className="font-medium">
-                {getProgressDisplay(playerProgress?.progressValue, taskPlayParamValue)}
+                {getProgressDisplay(playerProgress?.progressValue?.toLowerCase(), taskPlayParamValue)}
             </span>
         </div>
     )

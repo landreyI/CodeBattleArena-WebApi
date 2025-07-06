@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { StandardError } from '@/untils/errorHandler';
+import { AlertTriangle, ChevronDown, ChevronUp } from 'lucide-react';
 
 interface Props {
     error: StandardError;
@@ -7,35 +8,48 @@ interface Props {
 
 export function ErrorMessage({ error }: Props) {
     const [showDetails, setShowDetails] = useState(false);
-    
-    return (
-        <div className="flex flex-col items-center justify-center h-auto text-red px-4 py-8">
-            <p className="text-xl font-mono mb-4">Error: {error.message}</p>
 
-            {(error.code != null || (error.fieldErrors && Object.keys(error.fieldErrors).length > 0)) && (
+    return (
+        <div className="w-full max-w-lg mx-auto bg-red-50 border border-red-300 text-red-800 rounded-2xl shadow-md p-6 space-y-4">
+            <div className="flex items-center space-x-3">
+                <AlertTriangle className="w-6 h-6 text-red-500" />
+                <p className="text-lg font-semibold">Error: {error.message}</p>
+            </div>
+
+            {(error.code || (error.fieldErrors && Object.keys(error.fieldErrors).length > 0)) && (
                 <button
                     onClick={() => setShowDetails(prev => !prev)}
-                    className="btn-animation btn-red"
+                    className="flex items-center space-x-2 text-sm text-red-600 hover:underline transition"
                 >
-                    {showDetails ? 'Hide details' : 'Find out more'}
+                    {showDetails ? (
+                        <>
+                            <ChevronUp className="w-4 h-4" />
+                            <span>Hide details</span>
+                        </>
+                    ) : (
+                        <>
+                            <ChevronDown className="w-4 h-4" />
+                            <span>More details</span>
+                        </>
+                    )}
                 </button>
             )}
 
             {showDetails && (
-                <div className="mt-4 p-4 rounded-lg w-full max-w-md text-sm space-y-2">
+                <div className="bg-red-100 rounded-lg p-4 text-sm space-y-2">
                     {error.code && (
                         <div>
-                            <span className="font-semibold text-red-300">Code:</span> {error.code}
+                            <span className="font-medium">Error code:</span> {error.code}
                         </div>
                     )}
 
                     {error.fieldErrors && Object.keys(error.fieldErrors).length > 0 && (
                         <div>
-                            <span className="font-semibold text-red-300">Field Errors:</span>
-                            <ul className="list-disc list-inside ml-2 mt-1">
+                            <span className="font-medium">Field errors:</span>
+                            <ul className="list-disc list-inside mt-1 space-y-1">
                                 {Object.entries(error.fieldErrors).map(([field, msg]) => (
                                     <li key={field}>
-                                        <span className="text-red-200">{field}:</span> {msg}
+                                        <span className="font-semibold">{field}:</span> {msg}
                                     </li>
                                 ))}
                             </ul>

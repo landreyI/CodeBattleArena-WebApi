@@ -131,6 +131,25 @@ namespace CodeBattleArena.Server.Controllers
         }
 
         [Authorize]
+        [HttpDelete("kick-out-session")]
+        public async Task<IActionResult> KickOutSession(string idDeletePlayer, int idSession, CancellationToken cancellationToken)
+        {
+            var currentUserId = _userManager.GetUserId(User);
+
+            var resultKick = await _playerSessionService.KickOutSessionAsync
+                (currentUserId, idSession, idDeletePlayer, cancellationToken);
+
+            if (!resultKick.IsSuccess)
+                return UnprocessableEntity(resultKick.Failure);
+
+            var player = await _playerService.GetPlayerAsync(currentUserId, cancellationToken);
+            var dtoPlayer = _mapper.Map<PlayerDto>(player);
+            await _sessionNotificationService.NotifySessionKickOutAsync(idSession, dtoPlayer);
+
+            return Ok(true);
+        }
+
+        [Authorize]
         [HttpPut("join-session")]
         public async Task<IActionResult> JoinSession(int? idSession, string? password, CancellationToken cancellationToken)
         {
@@ -151,6 +170,22 @@ namespace CodeBattleArena.Server.Controllers
             var dtoPlayer = _mapper.Map<PlayerDto>(player);
 
             await _sessionNotificationService.NotifySessionJoinAsync(idSession.Value, dtoPlayer);
+
+            return Ok(true);
+        }
+
+        [Authorize]
+        [HttpPut("invite-session")]
+        public async Task<IActionResult> JoinSession(string? idPlayerInvite, CancellationToken cancellationToken)
+        {
+            if (string.IsNullOrEmpty(idPlayerInvite)) 
+                return BadRequest(new ErrorResponse { Error = "Player ID not specified." });
+
+            var currentUserId = _userManager.GetUserId(User);
+
+            var activeSession = await _playerSessionService.GetActiveSession(currentUserId, cancellationToken);
+            if (activeSession == null)
+                return NotFound(new ErrorResponse { Error = "Not found active session." });
 
             return Ok(true);
         }

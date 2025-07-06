@@ -3,6 +3,8 @@ import { motion } from "framer-motion";
 import { QuestMiniCard } from "../cards/QuestMiniCard";
 import ProgressQuest from "../common/ProgressQuest";
 import { getTaskParamPrimary } from "@/untils/businessRules";
+import QuestResetTimer from "../common/QuestResetTimer";
+import { Badge } from "../ui/badge";
 interface Props {
     tasksPlays: TaskPlay[],
     playerTasksPlays?: PlayerTaskPlay[],
@@ -32,6 +34,19 @@ export function QuestsList({ tasksPlays, playerTasksPlays, cardWrapperClassName,
                             playerProgress={playerProgress}
                             taskPlayParamValue={getTaskParamPrimary(taskPlay)}
                         />
+                        {playerProgress?.isCompleted && !playerProgress?.isGet ? (
+                            <Badge className="text-sm">Reward available</Badge>
+                        ) : playerProgress?.isGet ? (
+                            <div className="flex flex-col md:flex-row gap-2">
+                                <Badge className="text-sm">Award Received</Badge>
+                                <QuestResetTimer
+                                    completedAt={playerProgress?.completedAt ?? undefined}
+                                    repeatAfterDays={taskPlay?.repeatAfterDays ?? undefined}
+                                    className="w-full"
+                                />
+                            </div>
+
+                        ) : null}
                     </div>
                 );
             })}

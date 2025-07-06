@@ -46,6 +46,7 @@ namespace CodeBattleArena.Server.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Type = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    PriceCoin = table.Column<int>(type: "int", nullable: true),
                     CssClass = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true)
@@ -77,6 +78,7 @@ namespace CodeBattleArena.Server.Migrations
                     IdLeague = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
+                    PhotoUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     MinWins = table.Column<int>(type: "int", nullable: false),
                     MaxWins = table.Column<int>(type: "int", nullable: true)
                 },
@@ -86,18 +88,22 @@ namespace CodeBattleArena.Server.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "TaskPlayParams",
+                name: "TasksPlay",
                 columns: table => new
                 {
-                    IdParam = table.Column<int>(type: "int", nullable: false)
+                    IdTask = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    TaskPlayId = table.Column<int>(type: "int", nullable: true),
-                    ParamKey = table.Column<string>(type: "nvarchar(40)", maxLength: 40, nullable: false),
-                    ParamValue = table.Column<string>(type: "nvarchar(40)", maxLength: 40, nullable: false)
+                    Name = table.Column<string>(type: "nvarchar(40)", maxLength: 40, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Type = table.Column<string>(type: "nvarchar(40)", maxLength: 40, nullable: false),
+                    Experience = table.Column<int>(type: "int", nullable: true),
+                    RewardCoin = table.Column<int>(type: "int", nullable: true),
+                    IsRepeatable = table.Column<bool>(type: "bit", nullable: false),
+                    RepeatAfterDays = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_TaskPlayParams", x => x.IdParam);
+                    table.PrimaryKey("PK_TasksPlay", x => x.IdTask);
                 });
 
             migrationBuilder.CreateTable(
@@ -130,6 +136,9 @@ namespace CodeBattleArena.Server.Migrations
                     AdditionalInformation = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Victories = table.Column<int>(type: "int", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CountGames = table.Column<int>(type: "int", nullable: true),
+                    Coin = table.Column<int>(type: "int", nullable: true),
+                    Experience = table.Column<int>(type: "int", nullable: true),
                     ActiveBackgroundId = table.Column<int>(type: "int", nullable: true),
                     ActiveAvatarId = table.Column<int>(type: "int", nullable: true),
                     ActiveBadgeId = table.Column<int>(type: "int", nullable: true),
@@ -157,27 +166,32 @@ namespace CodeBattleArena.Server.Migrations
                         name: "FK_AspNetUsers_Items_ActiveAvatarId",
                         column: x => x.ActiveAvatarId,
                         principalTable: "Items",
-                        principalColumn: "IdItem");
+                        principalColumn: "IdItem",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_AspNetUsers_Items_ActiveBackgroundId",
                         column: x => x.ActiveBackgroundId,
                         principalTable: "Items",
-                        principalColumn: "IdItem");
+                        principalColumn: "IdItem",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_AspNetUsers_Items_ActiveBadgeId",
                         column: x => x.ActiveBadgeId,
                         principalTable: "Items",
-                        principalColumn: "IdItem");
+                        principalColumn: "IdItem",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_AspNetUsers_Items_ActiveBorderId",
                         column: x => x.ActiveBorderId,
                         principalTable: "Items",
-                        principalColumn: "IdItem");
+                        principalColumn: "IdItem",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_AspNetUsers_Items_ActiveTitleId",
                         column: x => x.ActiveTitleId,
                         principalTable: "Items",
-                        principalColumn: "IdItem");
+                        principalColumn: "IdItem",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -225,27 +239,25 @@ namespace CodeBattleArena.Server.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "TasksPlay",
+                name: "TaskPlayParams",
                 columns: table => new
                 {
-                    IdTask = table.Column<int>(type: "int", nullable: false)
+                    IdParam = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(40)", maxLength: 40, nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Type = table.Column<string>(type: "nvarchar(40)", maxLength: 40, nullable: false),
-                    Experience = table.Column<int>(type: "int", nullable: true),
-                    RewardCoin = table.Column<int>(type: "int", nullable: true),
-                    IsRepeatable = table.Column<bool>(type: "bit", nullable: false),
-                    TaskPlayParamId = table.Column<int>(type: "int", nullable: true)
+                    TaskPlayId = table.Column<int>(type: "int", nullable: true),
+                    ParamKey = table.Column<string>(type: "nvarchar(40)", maxLength: 40, nullable: false),
+                    ParamValue = table.Column<string>(type: "nvarchar(40)", maxLength: 40, nullable: false),
+                    IsPrimary = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_TasksPlay", x => x.IdTask);
+                    table.PrimaryKey("PK_TaskPlayParams", x => x.IdParam);
                     table.ForeignKey(
-                        name: "FK_TasksPlay_TaskPlayParams_TaskPlayParamId",
-                        column: x => x.TaskPlayParamId,
-                        principalTable: "TaskPlayParams",
-                        principalColumn: "IdParam");
+                        name: "FK_TaskPlayParams_TasksPlay_TaskPlayId",
+                        column: x => x.TaskPlayId,
+                        principalTable: "TasksPlay",
+                        principalColumn: "IdTask",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -363,22 +375,25 @@ namespace CodeBattleArena.Server.Migrations
                 name: "Friends",
                 columns: table => new
                 {
-                    IdPlayer1 = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    IdPlayer2 = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    FriendshipDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    IdFriend = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    RequesterId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    AddresseeId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    IsFriendship = table.Column<bool>(type: "bit", nullable: false),
+                    FriendshipDate = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Friends", x => new { x.IdPlayer1, x.IdPlayer2 });
+                    table.PrimaryKey("PK_Friends", x => x.IdFriend);
                     table.ForeignKey(
-                        name: "FK_Friends_AspNetUsers_IdPlayer1",
-                        column: x => x.IdPlayer1,
+                        name: "FK_Friends_AspNetUsers_AddresseeId",
+                        column: x => x.AddresseeId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Friends_AspNetUsers_IdPlayer2",
-                        column: x => x.IdPlayer2,
+                        name: "FK_Friends_AspNetUsers_RequesterId",
+                        column: x => x.RequesterId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -406,6 +421,60 @@ namespace CodeBattleArena.Server.Migrations
                         principalTable: "Items",
                         principalColumn: "IdItem",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PlayerTaskPlays",
+                columns: table => new
+                {
+                    IdPlayerTaskPlay = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    PlayerId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    TaskPlayId = table.Column<int>(type: "int", nullable: false),
+                    IsCompleted = table.Column<bool>(type: "bit", nullable: false),
+                    CompletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IsGet = table.Column<bool>(type: "bit", nullable: false),
+                    ProgressValue = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PlayerTaskPlays", x => x.IdPlayerTaskPlay);
+                    table.ForeignKey(
+                        name: "FK_PlayerTaskPlays_AspNetUsers_PlayerId",
+                        column: x => x.PlayerId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_PlayerTaskPlays_TasksPlay_TaskPlayId",
+                        column: x => x.TaskPlayId,
+                        principalTable: "TasksPlay",
+                        principalColumn: "IdTask",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TaskPlayRewards",
+                columns: table => new
+                {
+                    TaskPlayId = table.Column<int>(type: "int", nullable: false),
+                    RewardId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TaskPlayRewards", x => new { x.TaskPlayId, x.RewardId });
+                    table.ForeignKey(
+                        name: "FK_TaskPlayRewards_Rewards_RewardId",
+                        column: x => x.RewardId,
+                        principalTable: "Rewards",
+                        principalColumn: "IdReward",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_TaskPlayRewards_TasksPlay_TaskPlayId",
+                        column: x => x.TaskPlayId,
+                        principalTable: "TasksPlay",
+                        principalColumn: "IdTask",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -466,58 +535,6 @@ namespace CodeBattleArena.Server.Migrations
                         column: x => x.IdTaskProgramming,
                         principalTable: "TasksProgramming",
                         principalColumn: "IdTaskProgramming",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "PlayerTaskPlays",
-                columns: table => new
-                {
-                    IdPlayerTaskPlay = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    PlayerId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    TaskPlayId = table.Column<int>(type: "int", nullable: false),
-                    IsCompleted = table.Column<bool>(type: "bit", nullable: false),
-                    ProgressValue = table.Column<string>(type: "nvarchar(max)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_PlayerTaskPlays", x => x.IdPlayerTaskPlay);
-                    table.ForeignKey(
-                        name: "FK_PlayerTaskPlays_AspNetUsers_PlayerId",
-                        column: x => x.PlayerId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_PlayerTaskPlays_TasksPlay_TaskPlayId",
-                        column: x => x.TaskPlayId,
-                        principalTable: "TasksPlay",
-                        principalColumn: "IdTask",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "TaskPlayRewards",
-                columns: table => new
-                {
-                    TaskPlayId = table.Column<int>(type: "int", nullable: false),
-                    RewardId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_TaskPlayRewards", x => new { x.TaskPlayId, x.RewardId });
-                    table.ForeignKey(
-                        name: "FK_TaskPlayRewards_Rewards_RewardId",
-                        column: x => x.RewardId,
-                        principalTable: "Rewards",
-                        principalColumn: "IdReward",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_TaskPlayRewards_TasksPlay_TaskPlayId",
-                        column: x => x.TaskPlayId,
-                        principalTable: "TasksPlay",
-                        principalColumn: "IdTask",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -654,9 +671,14 @@ namespace CodeBattleArena.Server.Migrations
                 column: "IdPlayer2");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Friends_IdPlayer2",
+                name: "IX_Friends_AddresseeId",
                 table: "Friends",
-                column: "IdPlayer2");
+                column: "AddresseeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Friends_RequesterId",
+                table: "Friends",
+                column: "RequesterId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Messages_IdChat",
@@ -709,9 +731,9 @@ namespace CodeBattleArena.Server.Migrations
                 column: "IdInputDataTask");
 
             migrationBuilder.CreateIndex(
-                name: "IX_TaskPlayParams_TaskPlayId",
+                name: "IX_TaskPlayParams_TaskPlayId_ParamKey",
                 table: "TaskPlayParams",
-                column: "TaskPlayId",
+                columns: new[] { "TaskPlayId", "ParamKey" },
                 unique: true,
                 filter: "[TaskPlayId] IS NOT NULL");
 
@@ -719,13 +741,6 @@ namespace CodeBattleArena.Server.Migrations
                 name: "IX_TaskPlayRewards_RewardId",
                 table: "TaskPlayRewards",
                 column: "RewardId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_TasksPlay_TaskPlayParamId",
-                table: "TasksPlay",
-                column: "TaskPlayParamId",
-                unique: true,
-                filter: "[TaskPlayParamId] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_TasksProgramming_LangProgrammingId",
@@ -773,6 +788,9 @@ namespace CodeBattleArena.Server.Migrations
                 name: "TaskInputData");
 
             migrationBuilder.DropTable(
+                name: "TaskPlayParams");
+
+            migrationBuilder.DropTable(
                 name: "TaskPlayRewards");
 
             migrationBuilder.DropTable(
@@ -798,9 +816,6 @@ namespace CodeBattleArena.Server.Migrations
 
             migrationBuilder.DropTable(
                 name: "TasksProgramming");
-
-            migrationBuilder.DropTable(
-                name: "TaskPlayParams");
 
             migrationBuilder.DropTable(
                 name: "Items");

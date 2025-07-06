@@ -7,6 +7,7 @@ namespace CodeBattleArena.Server.Specifications.PlayerSessionSpec
     {
         public PlayerSessionByIdSpec(int? idSession = null, string? idPlayer = null)
         {
+            AddInclude(ps => ps.Session);
             var criteria = new List<Expression<Func<PlayerSession, bool>>>();
 
             if (idSession.HasValue)

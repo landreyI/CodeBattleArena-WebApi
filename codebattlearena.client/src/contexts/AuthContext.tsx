@@ -6,11 +6,14 @@ export type UserAuth = {
     roles: string[];
     userName: string;
     photoUrl: string;
+    coin?: number | null;
+    experience?: number | null;
 };
 
 type AuthContextType = {
     user: UserAuth | null;
     logout: () => Promise<void>;
+    reload: () => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -19,16 +22,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const [user, setUser] = useState<UserAuth | null>(null);
 
     useEffect(() => {
-        api.get("/account/user", { withCredentials: true })
-            .then(response => {
-                setUser({
-                    id: response.data.id,
-                    roles: response.data.roles,
-                    userName: response.data.userName,
-                    photoUrl: response.data.photoUrl
-                });
-            })
-            .catch(() => setUser(null));
+        load();
     }, []);
 
     const logout = async () => {
@@ -36,8 +30,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(null);
     };
 
+    const load = async () => {
+        await api.get<UserAuth>("/account/user", { withCredentials: true })
+            .then(response => {
+                setUser(response.data);
+            })
+            .catch(() => setUser(null));
+    };
+
     return (
-        <AuthContext.Provider value={{ user, logout }}>
+        <AuthContext.Provider value={{ user, logout, reload: load }}>
             {children}
         </AuthContext.Provider>
     );

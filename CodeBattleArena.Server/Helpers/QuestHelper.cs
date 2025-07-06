@@ -28,7 +28,7 @@ namespace CodeBattleArena.Server.Helpers
 
         public static bool TryResetIfRepeatable(this PlayerTaskPlay playerTaskPlay)
         {
-            if (playerTaskPlay.IsCompleted)
+            if (playerTaskPlay.IsCompleted && playerTaskPlay.IsGet)
             {
                 if (playerTaskPlay.TaskPlay.RepeatAfterDays.HasValue)
                 {
@@ -45,5 +45,16 @@ namespace CodeBattleArena.Server.Helpers
             }
             return false;
         }
+
+        public static void ResetPlayerTaskPlay(PlayerTaskPlay task, string? defaultValue = null)
+        {
+            if (task == null) return;
+
+            task.IsCompleted = false;
+            task.ProgressValue = !string.IsNullOrEmpty(defaultValue) ? defaultValue : null;
+            task.CompletedAt = null;
+            task.IsGet = false;
+        }
+
     }
 }

@@ -28,6 +28,19 @@ export const fetchGetPlayersList = async (filter?: PlayerFilters): Promise<Playe
     }
 }
 
+export const fetchSelectRoles = async (idPlayer?: string, roles?: string []): Promise<boolean> => {
+    try {
+        const response = await api.put(`/Player/select-roles`, {
+            idPlayer: idPlayer,
+            roles: roles,
+        });
+        return response.data;
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+};
+
 export const fetchEditPlayer = async (player: Player): Promise<boolean> => {
     try {
         const response = await api.put(`/Player/edit-player`, player);

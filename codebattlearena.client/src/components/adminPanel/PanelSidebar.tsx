@@ -48,7 +48,7 @@ export function PanelSidebar() {
         navigate("/home");
     };
 
-    if (!user || !isEdit || !isModerator)
+    if (!user || (!isEdit && !isModerator))
         return null;
 
     const mainItemsCollapsible: {
@@ -108,7 +108,7 @@ export function PanelSidebar() {
                 <SidebarFooter className="p-2">
                     <div className="flex flex-col justify-between item-center hover:bg-muted rounded-xl p-2 group-data-[collapsible=icon]:p-0">
                         <div className="flex flex-row justify-between">
-                            <UserMenu user={user} handleLogout={handleLogout} className="w-full group-data-[collapsible=icon]:hidden" />
+                            <UserMenu user={user} handleLogout={handleLogout} className="w-full" />
                             <ChevronsUpDown size="18" className="mt-1 group-data-[collapsible=icon]:hidden" />
                         </div>
                         <div className="flex flex-wrap gap-2 mt-2 group-data-[collapsible=icon]:hidden">

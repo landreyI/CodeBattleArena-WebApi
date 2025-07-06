@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
 using CodeBattleArena.Server.DTO;
 using CodeBattleArena.Server.Enums;
+using CodeBattleArena.Server.Helpers;
 using CodeBattleArena.Server.IRepositories;
 using CodeBattleArena.Server.Models;
 using CodeBattleArena.Server.Specifications;
+using CodeBattleArena.Server.Specifications.ItemSpec;
 using CodeBattleArena.Server.Specifications.QuestSpec;
 using CodeBattleArena.Server.Specifications.SessionSpec;
 using CodeBattleArena.Server.Untils;
@@ -39,14 +41,24 @@ namespace CodeBattleArena.Server.Services.DBServices
         {
             return await _unitOfWork.QuestRepository.GetListTaskPlayAsync(spec, cancellationToken);
         }
-        public async Task<List<PlayerTaskPlay>> GetListPlayerTaskPlayAsync(ISpecification<PlayerTaskPlay> spec, CancellationToken cancellationToken)
+        public async Task<List<PlayerTaskPlay>> GetListPlayerTaskPlayAsync
+            (ISpecification<PlayerTaskPlay> spec, CancellationToken cancellationToken)
         {
             return await _unitOfWork.QuestRepository.GetListPlayerTaskPlayAsync(spec, cancellationToken);
         }
         public async Task<PlayerTaskPlay> GetPlayerTaskPlayAsync
             (ISpecification<PlayerTaskPlay> spec, CancellationToken cancellationToken)
         {
-            return await _unitOfWork.QuestRepository.GetPlayerTaskPlayAsync(spec, cancellationToken);
+            var playerTaskPlay = await _unitOfWork.QuestRepository.GetPlayerTaskPlayAsync(spec, cancellationToken);
+            if (playerTaskPlay != null && playerTaskPlay.IsCompleted)
+            {
+                if (QuestHelper.TryResetIfRepeatable(playerTaskPlay))
+                {
+                    QuestHelper.ResetPlayerTaskPlay(playerTaskPlay);
+                    await UpdatePlayerTaskPlayInDbAsync(playerTaskPlay, cancellationToken);
+                }
+            }
+            return playerTaskPlay;
         }
         public async Task<List<Reward>> GetRewardsAsync(CancellationToken cancellationToken)
         {
@@ -67,45 +79,75 @@ namespace CodeBattleArena.Server.Services.DBServices
             var playerTaskPlay = await GetPlayerTaskPlayAsync(specPTP, cancellationToken);
             var player = playerTaskPlay.Player;
 
-            var specTP = Specification<TaskPlay>.Combine(
-                new TaskPlayListsIncludesSpec(),
-                new TaskPlaySpec(playerTaskPlay.TaskPlayId)
-            );
-            var taskPlay = await GetTaskPlayAsync(specTP, cancellationToken);
-
-            if (player == null || taskPlay == null)
+            if (playerTaskPlay == null || player == null)
                 return Result.Failure<Unit, ErrorResponse>(new ErrorResponse
                 { Error = "Database error when claim reward." });
 
-            player.Coin += taskPlay?.RewardCoin;
-            player.Experience += taskPlay?.Experience;
-
-            var resultUpdate = await _playerService.UpdatePlayerInDbAsync(player);
-            if (!resultUpdate.IsSuccess)
-                return Result.Failure<Unit, ErrorResponse>(resultUpdate.Failure);
-
-            var playersItems = new List<PlayerItem>();
-            /*foreach(var taskPlayReward in taskPlay.TaskPlayRewards)
+            if (!playerTaskPlay.IsCompleted || playerTaskPlay.IsGet)
             {
-                var reward = await 
-                playersItems.Add(
+                return Result.Failure<Unit, ErrorResponse>(new ErrorResponse
+                {
+                    Error = "Task is not completed or reward already claimed."
+                });
+            }
+
+            var playersItemsAdd = new List<PlayerItem>();
+            var playersItemsCurrent = await _itemService.GetListPlayerItemByIdItemAsync
+                (new PlayerItemSpec(idPlayer: player.Id), cancellationToken);
+
+            var rewards = await _unitOfWork.QuestRepository.GetTaskPlayRewardsAsync(playerTaskPlay.TaskPlay.IdTask, cancellationToken);
+            foreach (var taskPlayReward in rewards)
+            {
+                if (playersItemsCurrent.Any(pi => pi.IdItem == taskPlayReward.Reward.ItemId.Value))
+                    continue;
+                playersItemsAdd.Add(
                     new PlayerItem
                     {
                         IdItem = taskPlayReward.Reward.ItemId.Value,
                         IdPlayer = idPlayer,
                     }
                 );
-            }*/
-            var resultAdding = await _itemService.AddPlayersItemsAsync(playersItems, cancellationToken, false);
+            }
+            var resultAdding = await _itemService.AddPlayersItemsAsync(playersItemsAdd, cancellationToken, false);
+            if (!resultAdding.IsSuccess)
+                return resultAdding;
 
             playerTaskPlay.IsGet = true;
 
             var resultClaim = await UpdatePlayerTaskPlayInDbAsync(playerTaskPlay, cancellationToken);
             if (!resultClaim.IsSuccess)
-                return Result.Failure<Unit, ErrorResponse>(resultClaim.Failure);
+                return resultClaim;
+
+            player.Coin = (player.Coin ?? 0) + (playerTaskPlay.TaskPlay?.RewardCoin ?? 0);
+            player.Experience = (player.Experience ?? 0) + (playerTaskPlay.TaskPlay?.Experience ?? 0);
+
+            var resultUpdate = await _playerService.UpdatePlayerInDbAsync(player);
+            if (!resultUpdate.IsSuccess)
+                return resultUpdate;
 
             return Result.Success<Unit, ErrorResponse>(Unit.Value);
         }
+
+        public async Task<Result<Unit, ErrorResponse>> UpdateOrResetTaskProgress
+            (CancellationToken cancellationToken, bool commit = true)
+        {
+            var spec = Specification<PlayerTaskPlay>.Combine(
+                new PlayerTaskPlaySpec(checkRepeatable: true)
+            );
+            var playersTaskPlays = await GetListPlayerTaskPlayAsync(spec, cancellationToken);
+            foreach (var playerTaskPlay in playersTaskPlays)
+            {
+                if (QuestHelper.TryResetIfRepeatable(playerTaskPlay))
+                {
+                    QuestHelper.ResetPlayerTaskPlay(playerTaskPlay);
+                }
+            }
+            var resultUpdate = await UpdatePlayerTaskPlaysInBdAsync(playersTaskPlays, cancellationToken, commit);
+            if (!resultUpdate.IsSuccess) return resultUpdate;
+
+            return Result.Success<Unit, ErrorResponse>(Unit.Value);
+        }
+
 
         public async Task<Result<Unit, ErrorResponse>> AddTaskPlayAsync
             (TaskPlay taskPlay, List<int> idRewards, CancellationToken cancellationToken, bool commit = true)

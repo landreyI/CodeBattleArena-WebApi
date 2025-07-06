@@ -20,14 +20,27 @@ import { ItemProvider } from "@/contexts/ItemContext";
 import ItemRenderer from "@/components/items/ItemRenderer";
 import { usePlayerItems } from "@/hooks/item/usePlayerItems";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import { LevelDisplay } from "@/components/common/LevelDisplay";
+import { isAdminRole } from "@/untils/businessRules";
+import { useAuth } from "@/contexts/AuthContext";
+import { MenuAction } from "@/components/menu/GenericDropdownMenu";
+import RoleSelectModal from "@/components/modals/RoleSelectModal";
+import { useSelectRoles } from "@/hooks/player/useSelectRoles";
+import InlineNotification from "@/components/common/InlineNotification";
+import { useAddFriend } from "@/hooks/friend/useAddFriend";
 
 export function PlayerPage() {
     const { playerId } = useParams<{ playerId: string }>();
     const { player, setPlayer, isEdit, loading: playerLoad, error: playerError } = usePlayer(playerId);
-    const { sessions, setSessions, loading, error } = usePlayerSessions(playerId, isEdit);
+    const { sessions, error: sessionsError } = usePlayerSessions(playerId, isEdit);
     const { playerItems: bages } = usePlayerItems(playerId, TypeItem.Badge);
+    const { selectRoles, loading: selectLoad, error: selectError } = useSelectRoles();
+    const { addFriend, loading: addFriendLoad, error: addFriendError } = useAddFriend();
+    const { user } = useAuth();
+    const [notification, setNotification] = useState<string | null>(null);
 
     const [showEditPlayer, setShowEditPlayer] = useState(false);
+    const [showSelectRoles, setShowSelectRoles] = useState(false);
 
     const [showSessions, setShowSessions] = useState(true);
 
@@ -35,12 +48,49 @@ export function PlayerPage() {
         setPlayer(updatedPlayer);
     };
 
-    if (playerLoad) return <LoadingScreen />
+    const handleAddFriend = async () => {
+        setNotification(null);
+        const success = await addFriend(playerId);
+        if (success) {
+            setNotification("Friend request sent");
+        }
+    }
+
+    const handleOnSelecRoles = async (roles: string[]) => {
+        setNotification(null);
+        const success = await selectRoles(playerId, roles);
+        if (success) {
+            setNotification("Roles updated successfully");
+            setPlayer(prev => {
+                if (!prev) return prev;
+                return {
+                    ...prev,
+                    roles: roles
+                };
+            });
+        }
+    }
+
+    if (playerLoad || selectLoad) return <LoadingScreen />
     if (playerError) return <ErrorMessage error={playerError} />;
     if (!player) return <EmptyState message="Player not found" />;
 
+    const error = sessionsError || selectError || addFriendError;
+
+    const isEditRole = isAdminRole(user?.roles ?? []);
+
+    const actions: MenuAction[] = [
+        { label: "Select role", onClick: () => setShowSelectRoles(true), shortcut: "⌘R" },
+    ];
+
     return (
         <>
+            {error && <InlineNotification message={error.message} className="bg-red" />}
+
+            {notification && (
+                <InlineNotification message={notification} className="bg-blue" />
+            )}
+
             <BackgroundItem item={player.activeBackground ?? undefined} className="w-full min-h-[95vh] rounded-xl p-3">
                 <div className="w-full md:w-[65vw] mx-auto p-3 rounded-xl space-y-3">
                     {/* Верхний блок: карточка + меню + статистика */}
@@ -48,19 +98,17 @@ export function PlayerPage() {
                         <div className="relative">
                             {isEdit && (
                                 <div className="absolute top-0 right-0 z-10 bg-muted-card p-1 rounded-xl">
-                                    <SettingMenu setShowEdit={setShowEditPlayer} />
+                                    <SettingMenu setShowEdit={setShowEditPlayer} actionsProp={actions} />
                                 </div>
                             )}
                             <PlayerCard className="shadow-none border-none bg-transparent p-0" player={player} />
                         </div>
 
                         <div className="flex flex-col gap-2">
-                            <div className="flex flex-col items-center bg-primary rounded-xl p-3 justify-between">
-                                <Badge className="text-sm font-semibold bg-primary-pressed rounded-xl text-white">
-                                    LEVEL 30
-                                </Badge>
+                            <div className="flex flex-col items-center bg-primary rounded-xl gap-1 p-3 justify-between">
+                                <LevelDisplay experience={player?.experience ?? 0} />
 
-                                <Badge className="flex items-center gap-2 bg-primary-pressed rounded-xl text-white mt-2">
+                                <Badge className="flex items-center gap-2 bg-primary-pressed rounded-xl text-white">
                                     <Trophy size={16} />
                                     <p className="text-sm font-mono font-semibold">VICTORIES</p>
                                     <p className="text-sm font-bold">{player.victories}</p>
@@ -71,6 +119,11 @@ export function PlayerPage() {
                                 Badge
                                 <ItemRenderer item={player.activeBadge ?? undefined} />
                             </div>
+                            {playerId !== user?.id && (
+                                <Button className="btn-animation" onClick={handleAddFriend}>
+                                    Add Friend
+                                </Button>
+                            )}
                         </div>
                     </div>
 
@@ -131,6 +184,14 @@ export function PlayerPage() {
 
             {player && (
                 <EditPlayerModal open={showEditPlayer} player={player} onClose={() => setShowEditPlayer(false)} onUpdate={handleUpdatePlayer} />
+            )}
+            {player && (
+                <RoleSelectModal
+                    open={showSelectRoles}
+                    onSelect={handleOnSelecRoles}
+                    defaultSelected={player.roles ?? []}
+                    onClose={() => setShowSelectRoles(false)}
+                />
             )}
         </>
     );

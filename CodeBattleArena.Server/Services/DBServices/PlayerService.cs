@@ -7,6 +7,7 @@ using CodeBattleArena.Server.IRepositories;
 using CodeBattleArena.Server.Models;
 using CodeBattleArena.Server.Untils;
 using Microsoft.AspNetCore.Identity;
+using System.Threading;
 
 namespace CodeBattleArena.Server.Services.DBServices
 {
@@ -118,6 +119,56 @@ namespace CodeBattleArena.Server.Services.DBServices
             return Result.Success<Unit, ErrorResponse> (Unit.Value);
         }
 
+        public async Task<Result<Unit, ErrorResponse>> SelectRolesAsync(string idPlayer, string[] roles, CancellationToken ct)
+        {
+            var player = await GetPlayerAsync(idPlayer, ct);
+            if (player == null)
+                return Result.Failure<Unit, ErrorResponse>(new ErrorResponse
+                { Error = "Player not found." });
+
+            var currentRoles = await GetRolesAsync(idPlayer);
+
+            if (roles.Contains(Role.Admin.ToString()) && !currentRoles.Contains(Role.Admin.ToString()))
+                return Result.Failure<Unit, ErrorResponse>(new ErrorResponse 
+                { Error = $"You cannot add the {Role.Admin} role." });
+
+            var protectedRoles = new[] { Role.Admin.ToString() };
+
+            var addRoles = roles.Except(currentRoles)
+                .Where(r => !protectedRoles.Contains(r));
+            var delRoles = currentRoles.Except(roles)
+                .Where(r => !protectedRoles.Contains(r));
+
+            var resultAdd = await _userManager.AddToRolesAsync(player, addRoles);
+            if (!resultAdd.Succeeded)
+            {
+                return Result.Failure<Unit, ErrorResponse>(new ErrorResponse
+                {
+                    Error = "Failed to add roles",
+                    Details = resultAdd.Errors
+                        .ToDictionary(
+                            e => e.Code,
+                            e => e.Description
+                        )
+                });
+            }
+
+            var resultDelete = await _userManager.RemoveFromRolesAsync(player, delRoles);
+            if (!resultDelete.Succeeded)
+            {
+                return Result.Failure<Unit, ErrorResponse>(new ErrorResponse
+                {
+                    Error = "Failed to delete roles",
+                    Details = resultDelete.Errors
+                        .ToDictionary(
+                            e => e.Code,
+                            e => e.Description
+                        )
+                });
+            }
+
+            return Result.Success<Unit, ErrorResponse>(Unit.Value);
+        }
 
         public async Task<bool> IsUserNameTakenAsync(string username, string id)
         {

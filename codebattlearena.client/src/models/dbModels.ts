@@ -106,11 +106,21 @@ export interface League {
     maxWins: number | null;
 }
 
+export interface Friend {
+    idFriend?: number | null;
+    requesterId: string;
+    requester?: Player | null;
+    addresseeId: string;
+    addressee?: Player | null;
+    isFriendship: boolean;
+    friendshipDate?: Date;
+}
+
 export interface Chat {
     idChat: number | null;
-    idPlayer1: number;
+    idPlayer1: string;
     player1: Player | null;
-    idPlayer2: number;
+    idPlayer2: string;
     player2: Player | null;
 }
 

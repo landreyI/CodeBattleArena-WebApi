@@ -13,7 +13,7 @@ import { TaskPlay } from "@/models/dbModels";
 import { useTaskPlayRewards } from "@/hooks/quest/useTaskPlayRewards";
 import QuestCard from "@/components/cards/QuestCard";
 import { useDeleteTaskPlay } from "@/hooks/quest/useDeleteTaskPlay";
-import InlineNotification from "@/components/common/InlineErrorNotification";
+import InlineNotification from "@/components/common/InlineNotification";
 import ProgressQuest from "@/components/common/ProgressQuest";
 import RewardsList from "@/components/lists/RewardsList";
 import TaskPlayParamsList from "@/components/lists/TaskPlayParamsList";
@@ -21,6 +21,8 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { useClaimReward } from "@/hooks/quest/useClaimReward";
 import { Badge } from "@/components/ui/badge";
+import QuestResetTimer from "@/components/common/QuestResetTimer";
+import { isQuestResetAvailable } from "@/untils/helpers";
 
 export function QuestPage() {
     const { taskPlayId } = useParams<{ taskPlayId: string }>();
@@ -32,7 +34,7 @@ export function QuestPage() {
     const [notification, setNotification] = useState<string | null>(null);
 
     const { user } = useAuth();
-    const { playerProgress, setPlayerProgress } = usePlayerProgress(user?.id, Number(taskPlayId));
+    const { playerProgress, setPlayerProgress, reloadProgress } = usePlayerProgress(user?.id, Number(taskPlayId));
 
     const navigate = useNavigate();
     const [showEditQuest, setShowEditQuest] = useState(false);
@@ -68,13 +70,14 @@ export function QuestPage() {
 
     const error = deleteTaskPlayError || getRewardError;
     const isEdit = isEditRole(user?.roles ?? []);
+    const isQuestReset = isQuestResetAvailable(playerProgress?.completedAt ?? undefined, taskPlay?.repeatAfterDays ?? undefined);
 
     return (
         <>
-            {error && <InlineNotification message={error.message} position="top" className="bg-red" />}
+            {error && <InlineNotification message={error.message} className="bg-red" />}
 
             {notification && (
-                <InlineNotification message={notification} position="top" className="bg-blue" />
+                <InlineNotification message={notification} className="bg-blue" />
             )}
 
             <div className="glow-box">
@@ -104,10 +107,25 @@ export function QuestPage() {
                             className="btn-animation"
                             onClick={handleGetReward}
                         >
-                            Get a reward
+                            Claim
                         </Button>
                     ) : playerProgress?.isGet ? (
-                            <Badge className="">Award Received</Badge>
+                        <div className="flex flex-col md:flex-row gap-2">
+                                <Badge className="text-sm">Award Received</Badge>
+                                <QuestResetTimer
+                                    completedAt={playerProgress?.completedAt ?? undefined}
+                                    repeatAfterDays={taskPlay?.repeatAfterDays ?? undefined}
+                                />
+                                {isQuestReset && (
+                                    <Button
+                                        className="btn-animation"
+                                        onClick={reloadProgress}
+                                    >
+                                        Reload quest
+                                    </Button>
+                                )}
+                        </div>
+
                     ) : null}
 
                     {isEdit && (

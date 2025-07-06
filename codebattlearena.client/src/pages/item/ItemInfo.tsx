@@ -3,11 +3,11 @@ import { useItem } from "@/hooks/item/useItem";
 import { useDeleteItem } from "@/hooks/item/useDeleteItem";
 import { useAuth } from "@/contexts/AuthContext";
 import { useEffect, useState } from "react";
-import { Item, PlayerItem } from "@/models/dbModels";
+import { Friend, Item, PlayerItem } from "@/models/dbModels";
 import EmptyState from "@/components/common/EmptyState";
 import ErrorMessage from "@/components/common/ErrorMessage";
 import LoadingScreen from "@/components/common/LoadingScreen";
-import InlineNotification from "@/components/common/InlineErrorNotification";
+import InlineNotification from "@/components/common/InlineNotification";
 import { isEditRole } from "@/untils/businessRules";
 import ItemCard from "@/components/cards/ItemCard";
 import SettingMenu from "@/components/menu/SettingMenu";
@@ -16,21 +16,25 @@ import { CircleCheck } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import EditItemModal from "@/components/modals/EditItemModal";
 import { Button } from "@/components/ui/button";
-import { useCreatePlayerItem } from "@/hooks/item/useCreatePlayerItem";
+import { useBuyItem } from "@/hooks/item/useBuyItem";
 import { useChangeActiveItem } from "@/hooks/player/useChangeActiveItem";
+import { useFriendshipFriends } from "@/hooks/friend/useFriendshipFriends";
+import FriendsSelectModal from "@/components/modals/FriendsSelectModal";
 
 export function ItemInfo() {
     const { itemId } = useParams<{ itemId: string }>();
     const { item, setItem, loading: itemLoad, error: itemError, reloadItem } = useItem(Number(itemId));
     const { deleteItem, error: itemDeleteError } = useDeleteItem();
-    const { createPlayerItem, error: playerItemCreateError } = useCreatePlayerItem();
+    const { buyItem, error: playerItemCreateError } = useBuyItem();
     const { changeActiveItem, error: changeError } = useChangeActiveItem();
     const { user } = useAuth();
     const { playerItems } = usePlayerItems(user?.id);
+    const { friendships, loading: friendshipsLoad, error: friendshipsError, reloadFriendships } = useFriendshipFriends();
     const navigate = useNavigate();
 
     const [notification, setNotification] = useState<string | null>(null);
     const [showEditItem, setShowEditItem] = useState(false);
+    const [showSelectedFriends, setShowSelectedFriends] = useState(false);
     const [isOwned, setIsOwned] = useState(false);
 
     useEffect(() => {
@@ -50,19 +54,16 @@ export function ItemInfo() {
 
     const handleAddInventory = async () => {
         setNotification(null);
-        const isEdit = isEditRole(user?.roles ?? []);
-        if (isEdit) {
-            const playerItem: PlayerItem = {
-                idPlayer: user?.id ?? "",
-                player: null,
-                idItem: item?.idItem ?? 0,
-                item: null
-            };
-            const isSuccess = await createPlayerItem(playerItem);
-            if (isSuccess) {
-                setNotification("Successfully added");
-                setIsOwned(true);
-            }
+        const playerItem: PlayerItem = {
+            idPlayer: user?.id ?? "",
+            player: null,
+            idItem: item?.idItem ?? 0,
+            item: null
+        };
+        const isSuccess = await buyItem(playerItem);
+        if (isSuccess) {
+            setNotification("The item has been added to your inventory.");
+            setIsOwned(true);
         }
     }
 
@@ -72,17 +73,39 @@ export function ItemInfo() {
         if(isSuccess) setNotification("Successfully change");
     }
 
-    if (itemLoad) return <LoadingScreen />
+    const handlePressSelectedFriends = () => {
+        if (!friendships || friendships.length === 0)
+            reloadFriendships();
+        setShowSelectedFriends(true);
+    }
+
+    const handleSelectedFriend = async (selectedFriend?: Friend) => {
+        setShowSelectedFriends(false);
+        setNotification(null);
+        const playerItem: PlayerItem = {
+            idPlayer: selectedFriend?.addresseeId !== user?.id ? selectedFriend?.addresseeId ?? "" : selectedFriend?.requesterId ?? "",
+            player: null,
+            idItem: item?.idItem ?? 0,
+            item: null
+        };
+        const isSuccess = await buyItem(playerItem);
+        if (isSuccess) {
+            setNotification("This item has been gifted successfully.");
+            setIsOwned(true);
+        }
+    };
+
+    if (itemLoad || friendshipsLoad) return <LoadingScreen />
     if (itemError) return <ErrorMessage error={itemError} />;
     if (!item) return <EmptyState message="Item not found" />;
 
-    const error = itemDeleteError || playerItemCreateError || changeError;
+    const error = itemDeleteError || playerItemCreateError || changeError || friendshipsError;
     return (
         <>
-            {error && <InlineNotification message={error.message} position="top" className="bg-red" />}
+            {error && <InlineNotification message={error.message} className="bg-red" />}
 
             {notification && (
-                <InlineNotification message={notification} position="top" className="bg-blue" />
+                <InlineNotification message={notification} className="bg-blue" />
             )}
 
             <div className="glow-box py-8 px-4">
@@ -91,19 +114,27 @@ export function ItemInfo() {
                         {/* Левая зона: бейдж + кнопка */}
                         <div className="flex flex-col md:flex-row items-center gap-4">
                             {isOwned && (
-                                <Badge className="inline-flex items-center gap-2 bg-green text-white px-3 py-1.5 rounded-md text-sm font-semibold">
+                                <Badge className="inline-flex items-center gap-2 bg-green px-3 py-1.5 rounded-md text-sm font-semibold">
                                     <CircleCheck size={16} />
                                     In Inventory
                                 </Badge>
                             )}
 
-                            {(isOwned || isEditRole(user?.roles ?? [])) && (
-                                <Button
-                                    onClick={isOwned ? handleMakeActive : handleAddInventory}
-                                    className="btn-animation w-auto"
-                                >
-                                    {isOwned ? 'Set as Active' : 'Add to Inventory'}
-                                </Button>
+                            {user && item.priceCoin && (
+                                <>
+                                    <Button
+                                        onClick={isOwned ? handleMakeActive : handleAddInventory}
+                                        className="btn-animation w-auto"
+                                    >
+                                        {isOwned ? 'Set as Active' : 'Buy item'}
+                                    </Button>
+                                    <Button
+                                        className="btn-animation w-auto"
+                                        onClick={handlePressSelectedFriends}
+                                    >
+                                        Gift for friend
+                                    </Button>
+                                </>
                             )}
                         </div>
 
@@ -122,6 +153,9 @@ export function ItemInfo() {
 
             {item && (
                 <EditItemModal open={showEditItem} item={item} onClose={() => setShowEditItem(false)} onUpdate={handleUpdateItem} />
+            )}
+            {friendships && (
+                <FriendsSelectModal open={showSelectedFriends} friends={friendships} onClose={() => setShowSelectedFriends(false)} onSaveSelect={handleSelectedFriend} />
             )}
         </>
     )

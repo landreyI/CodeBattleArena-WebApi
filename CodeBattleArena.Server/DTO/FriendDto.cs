@@ -1,12 +1,18 @@
-﻿namespace CodeBattleArena.Server.DTO
+﻿using CodeBattleArena.Server.Models;
+
+namespace CodeBattleArena.Server.DTO
 {
     public class FriendDto
     {
-        public string IdPlayer1 { get; set; }
-        public PlayerDto? Player1 { get; set; }
-        public string IdPlayer2 { get; set; }
-        public PlayerDto? Player2 { get; set; }
+        public int? IdFriend { get; set; }
+        public string RequesterId { get; set; }
+        public PlayerDto? Requester { get; set; }
 
-        public DateTime FriendshipDate { get; set; } = DateTime.Now;
+        public string AddresseeId { get; set; }
+        public PlayerDto? Addressee { get; set; }
+
+        public bool IsFriendship { get; set; }
+
+        public DateTime? FriendshipDate { get; set; }
     }
 }

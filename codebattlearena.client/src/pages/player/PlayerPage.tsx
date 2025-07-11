@@ -1,11 +1,9 @@
-﻿import React from "react";
-import { Link, useParams } from "react-router-dom";
+﻿import { Link, useParams } from "react-router-dom";
 
 import { usePlayer } from "@/hooks/player/usePlayer";
 import { useState } from "react";
 import { Player, TypeItem } from "@/models/dbModels";
 import PlayerCard from "@/components/cards/PlayerCard";
-import EditPlayerModal from "@/components/modals/EditPlayerModal";
 import SessionList from "@/components/lists/SessionsList";
 import { Button } from "@/components/ui/button";
 import { ChevronDown, ChevronRight, Trophy } from "lucide-react";
@@ -28,6 +26,8 @@ import RoleSelectModal from "@/components/modals/RoleSelectModal";
 import { useSelectRoles } from "@/hooks/player/useSelectRoles";
 import InlineNotification from "@/components/common/InlineNotification";
 import { useAddFriend } from "@/hooks/friend/useAddFriend";
+import EditPlayerForm from "@/components/forms/EditPlayerForm";
+import EditModal from "@/components/modals/EditModal";
 
 export function PlayerPage() {
     const { playerId } = useParams<{ playerId: string }>();
@@ -175,7 +175,9 @@ export function PlayerPage() {
                             <Link to={`/item/list-items`} className="nav-link">
                                 Shop Items
                             </Link>
-                            <p>Friends</p>
+                            <Link to={`/friend/list-friends`} className="nav-link">
+                                Friends
+                            </Link>
                             <p>Chats</p>
                         </div>
                     </div>
@@ -183,7 +185,9 @@ export function PlayerPage() {
             </BackgroundItem>
 
             {player && (
-                <EditPlayerModal open={showEditPlayer} player={player} onClose={() => setShowEditPlayer(false)} onUpdate={handleUpdatePlayer} />
+                <EditModal open={showEditPlayer} title="Edit Player" onClose={() => setShowEditPlayer(false)}>
+                    <EditPlayerForm player={player} onClose={() => setShowEditPlayer(false)} onUpdate={handleUpdatePlayer}></EditPlayerForm>
+                </EditModal>
             )}
             {player && (
                 <RoleSelectModal

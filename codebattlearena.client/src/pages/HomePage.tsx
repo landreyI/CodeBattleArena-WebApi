@@ -1,4 +1,5 @@
 ﻿import { motion, useMotionValue, useSpring } from "framer-motion";
+import AnimatedCoins from "../components/animations/AnimatedCoins";
 
 const logos = [
     { src: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/c/c-original.svg', alt: 'C' },

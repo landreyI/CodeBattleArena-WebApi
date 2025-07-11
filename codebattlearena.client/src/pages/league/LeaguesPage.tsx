@@ -35,7 +35,7 @@ export function LeaguesPage() {
         <>
             {deleteError && <InlineNotification message={deleteError.message} className="bg-red" />}
 
-            <div className="w-full lg:w-[65%] mx-auto">
+            <div className="w-full lg:w-[70%] mx-auto">
                 {playersLeagues.map((playersLeague, index) => (
                     <LeagueCard
                         key={index}

@@ -6,6 +6,7 @@ import path from 'path';
 import child_process from 'child_process';
 import { env } from 'process';
 import tailwindcss from '@tailwindcss/vite';
+import { API_BASE_URL } from "../codebattlearena.client/src/config";
 
 const baseFolder =
     env.APPDATA !== undefined && env.APPDATA !== ''
@@ -35,7 +36,7 @@ if (!fs.existsSync(certFilePath) || !fs.existsSync(keyFilePath)) {
 }
 
 const target = env.ASPNETCORE_HTTPS_PORT ? `https://localhost:${env.ASPNETCORE_HTTPS_PORT}` :
-    env.ASPNETCORE_URLS ? env.ASPNETCORE_URLS.split(';')[0] : 'https://localhost:7195';
+    env.ASPNETCORE_URLS ? env.ASPNETCORE_URLS.split(';')[0] : `${API_BASE_URL}`;
 
 export default defineConfig({
     plugins: [

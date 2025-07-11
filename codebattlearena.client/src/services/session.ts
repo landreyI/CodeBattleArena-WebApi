@@ -1,6 +1,7 @@
 import axios, { api } from "../api/axios";
 import { Player, Session, PlayerSession } from "@/models/dbModels";
 import { SessionFilters } from "../models/filters";
+import qs from "qs";
 
 export const fetchGetSession = async (id: number): Promise<{ session: Session, isEdit: boolean }> => {
     try {
@@ -56,6 +57,21 @@ export const fetchBestResult = async (idSession: number): Promise<PlayerSession>
     try {
         let response = await api.get(`Session/best-result-session`, {
             params: { idSession: idSession }
+        });
+        return response.data;
+    }
+    catch (error) {
+        console.error(error);
+        throw error;
+    }
+}
+
+export const fetchInviteSession = async (idPlayersInvite?: string[]): Promise<boolean> => {
+    try {
+        let response = await api.get("Session/invite-session", {
+            params: { idPlayersInvite },
+            paramsSerializer: (params) =>
+                qs.stringify(params, { arrayFormat: "repeat" }) // <-- важно
         });
         return response.data;
     }

@@ -174,22 +174,6 @@ namespace CodeBattleArena.Server.Controllers
             return Ok(true);
         }
 
-        [Authorize]
-        [HttpPut("invite-session")]
-        public async Task<IActionResult> JoinSession(string? idPlayerInvite, CancellationToken cancellationToken)
-        {
-            if (string.IsNullOrEmpty(idPlayerInvite)) 
-                return BadRequest(new ErrorResponse { Error = "Player ID not specified." });
-
-            var currentUserId = _userManager.GetUserId(User);
-
-            var activeSession = await _playerSessionService.GetActiveSession(currentUserId, cancellationToken);
-            if (activeSession == null)
-                return NotFound(new ErrorResponse { Error = "Not found active session." });
-
-            return Ok(true);
-        }
-
 
         [HttpGet("update-code-player")]
         public async Task<IActionResult> UpdateCodePlayer(int? sessionId, string? code, CancellationToken cancellationToken)

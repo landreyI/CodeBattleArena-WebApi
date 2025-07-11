@@ -56,6 +56,7 @@
 
     --color-card: var(--card);
     --color-card-foreground: var(--card-foreground);
+
     --color-glow-box: var(--glow-box);
     --color-header-bg: var(--header-bg);
     --color-header-foreground: var(--header-foreground);
@@ -99,7 +100,7 @@
     --accent-foreground: #1a202c;
     --muted: #e2e8f0; 
     --muted-foreground: #4a5568;
-    --border: #e2e8f0;
+    --border: #dae1e8;
     --input: #e2e8f0;
    
     --primary-green: var(--primary);
@@ -108,8 +109,8 @@
     --primary-blue: var(--blue);
     --primary-purple: var(--purple);
 
-    --red: #fc5353; 
-    --red-pressed: #e34444;
+    --red: #ff6969; 
+    --red-pressed: #ff5757;
     --green: #30db6f; 
     --green-pressed: #2bc262;
     --yellow: #ffd42b; 
@@ -118,8 +119,8 @@
     --gray-pressed: #b6c0d6;
     --blue: #649dfa; 
     --blue-pressed: #5293ff;
-    --purple: #a855f7; 
-    --purple-pressed: #7e22ce;
+    --purple: #be7aff; 
+    --purple-pressed: #b669ff;
     --color-bronze: #ffa24d;
 
     --bubbles: #8bf092;

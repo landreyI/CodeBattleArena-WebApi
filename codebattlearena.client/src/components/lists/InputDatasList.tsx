@@ -14,14 +14,14 @@ export function InputDatasList({ inputDatas, outDatas, cardWrapperClassName = ""
     const [activeTab, setActiveTab] = useState("0");
 
     return (
-        <Card className="p-0 pb-3 border-none h-full flex flex-col">
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full h-full flex flex-col">
-                <TabsList className="mb-4 w-full overflow-x-auto flex-nowrap whitespace-nowrap px-1 sm:px-0">
+        <Card className="p-2 border-none h-full flex flex-col">
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full h-full flex flex-col items-center">
+                <TabsList className="flex flex-col md:flex-row mb-4 w-full h-auto px-1">
                     {displayed.map((_, index) => (
                         <TabsTrigger
                             key={index}
                             value={index.toString()}
-                            className="flex-shrink-0 text-sm sm:text-base"
+                            className="w-full text-sm sm:text-base"
                         >
                             Case {index + 1}
                         </TabsTrigger>
@@ -29,7 +29,7 @@ export function InputDatasList({ inputDatas, outDatas, cardWrapperClassName = ""
                 </TabsList>
 
                 {displayed.map((item, index) => (
-                    <TabsContent key={index} value={index.toString()} className="w-full h-full flex flex-col overflow-y-auto px-2">
+                    <TabsContent key={index} value={index.toString()} className="w-full h-full flex flex-col overflow-y-auto">
                         <div className={`space-y-4 ${cardWrapperClassName}`}>
                             <div>
                                 <label className="text-muted-foreground text-sm sm:text-base">Input =</label>

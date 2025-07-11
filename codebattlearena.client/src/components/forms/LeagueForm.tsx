@@ -157,7 +157,7 @@ export function LeagueForm({ league, onClose, onUpdate, submitLabel }: Props) {
                     )}
                 />
 
-                <Button type="submit" disabled={isLoading} className="w-full btn-animation">
+                <Button type="submit" disabled={isLoading} className="w-full md:w-fit btn-animation">
                     {isLoading ? "Saving..." : submitLabel}
                 </Button>
             </form>

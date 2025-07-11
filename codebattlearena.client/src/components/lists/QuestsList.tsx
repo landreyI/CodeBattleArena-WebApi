@@ -35,14 +35,14 @@ export function QuestsList({ tasksPlays, playerTasksPlays, cardWrapperClassName,
                             taskPlayParamValue={getTaskParamPrimary(taskPlay)}
                         />
                         {playerProgress?.isCompleted && !playerProgress?.isGet ? (
-                            <Badge className="text-sm">Reward available</Badge>
+                            <Badge className="text-sm rounded-xl">Reward available</Badge>
                         ) : playerProgress?.isGet ? (
                             <div className="flex flex-col md:flex-row gap-2">
-                                <Badge className="text-sm">Award Received</Badge>
+                                <Badge className="text-sm rounded-xl">Award Received</Badge>
                                 <QuestResetTimer
                                     completedAt={playerProgress?.completedAt ?? undefined}
                                     repeatAfterDays={taskPlay?.repeatAfterDays ?? undefined}
-                                    className="w-full"
+                                    className="w-full rounded-xl"
                                 />
                             </div>
 

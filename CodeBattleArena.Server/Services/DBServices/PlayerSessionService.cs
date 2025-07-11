@@ -1,7 +1,10 @@
-﻿using CodeBattleArena.Server.Helpers;
+﻿using AutoMapper;
+using CodeBattleArena.Server.DTO;
+using CodeBattleArena.Server.Helpers;
 using CodeBattleArena.Server.IRepositories;
 using CodeBattleArena.Server.Models;
 using CodeBattleArena.Server.Services.Judge0;
+using CodeBattleArena.Server.Services.Notifications.INotifications;
 using CodeBattleArena.Server.Specifications;
 using CodeBattleArena.Server.Specifications.PlayerSessionSpec;
 using CodeBattleArena.Server.Specifications.SessionSpec;
@@ -16,14 +19,19 @@ namespace CodeBattleArena.Server.Services.DBServices
         private readonly ILogger<SessionService> _logger;
         private readonly SessionService _sessionService;
         private readonly PlayerService _playerService;
+        private readonly IMapper _mapper;
+        private readonly IPlayerNotificationService _playerNotificationService;
 
         public PlayerSessionService(IUnitOfWork unitOfWork, ILogger<SessionService> logger, 
-            SessionService sessionService, PlayerService playerService)
+            SessionService sessionService, PlayerService playerService, IMapper mapper,
+            IPlayerNotificationService playerNotificationService)
         {
             _unitOfWork = unitOfWork;
             _logger = logger;
             _sessionService = sessionService;
             _playerService = playerService;
+            _mapper = mapper;
+            _playerNotificationService = playerNotificationService;
         }
 
         public async Task<Result<PlayerSession, ErrorResponse>> CreatPlayerSession
@@ -143,6 +151,33 @@ namespace CodeBattleArena.Server.Services.DBServices
                 return Result.Failure<PlayerSession, ErrorResponse>(resultUpdate.Failure);
 
             return Result.Success<PlayerSession, ErrorResponse>(playerSession);
+        }
+
+        public async Task<Result<Unit, ErrorResponse>> InviteSessionAsync
+            (string authUserId, List<string> idPlayersInvite, CancellationToken ct)
+        {
+            var activeSession = await GetActiveSession(authUserId, ct);
+            if (activeSession == null)
+                return Result.Failure<Unit, ErrorResponse>
+                    (new ErrorResponse { Error = "Not found active session." });
+
+            var resultIsEdit = await _sessionService.CanEditSessionAsync(activeSession.IdSession, authUserId, ct);
+            if (!resultIsEdit.IsSuccess)
+                return Result.Failure<Unit, ErrorResponse>(resultIsEdit.Failure);
+
+            bool isEdit = resultIsEdit.Success;
+            if (!isEdit)
+                return Result.Failure<Unit, ErrorResponse>(new ErrorResponse
+                {
+                    Error = "You do not have sufficient permissions to edit this session."
+                });
+
+            foreach (var idPlayer in idPlayersInvite)
+            {
+                await _playerNotificationService.NotifyInvitationSessionAsync(idPlayer, _mapper.Map<SessionDto>(activeSession));
+            }
+
+            return Result.Success<Unit, ErrorResponse>(Unit.Value);
         }
 
         public async Task<Result<Unit, ErrorResponse>> FinishTask(int idSession, string idPlayer, CancellationToken ct, bool commit = true)

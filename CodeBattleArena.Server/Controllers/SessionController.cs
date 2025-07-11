@@ -163,6 +163,22 @@ namespace CodeBattleArena.Server.Controllers
         }
 
         [Authorize]
+        [HttpGet("invite-session")]
+        public async Task<IActionResult> InviteSession([FromQuery] List<string>? idPlayersInvite, CancellationToken cancellationToken)
+        {
+            if (idPlayersInvite == null || idPlayersInvite.Count == 0)
+                return BadRequest(new ErrorResponse { Error = "No IDs provided." });
+
+            var authUserId = _userManager.GetUserId(User);
+
+            var resultInvite = await _playerSessionService.InviteSessionAsync(authUserId, idPlayersInvite, cancellationToken);
+            if(!resultInvite.IsSuccess)
+                return UnprocessableEntity(resultInvite.Failure);
+
+            return Ok(true);
+        }
+
+        [Authorize]
         [HttpGet("select-task-for-session")]
         public async Task<IActionResult> SelectTaskForSession(int? sessionId, int? taskId, CancellationToken cancellationToken)
         {

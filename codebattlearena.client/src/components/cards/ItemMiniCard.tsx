@@ -1,8 +1,6 @@
-import { Card, CardContent } from "@/components/ui/card";
 import { Item } from "@/models/dbModels";
-import { getClassTypeItem, isActiveItem } from "@/untils/helpers";
-import { CircleCheck, Coins, Sparkles, Trash2 } from "lucide-react";
-import { Button } from "../ui/button";
+import { isActiveItem } from "@/untils/helpers";
+import { CircleCheck, Coins, Sparkles } from "lucide-react";
 import { Link } from "react-router-dom";
 import ItemRenderer from "../items/ItemRenderer";
 import { Badge } from "../ui/badge";

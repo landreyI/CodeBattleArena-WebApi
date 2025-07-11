@@ -8,7 +8,8 @@ import LoadingScreen from "@/components/common/LoadingScreen";
 import { useDeleteReward } from "@/hooks/quest/useDeleteReward";
 import InlineNotification from "@/components/common/InlineNotification";
 import { useState } from "react";
-import EditRewardModal from "@/components/modals/EditRewardModal";
+import EditModal from "@/components/modals/EditModal";
+import RewardForm from "@/components/forms/RewardForm";
 
 export function RewardsListPage() {
     const { rewards, setRewards, loading: rewardLoad, error: rewardError, reloadRewards } = useRewards();
@@ -49,12 +50,13 @@ export function RewardsListPage() {
                             setShowEdit={() => setEditingRewardId(reward.idReward ?? null)}
                             handleDelet={() => handleDeletReward(reward.idReward ?? undefined)}
                         />
-                        <EditRewardModal
+                        <EditModal
                             open={editingRewardId === reward.idReward}
+                            title="Edit Reward"
                             onClose={() => setEditingRewardId(null)}
-                            reward={reward}
-                            onUpdate={handleUpdateReward}
-                        />
+                        >
+                            <RewardForm reward={reward} onClose={() => setEditingRewardId(null)} onUpdate={handleUpdateReward} submitLabel="Save"></RewardForm>
+                        </EditModal>
                     </div>
                 )}
             />

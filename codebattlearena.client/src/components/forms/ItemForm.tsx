@@ -226,7 +226,7 @@ export function ItemForm({ item, onClose, onUpdate, submitLabel }: Props) {
                     )}
                 />
 
-                <Button type="submit" disabled={isLoading} className="w-full btn-animation">
+                <Button type="submit" disabled={isLoading} className="w-full md:w-fit btn-animation">
                     {isLoading ? "Saving..." : submitLabel}
                 </Button>
             </form>

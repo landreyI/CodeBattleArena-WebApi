@@ -13,14 +13,15 @@ import clsx from "clsx";
 import { useState } from "react";
 import { Button } from "../ui/button";
 import SettingMenu from "../menu/SettingMenu";
-import EditLeagueModal from "../modals/EditLeagueModal";
+import EditModal from "../modals/EditModal";
+import LeagueForm from "../forms/LeagueForm";
 
 interface Props {
     league?: League;
     players?: Player[];
     className?: string;
     isEdit?: boolean
-    handleDeletLeague: (e: any) => void;
+    handleDeletLeague: () => void;
     handleUpdateLeague: (leagueUpdate: League) => void;
 }
 
@@ -84,7 +85,7 @@ export function LeagueCard({ league, players, className, isEdit, handleDeletLeag
                 {/* Правая часть — список игроков */}
                 <div
                     className={clsx(
-                        "transition-all duration-500 ease-in-out overflow-hidden w-full p-2 league-" + name.toLowerCase(),
+                        "transition-all duration-500 ease-in-out overflow-hidden w-full p-2" + " league-" + name.toLowerCase(),
                         showPlayers ? "max-h-[1000px] opacity-100" : "max-h-0 opacity-0"
                     )}
                 >
@@ -102,7 +103,9 @@ export function LeagueCard({ league, players, className, isEdit, handleDeletLeag
                 </div>
             </div>
             {league && (
-                <EditLeagueModal open={showEditLeague} league={league} onClose={() => setShowEditLeague(false)} onUpdate={handleUpdateLeague} />
+                <EditModal open={showEditLeague} title="Edit League" onClose={() => setShowEditLeague(false)}>
+                    <LeagueForm league={league} onClose={() => setShowEditLeague(false)} onUpdate={handleUpdateLeague} submitLabel="Save"></LeagueForm>
+                </EditModal>
             )}
         </>
     );

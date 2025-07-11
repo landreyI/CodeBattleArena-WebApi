@@ -399,20 +399,20 @@ export function QuestForm({ taskPlay, onClose, onUpdate, submitLabel }: Props) {
                         )}
                     />
 
-                    <Button
-                        type="button"
-                        className="btn-animation"
-                        onClick={() =>
-                            form.setValue("taskPlayParams", [
-                                ...form.getValues("taskPlayParams"),
-                                { paramKey: "", paramValue: "", isPrimary: false },
-                            ])
-                        }
-                    >
-                        Add Param
-                    </Button>
-
                     <div className="flex flex-col md:flex-row gap-3">
+                        <Button
+                            type="button"
+                            className="btn-animation"
+                            onClick={() =>
+                                form.setValue("taskPlayParams", [
+                                    ...form.getValues("taskPlayParams"),
+                                    { paramKey: "", paramValue: "", isPrimary: false },
+                                ])
+                            }
+                        >
+                            Add Param
+                        </Button>
+
                         <Button type="button" onClick={() => setOpenRewardsModal(true)} className="btn-animation btn-primary">
                             Select rewards
                         </Button>
@@ -424,7 +424,7 @@ export function QuestForm({ taskPlay, onClose, onUpdate, submitLabel }: Props) {
                         cardWrapperClassName="hover:scale-[1.02] transition relative h-full"
                     />
 
-                    <Button type="submit" disabled={isLoading} className="w-full btn-animation">
+                    <Button type="submit" disabled={isLoading} className="w-full md:w-fit btn-animation">
                         {isLoading ? "Saving..." : submitLabel}
                     </Button>
                 </form>

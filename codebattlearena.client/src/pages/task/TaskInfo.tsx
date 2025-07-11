@@ -7,7 +7,6 @@ import TaskProgrammingCard from "@/components/cards/TaskProgrammingCard";
 import InlineNotification from "@/components/common/InlineNotification";
 import { useState } from "react";
 import SettingMenu from "@/components/menu/SettingMenu";
-import EditTaskModal from "@/components/modals/EditTaskModal";
 import { TaskProgramming } from "@/models/dbModels";
 import { useDeleteTask } from "@/hooks/task/useDeleteTask";
 import { useAuth } from "@/contexts/AuthContext";
@@ -16,6 +15,8 @@ import { Button } from "@/components/ui/button";
 import { useActiveSession } from "@/contexts/ActiveSessionContext";
 import { useSelectTaskForSession } from "@/hooks/session/useSelectTaskForSession";
 import { useTaskEventsHub } from "@/hooks/hubs/task/useTaskEventsHub";
+import EditModal from "@/components/modals/EditModal";
+import TaskForm from "@/components/forms/TaskForm";
 
 export function TaskInfo() {
     const { taskId } = useParams<{ taskId: string }>();
@@ -66,7 +67,7 @@ export function TaskInfo() {
 
             <div className="glow-box">
                 <div className="md:w-[60vw] sm:w-[100vw] mx-auto">
-                    <div className="flex items-center justify-between mb-6">
+                    <div className="flex flex-col md:flex-row items-center md:justify-between gap-4 mb-6">
                         {activeSession && (
                             <Button
                                 className="btn-green btn-animation"
@@ -90,7 +91,9 @@ export function TaskInfo() {
                 </div>
             </div>
             {task && (
-                <EditTaskModal open={showEditTask} task={task} onClose={() => setShowEditTask(false)} onUpdate={handleUpdateTask} />
+                <EditModal open={showEditTask} title="Edit Task" onClose={() => setShowEditTask(false)}>
+                    <TaskForm task={task} onClose={() => setShowEditTask(false)} onUpdate={handleUpdateTask} submitLabel="Save"></TaskForm>
+                </EditModal>
             )}
         </>
     );

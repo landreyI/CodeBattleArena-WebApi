@@ -5,12 +5,12 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog";
 import { Reward } from "@/models/dbModels";
-import RewardCard from "../cards/RewardCard";
-import EditRewardModal from "./EditRewardModal";
 import { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import { Checkbox } from "../ui/checkbox";
 import RewardsList from "../lists/RewardsList";
+import RewardForm from "../forms/RewardForm";
+import EditModal from "./EditModal";
 
 interface Props {
     open: boolean;
@@ -92,12 +92,9 @@ export function RewardsModal({
                     </div>
                 </div>
 
-
-                <EditRewardModal
-                    open={openRewardModal}
-                    onClose={() => setOpenRewardModal(false)}
-                    onUpdate={onAddReward}
-                />
+                <EditModal open={openRewardModal} title="Create Reward" onClose={() => setOpenRewardModal(false)}>
+                    <RewardForm onClose={() => setOpenRewardModal(false)} onUpdate={onAddReward} submitLabel="Create"></RewardForm>
+                </EditModal>
             </DialogContent>
         </Dialog>
     );

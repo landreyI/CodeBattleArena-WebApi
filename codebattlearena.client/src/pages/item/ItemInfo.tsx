@@ -12,14 +12,15 @@ import { isEditRole } from "@/untils/businessRules";
 import ItemCard from "@/components/cards/ItemCard";
 import SettingMenu from "@/components/menu/SettingMenu";
 import { usePlayerItems } from "@/hooks/item/usePlayerItems";
-import { CircleCheck } from "lucide-react";
+import { CircleCheck} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import EditItemModal from "@/components/modals/EditItemModal";
 import { Button } from "@/components/ui/button";
 import { useBuyItem } from "@/hooks/item/useBuyItem";
 import { useChangeActiveItem } from "@/hooks/player/useChangeActiveItem";
 import { useFriendshipFriends } from "@/hooks/friend/useFriendshipFriends";
 import FriendsSelectModal from "@/components/modals/FriendsSelectModal";
+import EditModal from "@/components/modals/EditModal";
+import ItemForm from "@/components/forms/ItemForm";
 
 export function ItemInfo() {
     const { itemId } = useParams<{ itemId: string }>();
@@ -70,7 +71,7 @@ export function ItemInfo() {
     const handleMakeActive = async () => {
         setNotification(null);
         const isSuccess = await changeActiveItem(user?.id, Number(itemId));
-        if(isSuccess) setNotification("Successfully change");
+        if (isSuccess) setNotification("Successfully change");
     }
 
     const handlePressSelectedFriends = () => {
@@ -120,20 +121,22 @@ export function ItemInfo() {
                                 </Badge>
                             )}
 
-                            {user && item.priceCoin && (
+                            {user && (
                                 <>
                                     <Button
                                         onClick={isOwned ? handleMakeActive : handleAddInventory}
                                         className="btn-animation w-auto"
                                     >
-                                        {isOwned ? 'Set as Active' : 'Buy item'}
+                                        {isOwned ? 'Set as Active' : 'Get item'}
                                     </Button>
-                                    <Button
-                                        className="btn-animation w-auto"
-                                        onClick={handlePressSelectedFriends}
-                                    >
-                                        Gift for friend
-                                    </Button>
+                                    {item.priceCoin && (
+                                        <Button
+                                            className="btn-animation w-auto"
+                                            onClick={handlePressSelectedFriends}
+                                        >
+                                            Gift for friend
+                                        </Button>
+                                    )}
                                 </>
                             )}
                         </div>
@@ -152,7 +155,9 @@ export function ItemInfo() {
             </div>
 
             {item && (
-                <EditItemModal open={showEditItem} item={item} onClose={() => setShowEditItem(false)} onUpdate={handleUpdateItem} />
+                <EditModal open={showEditItem} title="Edit Item" onClose={() => setShowEditItem(false)}>
+                    <ItemForm item={item} onClose={() => setShowEditItem(false)} onUpdate={handleUpdateItem} submitLabel="Save"></ItemForm>
+                </EditModal>
             )}
             {friendships && (
                 <FriendsSelectModal open={showSelectedFriends} friends={friendships} onClose={() => setShowSelectedFriends(false)} onSaveSelect={handleSelectedFriend} />

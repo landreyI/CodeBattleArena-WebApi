@@ -6,9 +6,7 @@ import { RegistrationModal } from "../modals/RegistrationModal";
 import AuthorizationModal from "../modals/AuthorizationModal";
 import { Coins, Menu, Star, X } from "lucide-react";
 import SessionMenu from "../menu/SessionMenu";
-import { TaskMenu } from "../menu/TaskMenu";
 import UserMenu from "../menu/UserMenu";
-import EditTaskModal from "../modals/EditTaskModal";
 import SessionActiveMenu from "./SessionActiveMenu";
 import ThemeMenu from "../menu/ThemeMenu";
 import React from "react";
@@ -97,7 +95,6 @@ export function Header() {
 
             <RegistrationModal open={showRegistration} onClose={() => setShowRegistration(false)} />
             <AuthorizationModal open={showAuthorization} onClose={() => setShowAuthorization(false)} />
-            <EditTaskModal open={showAddTask} onClose={() => setShowAddTask(false)} />
         </>
     );
 };

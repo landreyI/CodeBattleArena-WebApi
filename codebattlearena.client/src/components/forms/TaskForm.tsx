@@ -26,6 +26,7 @@ import { useInputDatas } from "../../hooks/task/useInputDatas";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTrigger } from "../ui/dialog";
 import { Checkbox } from "../ui/checkbox";
+import { Separator } from "../ui/separator";
 
 // Определяем схему валидации формы
 export const formSchema = z
@@ -288,15 +289,14 @@ export function TaskForm({ task, onClose, onUpdate, submitLabel }: Props) {
                     )}
                 />
 
-                <div>
-                    <h3 className="text-lg font-semibold mb-2">Test Cases</h3>
+                <h3 className="text-lg font-semibold mb-2">Test Cases</h3>
 
+                <div>
                     {/* Модальное окно для выбора входных данных */}
                     <Dialog open={openModal} onOpenChange={setOpenModal}>
-                        <DialogTrigger>Open Modal</DialogTrigger>
                         <DialogContent>
                             <DialogHeader>
-                                <h3>Select Input Data</h3>
+                                <h3 className="text-lg font-semibold mb-2">Select Input Data</h3>
                             </DialogHeader>
                             <div className="space-y-2">
                                 {inputDatas.map((inputData) => (
@@ -326,56 +326,57 @@ export function TaskForm({ task, onClose, onUpdate, submitLabel }: Props) {
                         </DialogContent>
                     </Dialog>
 
-                    {fields.map((field, index) => (
-                        <div key={field.id} className="mb-4 border rounded p-3 space-y-2">
-                            <div className="flex gap-2 items-start">
-                                <FormField
-                                    control={form.control}
-                                    name={`taskInputData.${index}.inputData.data`}
-                                    render={({ field }) => (
-                                        <FormItem className="flex-1">
-                                            <FormControl>
-                                                <Textarea
-                                                    placeholder="Input"
-                                                    className="resize-none min-h-[40px]"
-                                                    {...field}
-                                                />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
+                    <div className="border rounded-xl mb-4 p-3 space-y-4">
 
-                                <FormField
-                                    control={form.control}
-                                    name={`taskInputData.${index}.answer`}
-                                    render={({ field }) => (
-                                        <FormItem className="flex-1">
-                                            <FormControl>
-                                                <Textarea
-                                                    placeholder="Expected output"
-                                                    className="resize-none min-h-[40px]"
-                                                    {...field}
-                                                />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
+                        {fields.map((field, index) => (
+                            <div key={field.id} className="space-y-2">
+                                <div className="flex flex-col md:flex-row gap-2">
+                                    <FormField
+                                        control={form.control}
+                                        name={`taskInputData.${index}.inputData.data`}
+                                        render={({ field }) => (
+                                            <FormItem className="flex-1">
+                                                <FormControl>
+                                                    <Textarea
+                                                        placeholder="Input"
+                                                        className="resize-none min-h-[40px]"
+                                                        {...field}
+                                                    />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
 
-                                <Button
-                                    type="button"
-                                    variant="destructive"
-                                    size="sm"
-                                    className="ml-auto mt-1 btn-animation btn-red"
-                                    onClick={() => remove(index)}
-                                >
-                                    Remove
-                                </Button>
+                                    <FormField
+                                        control={form.control}
+                                        name={`taskInputData.${index}.answer`}
+                                        render={({ field }) => (
+                                            <FormItem className="flex-1">
+                                                <FormControl>
+                                                    <Textarea
+                                                        placeholder="Expected output"
+                                                        className="resize-none min-h-[40px]"
+                                                        {...field}
+                                                    />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+
+                                    <Button
+                                        type="button"
+                                        className="w-full md:w-fit btn-animation btn-red"
+                                        onClick={() => remove(index)}
+                                    >
+                                        Remove
+                                    </Button>
+                                </div>
                             </div>
-                        </div>
-                    ))}
-                    <div className="flex justify-between space-x-4">
+                        ))}
+                    </div>
+                    <div className="flex flex-col md:flex-row justify-between gap-4">
                         <Button
                             type="button"
                             onClick={() =>
@@ -410,7 +411,7 @@ export function TaskForm({ task, onClose, onUpdate, submitLabel }: Props) {
 
 
 
-                <Button type="submit" disabled={isLoading} className="w-full btn-animation">
+                <Button type="submit" disabled={isLoading} className="w-full md:w-fit btn-animation">
                     {isLoading ? "Saving..." : submitLabel}
                 </Button>
             </form>

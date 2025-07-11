@@ -7,7 +7,6 @@ import { SessionCard } from "@/components/cards/SessionCard";
 import LoadingScreen from "@/components/common/LoadingScreen";
 import ErrorMessage from "@/components/common/ErrorMessage";
 import EmptyState from "@/components/common/EmptyState";
-import EditSessionModal from "@/components/modals/EditSessionModal";
 import { useSessionPlayers } from "@/hooks/session/useSessionPlayers";
 import SettingMenu from "@/components/menu/SettingMenu";
 import TaskProgrammingMiniCard from "@/components/cards/TaskProgrammingMiniCard";
@@ -30,6 +29,9 @@ import { useCountCompletedTask } from "@/hooks/session/useCountCompletedTask";
 import { useKickOutSession } from "@/hooks/playerSession/useKickOutSession";
 import { useFriendshipFriends } from "@/hooks/friend/useFriendshipFriends";
 import FriendsSelectModal from "@/components/modals/FriendsSelectModal";
+import { useInviteSession } from "@/hooks/session/useInviteSession";
+import EditModal from "@/components/modals/EditModal";
+import SessionForm from "@/components/forms/SessionForm";
 
 export function SessionInfo() {
     const { sessionId } = useParams<{ sessionId: string }>();
@@ -50,6 +52,7 @@ export function SessionInfo() {
     const { user } = useAuth();
 
     const { friendships, loading: friendshipsLoad, error: friendshipsError, reloadFriendships } = useFriendshipFriends();
+    const { inviteSession, error: inviteError } = useInviteSession();
     const [showSelectedFriends, setShowSelectedFriends] = useState(false);
 
     useSessionEventsHub(Number(sessionId), {
@@ -121,7 +124,20 @@ export function SessionInfo() {
     const handleSelectedFriend = async (selectedFriend?: Friend[]) => {
         setShowSelectedFriends(false);
         setNotification(null);
-        console.log(selectedFriend);
+
+        if (!selectedFriend || selectedFriend.length === 0) return;
+
+        const friendIds = selectedFriend.map((friend) => {
+            return friend.requesterId === user?.id
+                ? friend.addresseeId
+                : friend.requesterId;
+        });
+
+        const success = await inviteSession(friendIds);
+
+        if (success) {
+            setNotification("Invitations sent");
+        }
     };
 
     if (sessionLoad) return <LoadingScreen />
@@ -133,7 +149,7 @@ export function SessionInfo() {
     const isPrivate = session?.state === SessionState.Private;
     const isJoined = activeSession?.idSession === session?.idSession;
 
-    const error = deleteError || joinError || startError || finishError || kickError || countCompletedError;
+    const error = deleteError || joinError || startError || finishError || kickError || countCompletedError || friendshipsError || inviteError;
 
     return (
         <>
@@ -289,7 +305,9 @@ export function SessionInfo() {
                 </div>
             </div>
             {session && (
-                <EditSessionModal open={showEditSession} session={session} onClose={() => setShowEditSession(false)} onUpdate={handleUpdateSession} />
+                <EditModal open={showEditSession} title="Edit Session" onClose={() => setShowEditSession(false)}>
+                    <SessionForm session={session} onClose={() => setShowEditSession(false)} onUpdate={handleUpdateSession} submitLabel="Save"></SessionForm>
+                </EditModal>
             )}
             {friendships && (
                 <FriendsSelectModal open={showSelectedFriends} friends={friendships} onClose={() => setShowSelectedFriends(false)} isMultipleSelect={true} onSaveSelected={handleSelectedFriend} />

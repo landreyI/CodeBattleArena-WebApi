@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import {
@@ -65,12 +65,14 @@ export function RewardForm({ reward, onClose, onUpdate, submitLabel = "Submit" }
         },
     });
 
+    const itemId = useWatch({ control: form.control, name: "itemId" });
+
+    const selectedItem = items.find(i => i.idItem === itemId);
+
     const handleSaveSelected = (itemId: number | null) => {
         form.setValue("itemId", itemId ?? undefined);
         closeItemsModal();
     };
-
-    const selectedItem = reward?.item ?? items.find(i => i.idItem === form.watch("itemId"));
 
     const buildReward = (values: z.infer<typeof formSchema>, reward?: Reward): Reward => ({
         idReward: reward?.idReward ?? null,
@@ -153,7 +155,7 @@ export function RewardForm({ reward, onClose, onUpdate, submitLabel = "Submit" }
 
                     </div>
 
-                    <Button type="submit" disabled={isLoading} className="w-full btn-animation btn-primary">
+                    <Button type="submit" disabled={isLoading} className="w-full md:w-fit btn-animation">
                         {isLoading ? "Saving..." : submitLabel}
                     </Button>
                 </form>

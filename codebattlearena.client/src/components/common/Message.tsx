@@ -2,6 +2,7 @@ import { User } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarImage, AvatarFallback } from "@radix-ui/react-avatar";
 import { Message } from "@/models/dbModels";
+import { Link } from "react-router-dom";
 
 export interface MessageProps {
     message?: Message;
@@ -16,19 +17,21 @@ export function MessageComponent({ message, isUser }: MessageProps) {
             )}
         >
             {!isUser && (
-                <Avatar className="w-10 h-10 sm:w-12 sm:h-12">
-                    <AvatarImage className="rounded-full" src={message?.sender?.photoUrl ?? undefined} />
-                    <AvatarFallback className="text-primary">
-                        {message?.sender?.username.charAt(0).toUpperCase()}
-                    </AvatarFallback>
-                </Avatar>
+                <Link to={`/player/info-player/${message?.idSender}`} title="View player" className="w-10 h-10 sm:w-12 sm:h-12">
+                    <Avatar className="">
+                        <AvatarImage className="rounded-full" src={message?.sender?.photoUrl ?? undefined} />
+                        <AvatarFallback className="text-primary">
+                            {message?.sender?.username.charAt(0).toUpperCase()}
+                        </AvatarFallback>
+                    </Avatar>
+                </Link>
             )}
             <div
                 className={cn(
                     "rounded-lg px-4 py-2",
                     isUser
                         ? "bg-primary text-primary-foreground"
-                        : "bg-muted text-muted-foreground"
+                        : "bg-blue text-primary-foreground"
                 )}
             >
                 <p className="whitespace-pre-wrap break-words overflow-auto max-w-60">

@@ -8,7 +8,6 @@ import LoadingScreen from "@/components/common/LoadingScreen";
 import { getTaskParamPrimary, isEditRole } from "@/untils/businessRules";
 import SettingMenu from "@/components/menu/SettingMenu";
 import { useState } from "react";
-import EditQuestModal from "@/components/modals/EditQuestModal";
 import { TaskPlay } from "@/models/dbModels";
 import { useTaskPlayRewards } from "@/hooks/quest/useTaskPlayRewards";
 import QuestCard from "@/components/cards/QuestCard";
@@ -23,6 +22,10 @@ import { useClaimReward } from "@/hooks/quest/useClaimReward";
 import { Badge } from "@/components/ui/badge";
 import QuestResetTimer from "@/components/common/QuestResetTimer";
 import { isQuestResetAvailable } from "@/untils/helpers";
+import { showAnimationRotateIcons } from "@/components/animations/AnimationRotateIcons";
+import { Coins, Star } from "lucide-react";
+import EditModal from "@/components/modals/EditModal";
+import { QuestForm } from "@/components/forms/QuestForm";
 
 export function QuestPage() {
     const { taskPlayId } = useParams<{ taskPlayId: string }>();
@@ -33,7 +36,7 @@ export function QuestPage() {
 
     const [notification, setNotification] = useState<string | null>(null);
 
-    const { user } = useAuth();
+    const { user, reload } = useAuth();
     const { playerProgress, setPlayerProgress, reloadProgress } = usePlayerProgress(user?.id, Number(taskPlayId));
 
     const navigate = useNavigate();
@@ -61,6 +64,9 @@ export function QuestPage() {
                     isGet: true,
                 });
             }
+            reload();
+            await showAnimationRotateIcons({ icon: <Coins className="text-yellow" /> });
+            await showAnimationRotateIcons({ icon: <Star className="text-purple" /> });
         }
     }
 
@@ -130,14 +136,14 @@ export function QuestPage() {
 
                     {isEdit && (
                         <>
-                            <Label className="mt-5 text-base font-semibold">Options</Label>
-                            <TaskPlayParamsList params={taskPlay?.taskPlayParams ?? []} cardWrapperClassName="hover:scale-[1.02] transition" />
+                            <Label className="mt-5 mb-1 text-base font-semibold text-primary">Options</Label>
+                            <TaskPlayParamsList params={taskPlay?.taskPlayParams ?? []} cardWrapperClassName="" />
                         </>
                     )}
 
                     {taskPlayRewards && taskPlayRewards.length != 0 && (
                         <>
-                            <Label className="mt-5 text-base font-semibold">Rewards</Label>
+                            <Label className="mt-5 mb-1 text-base font-semibold text-primary">Rewards</Label>
                             <RewardsList
                                 rewards={taskPlayRewards}
                                 className="gap-4"
@@ -150,7 +156,9 @@ export function QuestPage() {
                 </div>
             </div>
             {taskPlay && (
-                <EditQuestModal open={showEditQuest} taskPlay={taskPlay} onClose={() => setShowEditQuest(false)} onUpdate={handleUpdateQuest} />
+                <EditModal open={showEditQuest} title="Edit Quest" onClose={() => setShowEditQuest(false)}>
+                    <QuestForm taskPlay={taskPlay} onClose={() => setShowEditQuest(false)} onUpdate={handleUpdateQuest} submitLabel="Save"></QuestForm>
+                </EditModal>
             )}
         </>
     )

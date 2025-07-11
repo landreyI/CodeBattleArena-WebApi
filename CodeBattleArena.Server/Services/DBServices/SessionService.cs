@@ -15,6 +15,7 @@ using CodeBattleArena.Server.Untils;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using System.Globalization;
+using System.Threading;
 using static Azure.Core.HttpHeader;
 
 namespace CodeBattleArena.Server.Services.DBServices
@@ -24,21 +25,17 @@ namespace CodeBattleArena.Server.Services.DBServices
         private readonly IUnitOfWork _unitOfWork;
         private readonly ILogger<SessionService> _logger;
         private readonly IMapper _mapper;
-        private readonly UserManager<Player> _userManager;
         private readonly PlayerService _playerService;
-        private readonly TaskService _taskService;
         private readonly ISessionNotificationService _sessionNotificationService;
         private readonly GameEventDispatcher _gameEventDispatcher;
         public SessionService(IUnitOfWork unitOfWork, ILogger<SessionService> logger, IMapper mapper, 
-            UserManager<Player> userManager, PlayerService playerService, TaskService taskService,
-            ISessionNotificationService sessionNotificationService, GameEventDispatcher gameEventDispatcher)
+            PlayerService playerService, ISessionNotificationService sessionNotificationService, 
+            GameEventDispatcher gameEventDispatcher)
         {
             _unitOfWork = unitOfWork;
             _logger = logger;
             _mapper = mapper;
-            _userManager = userManager;
             _playerService = playerService;
-            _taskService = taskService;
             _sessionNotificationService = sessionNotificationService;
             _gameEventDispatcher = gameEventDispatcher;
         }
@@ -239,6 +236,7 @@ namespace CodeBattleArena.Server.Services.DBServices
 
             return Result.Success<bool, ErrorResponse>(isEditSession);
         }
+
         public async Task<Result<Session, ErrorResponse>> CreateSessionAsync
             (string userId, SessionDto dto, CancellationToken ct)
         {

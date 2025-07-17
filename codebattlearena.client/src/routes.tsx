@@ -121,4 +121,10 @@ export const routes = [
         path: "/quest/create-reward",
         element: lazy(() => import("@/pages/quest/CreateReward")),
     },
+
+    // Statistics
+    {
+        path: "/statistics/info-statistics",
+        element: lazy(() => import("@/pages/statistics/StatisticsPage")),
+    },
 ];

@@ -1,4 +1,4 @@
-﻿using CodeBattleArena.Server.DTO;
+﻿using CodeBattleArena.Server.DTO.ModelsDTO;
 using CodeBattleArena.Server.Enums;
 using CodeBattleArena.Server.Models;
 
@@ -40,6 +40,10 @@ namespace CodeBattleArena.Server.Helpers
         public static bool IsStartetSession(Session session)
         {
             return session.IsStart;
+        }
+        public static bool IsFinishSession(Session session)
+        {
+            return session.IsFinish;
         }
 
         public static PlayerDto ChangeActiveItem(PlayerDto dtoPlayer, Item item)

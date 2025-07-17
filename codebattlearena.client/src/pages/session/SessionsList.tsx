@@ -56,7 +56,7 @@ export function SessionsList() {
         <>
             <SessionFilter filter={filter} onChange={handleChangeFilter} handleSearch={reloadSessions}></SessionFilter>
 
-            {!sessions || sessions.length === 0 && (<EmptyState message="Sessions not found" />)}
+            {(!sessions || sessions.length === 0) && (<EmptyState message="Sessions not found" />)}
 
             <SessionList
                 sessions={sessions}

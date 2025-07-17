@@ -1,6 +1,6 @@
 ﻿using CodeBattleArena.Server.Models;
 
-namespace CodeBattleArena.Server.DTO
+namespace CodeBattleArena.Server.DTO.ModelsDTO
 {
     public class FriendDto
     {

@@ -53,7 +53,7 @@ export function ItemsListPage() {
 
             <ItemFilter filter={filter} onChange={handleChangeFilter} handleSearch={reloadItems}></ItemFilter>
 
-            {!items || items.length === 0 && (<EmptyState message="Items not found" />)}
+            {(!items || items?.length === 0) && (<EmptyState message="Items not found" />)}
 
             <PlayerProvider player={player}>
                 <ItemsList

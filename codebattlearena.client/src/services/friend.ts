@@ -1,58 +1,53 @@
 import { api } from "../api/axios";
 import { Friend } from "../models/dbModels";
 
-export const fetchGetListFriends = async (): Promise<Friend[]> => {
-    try {
-        let response = await api.get(`Friend/list-friends`);
-        return response.data;
-    }
-    catch (error) {
-        console.error(error);
-        throw error;
-    }
-}
-
-export const fetchGetFriendshipFriends = async (): Promise<Friend[]> => {
-    try {
-        let response = await api.get(`Friend/friendship-friends`);
-        return response.data;
-    }
-    catch (error) {
-        console.error(error);
-        throw error;
-    }
-}
-
-export const fetcAddFriend = async (addresseeId?: string): Promise<boolean> => {
-    try {
-        const response = await api.post(`Friend/add-friend`, addresseeId);
-        return response.data;
-    }
-    catch (error) {
-        console.error(error);
-        throw error;
-    }
-}
-
-export const fetchApproveFriendship = async (idFriend?: number): Promise<boolean> => {
-    try {
-        const response = await api.put(`/Friend/approve-friendship`, idFriend);
-        return response.data;
-    } catch (error) {
-        console.error(error);
-        throw error;
-    }
+export const fetchGetListFriends = async (
+    _: void,
+    config?: { signal?: AbortSignal }
+): Promise<Friend[]> => {
+    const response = await api.get(`Friend/list-friends`, {
+        signal: config?.signal,
+    });
+    return response.data;
 };
 
-export const fetchDeleteFriend = async (idFriend?: number): Promise<boolean> => {
-    try {
-        let response = await api.delete(`Friend/delete-friend`, {
-            params: { idFriend: idFriend }
-        });
-        return response.data;
-    }
-    catch (error) {
-        console.error(error);
-        throw error;
-    }
-}
+export const fetchGetFriendshipFriends = async (
+    _: void,
+    config?: { signal?: AbortSignal }
+): Promise<Friend[]> => {
+    const response = await api.get(`Friend/friendship-friends`, {
+        signal: config?.signal,
+    });
+    return response.data;
+};
+
+export const fetcAddFriend = async (
+    addresseeId?: string,
+    config?: { signal?: AbortSignal }
+): Promise<boolean> => {
+    const response = await api.post(`Friend/add-friend`, addresseeId, {
+        signal: config?.signal,
+    });
+    return response.data;
+};
+
+export const fetchApproveFriendship = async (
+    idFriend?: number,
+    config?: { signal?: AbortSignal }
+): Promise<boolean> => {
+    const response = await api.put(`/Friend/approve-friendship`, idFriend, {
+        signal: config?.signal,
+    });
+    return response.data;
+};
+
+export const fetchDeleteFriend = async (
+    idFriend?: number,
+    config?: { signal?: AbortSignal }
+): Promise<boolean> => {
+    const response = await api.delete(`Friend/delete-friend`, {
+        params: { idFriend },
+        signal: config?.signal,
+    });
+    return response.data;
+};

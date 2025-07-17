@@ -47,6 +47,7 @@ export function Header() {
                             <NavLink href="/league/list-leagues" label="Leagues" />
                             <NavLink href="/item/list-items" label="Items" />
                             <NavLink href="/quest/list-quests" label="Quests" />
+                            <NavLink href="/statistics/info-statistics" label="Statistics" />
                         </div>
                     </div>
 
@@ -81,6 +82,7 @@ export function Header() {
                             <NavLink href="/league/list-leagues" label="Leagues" />
                             <NavLink href="/item/list-items" label="Items" />
                             <NavLink href="/quest/list-quests" label="Quests" />
+                            <NavLink href="/statistics/info-statistics" label="Statistics" />
                             {!isAuthenticated && (
                                 <>
                                     <button onClick={() => { setShowAuthorization(true); setIsMobileMenuOpen(false); }} className="text-primary nav-link">Sign In</button>

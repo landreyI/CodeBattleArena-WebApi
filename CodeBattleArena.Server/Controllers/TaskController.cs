@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using CodeBattleArena.Server.DTO;
+using CodeBattleArena.Server.DTO.ModelsDTO;
 using CodeBattleArena.Server.Filters;
 using CodeBattleArena.Server.Infrastructure.Attributes;
 using CodeBattleArena.Server.Models;

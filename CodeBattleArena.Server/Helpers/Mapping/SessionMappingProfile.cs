@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using CodeBattleArena.Server.DTO;
+using CodeBattleArena.Server.DTO.ModelsDTO;
 using CodeBattleArena.Server.Models;
 
 namespace CodeBattleArena.Server.Helpers.Mapping

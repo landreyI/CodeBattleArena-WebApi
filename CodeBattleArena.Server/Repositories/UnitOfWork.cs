@@ -21,6 +21,7 @@ namespace CodeBattleArena.Server.Repositories
         private readonly Lazy<IItemRepository> _itemRepository;
         private readonly Lazy<IPlayerItemRepository> _playerItemRepository;
         private readonly Lazy<IQuestRepository> _questRepository;
+        private readonly Lazy<IStatisticsRepository> _statisticsRepository;
 
         public UnitOfWork(AppDBContext context, UserManager<Player> userManager)
         {
@@ -37,6 +38,7 @@ namespace CodeBattleArena.Server.Repositories
             _itemRepository = new Lazy<IItemRepository>(() => new ItemRepository(_context));
             _playerItemRepository = new Lazy<IPlayerItemRepository>(() => new PlayerItemRepository(_context));
             _questRepository = new Lazy<IQuestRepository>(() => new QuestRepository(_context));
+            _statisticsRepository = new Lazy<IStatisticsRepository>(() => new StatisticsRepository(_context));
         }
 
         public ISessionRepository SessionRepository => _sessionRepository.Value;
@@ -50,6 +52,7 @@ namespace CodeBattleArena.Server.Repositories
         public IItemRepository ItemRepository => _itemRepository.Value;
         public IPlayerItemRepository PlayerItemRepository => _playerItemRepository.Value;
         public IQuestRepository QuestRepository => _questRepository.Value;
+        public IStatisticsRepository StatisticsRepository => _statisticsRepository.Value;
 
         public async Task<int> CommitAsync(CancellationToken cancellationToken)
         {

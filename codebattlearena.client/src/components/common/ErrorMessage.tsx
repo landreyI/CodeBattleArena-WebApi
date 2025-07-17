@@ -10,9 +10,11 @@ export function ErrorMessage({ error }: Props) {
     const [showDetails, setShowDetails] = useState(false);
 
     return (
-        <div className="w-full max-w-lg mx-auto bg-red-50 border border-red-300 text-red-800 rounded-2xl shadow-md p-6 space-y-4">
+        <div className="w-full max-w-lg mx-auto bg-red-100 border-0 border-l-8 border-red 
+                        text-red-800 rounded-2xl shadow-xl p-6 animate-in zoom-in-75"
+        >
             <div className="flex items-center space-x-3">
-                <AlertTriangle className="w-6 h-6 text-red-500" />
+                <AlertTriangle className="w-10 h-10 text-red animate-pulse" />
                 <p className="text-lg font-semibold">Error: {error.message}</p>
             </div>
 

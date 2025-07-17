@@ -13,6 +13,7 @@ import {
 import { Button } from "../ui/button";
 import { Card } from "../ui/card";
 import { Label } from "../ui/label";
+import LoadingScreen from "../common/LoadingScreen";
 
 interface Props {
     filter: TaskProgrammingFilters;
@@ -57,6 +58,8 @@ export function TaskFilter({ filter, onChange, handleSearch }: Props) {
         onChange(updatedFilter);
         handleSearch();
     };
+
+    if (loading) return <LoadingScreen />
 
     if (!langsProgramming || langsProgramming.length === 0) {
         return <EmptyState message="Langs not found" />;

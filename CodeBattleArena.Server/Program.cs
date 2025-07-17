@@ -1,4 +1,4 @@
-using CodeBattleArena.Server.Data;
+﻿using CodeBattleArena.Server.Data;
 using CodeBattleArena.Server.IRepositories;
 using CodeBattleArena.Server.Models;
 using CodeBattleArena.Server.Repositories;
@@ -17,13 +17,15 @@ using CodeBattleArena.Server.Services.Judge0;
 using CodeBattleArena.Server.QuestSystem;
 using CodeBattleArena.Server.QuestSystem.Dispatcher;
 using CodeBattleArena.Server.Untils;
+using Microsoft.AspNetCore.RateLimiting;
+using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
-        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()); //ENUM ������������
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()); //ENUM Сериализация
         options.JsonSerializerOptions.Converters.Add(new UtcDateTimeConverter());
     });
 
@@ -77,9 +79,42 @@ builder.Services.AddSwaggerGen(c =>
         Description = "API for CodeBattleArena",
     });
 
-    // �������� ���������� ����
+    // Избегаем конфликтов имен
     c.CustomSchemaIds(type => type.FullName);
 });
+
+// Настройка rate limiting
+builder.Services.AddRateLimiter(options =>
+{
+    options.AddPolicy("api-policy", httpContext =>
+    {
+        // Применять лимит только для API-запросов
+        if (httpContext.Request.Path.StartsWithSegments("/api"))
+        {
+            return RateLimitPartition.GetFixedWindowLimiter(
+                partitionKey: httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+                factory: _ => new FixedWindowRateLimiterOptions
+                {
+                    PermitLimit = 12,                  // максимум 12 запросов
+                    Window = TimeSpan.FromSeconds(3), // за 3 секунд
+                    QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
+                    QueueLimit = 0
+                });
+        }
+
+        return RateLimitPartition.GetNoLimiter(httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown");
+    });
+
+    options.RejectionStatusCode = 429;
+    options.OnRejected = async (context, token) =>
+    {
+        context.HttpContext.Response.ContentType = "application/json";
+        await context.HttpContext.Response.WriteAsync(
+            "{\"error\":\"Oops, too many requests. Please slow down.\"}",
+            cancellationToken: token);
+    };
+});
+
 
 //------ DATABASE ------
 var connectionStringBD = builder.Configuration.GetConnectionString("DefaultConnection");
@@ -108,6 +143,7 @@ builder.Services.AddScoped<LangProgrammingService>();
 builder.Services.AddScoped<LeagueService>();
 builder.Services.AddScoped<ItemService>();
 builder.Services.AddScoped<QuestService>();
+builder.Services.AddScoped<StatisticsService>();
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
@@ -163,7 +199,8 @@ app.MapHub<SessionHub>("/hubs/session");
 app.MapHub<TaskHub>("/hubs/task");
 app.MapHub<PlayerHub>("/hubs/player");
 
-app.MapControllers();
+app.UseRateLimiter();
+app.MapControllers().RequireRateLimiting("api-policy");
 
 app.MapFallbackToFile("/index.html");
 

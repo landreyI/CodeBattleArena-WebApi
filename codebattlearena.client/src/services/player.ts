@@ -2,63 +2,63 @@ import { api } from "../api/axios";
 import { Player } from "@/models/dbModels";
 import { PlayerFilters } from "../models/filters";
 
-export const fetchGetPlayer = async (id: string): Promise<{ player: Player; isEdit: boolean }> => {
-    try {
-        let response = await api.get(`/Player/info-player`, {
-            params: { id: id }
-        });
-        return response.data;
-    }
-    catch (error) {
-        console.error(error);
-        throw error;
-    }
-}
-
-export const fetchGetPlayersList = async (filter?: PlayerFilters): Promise<Player[]> => {
-    try {
-        let response = await api.get(`/Player/list-players`, {
-            params: filter
-        });
-        return response.data;
-    }
-    catch (error) {
-        console.error(error);
-        throw error;
-    }
-}
-
-export const fetchSelectRoles = async (idPlayer?: string, roles?: string []): Promise<boolean> => {
-    try {
-        const response = await api.put(`/Player/select-roles`, {
-            idPlayer: idPlayer,
-            roles: roles,
-        });
-        return response.data;
-    } catch (error) {
-        console.error(error);
-        throw error;
-    }
+export const fetchGetPlayer = async (
+    id: string,
+    config?: { signal?: AbortSignal }
+): Promise<{ player: Player; isEdit: boolean }> => {
+    const response = await api.get(`/Player/info-player`, {
+        params: { id },
+        signal: config?.signal,
+    });
+    return response.data;
 };
 
-export const fetchEditPlayer = async (player: Player): Promise<boolean> => {
-    try {
-        const response = await api.put(`/Player/edit-player`, player);
-        return response.data;
-    } catch (error) {
-        console.error(error);
-        throw error;
-    }
+export const fetchGetPlayersList = async (
+    filter?: PlayerFilters,
+    config?: { signal?: AbortSignal }
+): Promise<Player[]> => {
+    const response = await api.get(`/Player/list-players`, {
+        params: filter,
+        signal: config?.signal,
+    });
+    return response.data;
 };
 
-export const fetchChangeActiveItem = async (idPlayer?: string, idItem?: number): Promise<boolean> => {
-    try {
-        const response = await api.put(`/Player/change-active-item`, null, {
-            params: { idPlayer, idItem }
-        });
-        return response.data;
-    } catch (error) {
-        console.error(error);
-        throw error;
-    }
+export const fetchSelectRoles = async (
+    idPlayer?: string,
+    roles?: string[],
+    config?: { signal?: AbortSignal }
+): Promise<boolean> => {
+    const response = await api.put(
+        `/Player/select-roles`,
+        { idPlayer, roles },
+        { signal: config?.signal } 
+    );
+    return response.data;
+};
+
+export const fetchEditPlayer = async (
+    player: Player,
+    config?: { signal?: AbortSignal }
+): Promise<boolean> => {
+    const response = await api.put(`/Player/edit-player`, player, {
+        signal: config?.signal,
+    });
+    return response.data;
+};
+
+export const fetchChangeActiveItem = async (
+    idPlayer?: string,
+    idItem?: number,
+    config?: { signal?: AbortSignal }
+): Promise<boolean> => {
+    const response = await api.put(
+        `/Player/change-active-item`,
+        null,
+        {
+            params: { idPlayer, idItem },
+            signal: config?.signal
+        }
+    );
+    return response.data;
 };

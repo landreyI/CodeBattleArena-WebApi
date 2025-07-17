@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using CodeBattleArena.Server.DTO;
+using CodeBattleArena.Server.DTO.ModelsDTO;
 using CodeBattleArena.Server.Enums;
 using CodeBattleArena.Server.Filters;
 using CodeBattleArena.Server.Helpers;
@@ -85,6 +85,13 @@ namespace CodeBattleArena.Server.Services.DBServices
             if (session == null)
                 return Result.Failure<Unit, ErrorResponse>(new ErrorResponse { Error = "Session not found." });
 
+            if(session.PlayerSessions == null || session.PlayerSessions.Count == 0)
+                return Result.Failure<Unit, ErrorResponse>(new ErrorResponse { Error = "Players Session not found." });
+
+            if (session.PlayerSessions.Any(ps => !ps.IsCompleted))
+                return Result.Failure<Unit, ErrorResponse>(new ErrorResponse
+                { Error = "Not all players have completed the task yet." });
+
             var resultAssign = await AssignBestResult(session, ct, commit: false);
             if (!resultAssign.IsSuccess)
                 return resultAssign;
@@ -142,18 +149,30 @@ namespace CodeBattleArena.Server.Services.DBServices
         private async Task<Result<Unit, ErrorResponse>> AssignBestResult(Session session, CancellationToken ct, bool commit = true)
         {
             var best = session.PlayerSessions
-                .Select(p => new {
-                    Player = p,
-                    ParsedTime = double.TryParse(p.Time, NumberStyles.Any, CultureInfo.InvariantCulture, out var t) ? t : double.MaxValue
+                .Where(p => p.IsCompleted && p.FinishTask.HasValue && p.Memory.HasValue)
+                .Select(p => {
+                    // парсинг в секунды
+                    var parsedTime = double.TryParse(p.Time, NumberStyles.Any, CultureInfo.InvariantCulture, out var t)
+                        ? t : double.MaxValue;
+
+                    // вычисление потраченного времени (в секундах)
+                    var timeSpentSeconds = (p.FinishTask.Value - session.DateStartGame)?.TotalSeconds ?? double.MaxValue;
+
+                    return new
+                    {
+                        Player = p,
+                        ParsedTime = parsedTime,
+                        TimeSpent = timeSpentSeconds
+                    };
                 })
-                .Where(p => p.Player.Memory.HasValue)
                 .OrderBy(p => p.ParsedTime)
+                .ThenBy(p => p.TimeSpent)
                 .ThenBy(p => p.Player.Memory.Value)
                 .Select(p => p.Player)
                 .FirstOrDefault();
 
             if (best == null)
-                return Result.Failure<Unit, ErrorResponse>(new ErrorResponse { Error = "No valid results." });
+                return Result.Success<Unit, ErrorResponse>(Unit.Value);
 
             session.WinnerId = best.IdPlayer;
             var resultUpdate = await UpdateSessionInDbAsync(session, ct, commit: false);
@@ -347,7 +366,7 @@ namespace CodeBattleArena.Server.Services.DBServices
         {
             var session = await GetSessionAsync(new SessionByIdSpec(idSession), ct);
             if(session == null)
-                return Result.Failure<Unit, ErrorResponse>(new ErrorResponse { Code = "Session not found."});
+                return Result.Failure<Unit, ErrorResponse>(new ErrorResponse { Error = "Session not found."});
 
             var dto = _mapper.Map<SessionDto>(session);
 
@@ -360,6 +379,12 @@ namespace CodeBattleArena.Server.Services.DBServices
                 return Result.Failure<Unit, ErrorResponse>(new ErrorResponse
                 {
                     Error = "You do not have sufficient permissions to edit this session."
+                });
+
+            if (BusinessRules.IsFinishSession(session) && !BusinessRules.IsEditRole(await _playerService.GetRolesAsync(userId)))
+                return Result.Failure<Unit, ErrorResponse>(new ErrorResponse
+                {
+                    Error = "You can't delete a closed session."
                 });
 
             var resultDeleting = await DelSessionInDbAsync(idSession, ct);

@@ -3,6 +3,7 @@ import { Card } from "../ui/card";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "../ui/dialog";
 import { useState } from "react";
 import { Button } from "../ui/button";
+import { Clock, MemoryStick } from "lucide-react";
 
 interface Props {
     executionResult: ExecutionResult;
@@ -17,11 +18,11 @@ export function CodeVerificationResult({ executionResult, className }: Props) {
             <Card className={`p-4 space-y-4 text-sm ${className}`}>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                        <span className="font-medium">⏱️ Time:</span>
+                        <span className="flex items-center gap-2 font-medium"><Clock className="h-5 w-5" /> Time:</span>
                         <div>{time ?? "-"}</div>
                     </div>
                     <div>
-                        <span className="font-medium">💾 Memory:</span>
+                        <span className="flex items-center gap-2 font-medium"><MemoryStick className="h-5 w-5" /> Memory:</span>
                         <div>{memory ?? "-"}</div>
                     </div>
                 </div>

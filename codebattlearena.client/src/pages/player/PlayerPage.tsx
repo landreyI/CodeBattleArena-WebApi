@@ -28,6 +28,7 @@ import InlineNotification from "@/components/common/InlineNotification";
 import { useAddFriend } from "@/hooks/friend/useAddFriend";
 import EditPlayerForm from "@/components/forms/EditPlayerForm";
 import EditModal from "@/components/modals/EditModal";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export function PlayerPage() {
     const { playerId } = useParams<{ playerId: string }>();
@@ -71,7 +72,59 @@ export function PlayerPage() {
         }
     }
 
-    if (playerLoad || selectLoad) return <LoadingScreen />
+    if (playerLoad || selectLoad) {
+        return (
+            <div className="w-full min-h-[95vh] p-3">
+                <div className="w-full md:w-[65vw] mx-auto space-y-3">
+                    {/* Верхний блок */}
+                    <div className="grid grid-cols-1 md:grid-cols-[1fr_15vw] gap-3">
+                        <div className="relative">
+                            <Skeleton className="w-full h-[200px] rounded-xl" />
+                        </div>
+                        <div className="flex flex-col gap-2">
+                            <div className="bg-primary rounded-xl p-3 space-y-2">
+                                <Skeleton className="w-3/4 h-6 bg-primary-pressed/30" />
+                                <Skeleton className="w-1/2 h-4 bg-primary-pressed/30" />
+                            </div>
+                            <div className="bg-muted-card w-full rounded-xl p-3">
+                                <Skeleton className="w-1/3 h-10" />
+                            </div>
+                            <Skeleton className="w-full h-12 rounded-xl " />
+                        </div>
+                    </div>
+
+                    {/* Нижний блок */}
+                    <div className="grid grid-cols-1 md:grid-cols-[1fr_15vw] gap-3">
+                        <div className="border-card border-5 rounded-xl shadow-sm w-full">
+                            <div className="bg-card px-3 py-1 rounded-t-md flex justify-between items-center h-10">
+                                <Skeleton className="w-24 h-8" />
+                                <Skeleton className="w-8 h-8 rounded-md" />
+                            </div>
+                            <div className="flex flex-col md:flex-row p-3 gap-3 h-[250px]">
+                                {[...Array(3)].map((_, i) => (
+                                    <Skeleton key={i} className="w-full h-full  rounded-xl" />
+                                ))}
+                            </div>
+                        </div>
+
+                        <div className="bg-muted-card w-full flex flex-col rounded-xl p-3 gap-3">
+                            <div className="flex gap-2">
+                                {[...Array(3)].map((_, i) => (
+                                    <Skeleton key={i} className="w-full h-15 rounded-xl" />
+                                ))}
+                            </div>
+                            <Skeleton className="w-2/3 h-4" />
+                            <Skeleton className="w-full h-8" />
+                            <Skeleton className="w-full h-8" />
+                            <Skeleton className="w-full h-8" />
+                            <Skeleton className="w-1/2 h-4" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
     if (playerError) return <ErrorMessage error={playerError} />;
     if (!player) return <EmptyState message="Player not found" />;
 
@@ -115,12 +168,12 @@ export function PlayerPage() {
                                 </Badge>
                             </div>
 
-                            <div className="flex flex-row items-center bg-muted-card w-full rounded-2xl p-3 gap-3">
+                            <div className="flex flex-row items-center bg-muted-card w-full rounded-xl p-3 gap-3">
                                 Badge
                                 <ItemRenderer item={player.activeBadge ?? undefined} />
                             </div>
                             {playerId !== user?.id && (
-                                <Button className="btn-animation" onClick={handleAddFriend}>
+                                <Button className="btn-animation rounded-xl!" onClick={handleAddFriend}>
                                     Add Friend
                                 </Button>
                             )}
@@ -130,8 +183,8 @@ export function PlayerPage() {
 
                     {/* Нижний блок: sessions + info */}
                     <div className="grid grid-cols-1 md:grid-cols-[1fr_15vw] gap-3">
-                        <div className="border-card border-5 rounded-2xl shadow-sm w-full">
-                            <div className="flex items-center justify-between bg-card px-3 py-1 rounded-t-lg">
+                        <div className="border-card border-5 rounded-xl shadow-sm w-full">
+                            <div className="flex items-center justify-between bg-card px-3 py-1 rounded-t-md">
                                 <h2 className="text-xl text-primary">Sessions</h2>
                                 <Button
                                     variant="ghost"
@@ -156,7 +209,7 @@ export function PlayerPage() {
                             </ItemProvider>
                         </div>
 
-                        <div className="bg-muted-card w-full flex flex-col rounded-2xl p-3 gap-3">
+                        <div className="bg-muted-card w-full flex flex-col rounded-xl p-3 gap-3">
                             <Carousel className="w-full max-w-full">
                                 <CarouselContent className="-ml-2">
                                     {bages.map((bage, index) => (

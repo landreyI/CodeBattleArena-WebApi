@@ -9,4 +9,21 @@ export const api = axios.create({
     withCredentials: true
 });
 
+// Храним функцию для показа оверлея
+let showTooManyRequestsOverlay: (() => void) | null = null;
+
+export function registerTooManyRequestsHandler(handler: () => void) {
+    showTooManyRequestsOverlay = handler;
+}
+
+api.interceptors.response.use(
+    (response) => response,
+    (error) => {
+        if (error.response?.status === 429 && showTooManyRequestsOverlay) {
+            showTooManyRequestsOverlay(); // показать оверлей
+        }
+        return Promise.reject(error);
+    }
+);
+
 export default axios;

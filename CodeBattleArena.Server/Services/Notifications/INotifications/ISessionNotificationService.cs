@@ -1,4 +1,4 @@
-﻿using CodeBattleArena.Server.DTO;
+﻿using CodeBattleArena.Server.DTO.ModelsDTO;
 
 namespace CodeBattleArena.Server.Services.Notifications.INotifications
 {

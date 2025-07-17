@@ -1,6 +1,6 @@
 ﻿using CodeBattleArena.Server.Enums;
 
-namespace CodeBattleArena.Server.DTO
+namespace CodeBattleArena.Server.DTO.ModelsDTO
 {
     public class TaskPlayDto
     {

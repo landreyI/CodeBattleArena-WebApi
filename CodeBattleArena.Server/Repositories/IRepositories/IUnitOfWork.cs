@@ -16,6 +16,7 @@ namespace CodeBattleArena.Server.IRepositories
         IItemRepository ItemRepository { get; }
         IPlayerItemRepository PlayerItemRepository { get; }
         IQuestRepository QuestRepository { get; }
+        IStatisticsRepository StatisticsRepository { get; }
         Task<int> CommitAsync(CancellationToken cancellationToken);
     }
 }

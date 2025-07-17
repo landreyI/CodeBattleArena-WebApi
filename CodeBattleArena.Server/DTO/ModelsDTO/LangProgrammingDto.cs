@@ -1,4 +1,4 @@
-﻿namespace CodeBattleArena.Server.DTO
+﻿namespace CodeBattleArena.Server.DTO.ModelsDTO
 {
     public class LangProgrammingDto
     {

@@ -44,7 +44,7 @@ namespace CodeBattleArena.Server.Repositories
             if (session != null && session.WinnerId != null)
                 return await _context.PlayersSession
                     .Include(p => p.Player)
-                    .FirstOrDefaultAsync(p => p.IdPlayer == session.WinnerId, cancellationToken);
+                    .FirstOrDefaultAsync(p => p.IdSession == idSession && p.IdPlayer == session.WinnerId, cancellationToken);
 
             return null;
         }
@@ -111,7 +111,7 @@ namespace CodeBattleArena.Server.Repositories
         public async Task<List<int>> DeleteExpiredSessionsAsync(DateTime dateTime, CancellationToken cancellationToken)
         {
             // Выборка сессий, которые существуют более одного дня
-            var query = _context.Sessions.AsQueryable();
+            var query = _context.Sessions.AsQueryable().Where(s => !s.IsFinish);
             var listSessionsExpired = await SpecificationEvaluator
                 .GetQuery(query, new SessionsByDaySpec(1, dateTime))
                 .ToListAsync(cancellationToken);

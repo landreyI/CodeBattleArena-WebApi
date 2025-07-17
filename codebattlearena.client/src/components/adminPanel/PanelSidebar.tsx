@@ -64,7 +64,7 @@ export function PanelSidebar() {
         ];
 
     return (
-        <Sidebar collapsible="icon">
+        <Sidebar collapsible="icon" className="h-full">
             <SidebarHeader className="flex flex-row">
                 <SidebarTrigger className="bg-blue p-1 rounded-lg" iconSize={25} />
                 <SidebarGroupLabel className="text-sm group-data-[collapsible=icon]:hidden">Admin Panel</SidebarGroupLabel>

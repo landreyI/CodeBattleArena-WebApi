@@ -19,7 +19,7 @@ export function QuestsListPage() {
 
     return (
         <>
-            {!tasksPlayes || tasksPlayes.length === 0 && (<EmptyState message="Quests not found" />)}
+            {(!tasksPlayes || tasksPlayes.length === 0) && (<EmptyState message="Quests not found" />)}
 
             <QuestsList
                 tasksPlays={tasksPlayes}

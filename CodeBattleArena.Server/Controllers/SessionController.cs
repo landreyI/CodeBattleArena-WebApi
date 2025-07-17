@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using CodeBattleArena.Server.DTO;
 using CodeBattleArena.Server.Filters;
 using CodeBattleArena.Server.Models;
 using CodeBattleArena.Server.Services.DBServices;
@@ -11,6 +10,7 @@ using CodeBattleArena.Server.Untils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using CodeBattleArena.Server.DTO.ModelsDTO;
 
 namespace CodeBattleArena.Server.Controllers
 {

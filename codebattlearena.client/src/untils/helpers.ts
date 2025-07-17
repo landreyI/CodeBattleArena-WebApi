@@ -44,6 +44,17 @@ export function getLevelData(totalExp: number) {
     };
 }
 
+export function formatDuration(finish: Date, start: Date): string {
+    const diffMs = new Date(finish).getTime() - new Date(start).getTime();
+    if (diffMs < 0) return "Invalid";
+
+    const totalSeconds = Math.floor(diffMs / 1000);
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+
+    return `${minutes}m ${seconds}s`;
+}
+
 export const typeItemClassMap: Record<TypeItem, string> = {
     [TypeItem.Background]: "aspect-[4/3] w-full max-w-[400px] min-w-[150px]",
 

@@ -7,7 +7,7 @@ namespace CodeBattleArena.Server.Models
     {
         [Key]
         public int IdTaskProgramming { get; set; }
-        [StringLength(40)]
+        [StringLength(100)]
         public string Name { get; set; }
 
         public int LangProgrammingId { get; set; }

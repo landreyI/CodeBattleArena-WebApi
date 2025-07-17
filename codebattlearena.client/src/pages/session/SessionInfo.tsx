@@ -32,6 +32,7 @@ import FriendsSelectModal from "@/components/modals/FriendsSelectModal";
 import { useInviteSession } from "@/hooks/session/useInviteSession";
 import EditModal from "@/components/modals/EditModal";
 import SessionForm from "@/components/forms/SessionForm";
+import { formatDuration } from "@/untils/helpers";
 
 export function SessionInfo() {
     const { sessionId } = useParams<{ sessionId: string }>();
@@ -175,10 +176,16 @@ export function SessionInfo() {
                     </div>
 
                     {bestResult && (
-                        <div className="bg-muted p-4 rounded-xl shadow-md mb-4">
+                        <div className="bg-card border p-4 rounded-2xl shadow-sm mb-4">
                             <h3 className="text-lg font-semibold text-primary mb-2">
                                 🏆 Best Result: <span className="text-foreground">{bestResult?.player?.username}</span>
                             </h3>
+                            <h2 className="text-lg font-semibold text-primary mb-2">
+                                Time spent writing code:{" "}
+                                {bestResult?.finishTask && session.dateStartGame
+                                    ? formatDuration(bestResult.finishTask, session.dateStartGame)
+                                    : "Not finished"}
+                            </h2>
 
                             <div className="max-w-md">
                                 <CodeVerificationResult
@@ -187,6 +194,7 @@ export function SessionInfo() {
                                         memory: bestResult.memory ?? undefined,
                                         compileOutput: undefined
                                     }}
+                                    className="rounded-2xl bg-primary text-black"
                                 />
                             </div>
                         </div>

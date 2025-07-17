@@ -12,7 +12,7 @@ import CodeViewer from "@/components/common/CodeViewer";
 import InputDatasList from "@/components/lists/InputDatasList";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { getDifficultyColor } from "@/untils/helpers";
+import { formatDuration, getDifficultyColor } from "@/untils/helpers";
 import { useCheckPlayerCode } from "@/hooks/playerSession/useCheckPlayerCode";
 import PlayerMiniCard from "@/components/cards/PlayerMiniCard";
 import { useSessionEventsHub } from "@/hooks/hubs/session/useSessionEventsHub";
@@ -24,7 +24,8 @@ import { Card } from "@/components/ui/card";
 import { ExecutionResult } from "@/models/executionResult";
 import CodeVerificationResult from "@/components/cards/CodeVerificationResult";
 import { useFinishTaskPlayer } from "@/hooks/playerSession/useFinishTaskPlayer";
-import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "../../components/ui/resizable";
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
+import { useSession } from "@/hooks/session/useSession";
 
 export function PlayerCodePage() {
     const [searchParams] = useSearchParams();
@@ -32,6 +33,7 @@ export function PlayerCodePage() {
     const sessionId = searchParams.get("sessionId");
     const { loading: checkLoad, error: checkError, checkCode } = useCheckPlayerCode();
     const { playerSession, setPlayerSession, loadPlayerSessionInfo, loading: infoLoad, error: infoError } = usePlayerSessionInfo(playerId ?? undefined, Number(sessionId));
+    const { session, error: sessionError } = useSession(playerSession?.finishTask ? Number(sessionId) : undefined);
 
     const { user } = useAuth();
     const taskId = playerSession?.session?.taskId;
@@ -138,13 +140,21 @@ export function PlayerCodePage() {
     if (!playerSession) return <EmptyState message="Player Session not found" />;
     if (!task) return <EmptyState message="Task not found" />;
 
-    const errorNotifi = checkError || finishError;
+    const errorNotifi = checkError || finishError || sessionError;
 
     return (
         <>
             {errorNotifi && <InlineNotification message={errorNotifi.message} className="bg-red" />}
 
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-4">
+                {playerSession.finishTask && (
+                    <Card className="p-4 space-y-4 text-sm items-center">
+                        Time spent writing code:{" "}<br/>
+                        {playerSession?.finishTask && session?.dateStartGame
+                            ? formatDuration(playerSession.finishTask, session.dateStartGame)
+                            : "Not finished"}
+                    </Card>
+                )}
                 {responseCode && (
                     <CodeVerificationResult executionResult={responseCode}></CodeVerificationResult>
                 )}

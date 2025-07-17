@@ -15,6 +15,7 @@ import { Card } from "../ui/card";
 import { Input } from "../ui/input";
 import { Switch } from "../ui/switch";
 import { Label } from "../ui/label";
+import LoadingScreen from "../common/LoadingScreen";
 
 interface Props {
     filter: SessionFilters;
@@ -57,6 +58,7 @@ export function SessionFilter({ filter, onChange, handleSearch }: Props) {
 
     const handleFinishChange = (value: boolean) => {
         setIsFinish(value);
+        setIsStart(value);
     };
 
     const handleSearchClick = () => {
@@ -71,6 +73,8 @@ export function SessionFilter({ filter, onChange, handleSearch }: Props) {
         onChange(updatedFilter);
         handleSearch();
     };
+
+    if (loading) return <LoadingScreen />
 
     if (!langsProgramming || langsProgramming.length === 0) {
         return <EmptyState message="Languages not found" />;

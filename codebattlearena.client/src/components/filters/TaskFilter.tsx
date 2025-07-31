@@ -14,6 +14,7 @@ import { Button } from "../ui/button";
 import { Card } from "../ui/card";
 import { Label } from "../ui/label";
 import LoadingScreen from "../common/LoadingScreen";
+import { getDifficultyColor } from "@/untils/helpers";
 
 interface Props {
     filter: TaskProgrammingFilters;
@@ -109,7 +110,7 @@ export function TaskFilter({ filter, onChange, handleSearch }: Props) {
                             <SelectContent>
                                 <SelectItem value="all">All difficulties</SelectItem>
                                 {difficulties.map((diff) => (
-                                    <SelectItem key={diff} value={diff}>
+                                    <SelectItem key={diff} value={diff} className={`${getDifficultyColor(diff)} mt-1`}>
                                         {diff}
                                     </SelectItem>
                                 ))}

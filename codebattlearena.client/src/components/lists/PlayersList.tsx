@@ -51,7 +51,7 @@ export function PlayersList({
             className="grid gap-3"
         >
             {sortedPlayers.map((player, index) => (
-                <div key={player.id} className={`relative rounded-xl overflow-hidden  ${cardWrapperClassName ?? ""}`}>
+                <div key={player.id} className={`relative overflow-hidden  ${cardWrapperClassName ?? ""}`}>
                     {isTop && index < 3 && (
                         <div className="absolute top-1 left-2 bg-primary bg-opacity-60 text-xs px-2 py-0.5 rounded-md z-10">
                             TOP {index + 1}

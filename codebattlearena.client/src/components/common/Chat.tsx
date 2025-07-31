@@ -41,7 +41,7 @@ export function Chat({ messages = [], onSend }: ChatProps) {
     }, [messages]);
 
     return (
-        <div className="flex flex-col h-full overflow-hidden bg-background shadow-sm relative rounded-b-3xl">
+        <div className="flex flex-col h-full overflow-hidden bg-background shadow-sm relative rounded-b-2xl">
 
             <ScrollArea className="flex-1 overflow-y-auto p-3 bg-muted">
                 <div
@@ -80,7 +80,7 @@ export function Chat({ messages = [], onSend }: ChatProps) {
                         value={message}
                         onChange={(e) => setMessage(e.target.value)}
                         rows={1}
-                        className="w-full max-h-[4rem] overflow-y-auto resize-none rounded-3xl border focus:ring-2 focus:ring-primary transition leading-tight min-h-[2.5rem]"
+                        className="w-full max-h-[4rem] overflow-y-auto resize-none rounded-2xl border focus:ring-2 focus:ring-primary transition leading-tight min-h-[2.5rem]"
                         onKeyDown={(e) => {
                             if (e.key === "Enter" && !e.shiftKey) {
                                 e.preventDefault();
@@ -92,7 +92,7 @@ export function Chat({ messages = [], onSend }: ChatProps) {
                         onClick={handleSendMessage}
                         size="icon"
                         variant="ghost"
-                        className="rounded-3xl hover:bg-accent transition"
+                        className="rounded-2xl hover:bg-accent transition"
                     >
                         <Send className="w-5 h-5" />
                     </Button>

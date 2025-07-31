@@ -22,11 +22,11 @@ import { Textarea } from "../ui/textarea";
 import { useCreateTask } from "@/hooks/task/useCreateTask";
 import { useUpdateTask } from "@/hooks/task/useUpdateTask";
 import { useFieldArray } from "react-hook-form";
-import { useInputDatas } from "../../hooks/task/useInputDatas";
+import { useInputDatas } from "@/hooks/task/useInputDatas";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTrigger } from "../ui/dialog";
 import { Checkbox } from "../ui/checkbox";
-import { Separator } from "../ui/separator";
+import { getDifficultyColor } from "@/untils/helpers";
 
 // Определяем схему валидации формы
 export const formSchema = z
@@ -235,7 +235,7 @@ export function TaskForm({ task, onClose, onUpdate, submitLabel }: Props) {
                                     </SelectTrigger>
                                     <SelectContent>
                                         {Object.values(Difficulty).map((diff) => (
-                                            <SelectItem key={diff} value={diff}>
+                                            <SelectItem key={diff} value={diff} className={`${getDifficultyColor(diff)} mt-1`}>
                                                 {diff}
                                             </SelectItem>
                                         ))}

@@ -17,7 +17,6 @@ using CodeBattleArena.Server.Services.Judge0;
 using CodeBattleArena.Server.QuestSystem;
 using CodeBattleArena.Server.QuestSystem.Dispatcher;
 using CodeBattleArena.Server.Untils;
-using Microsoft.AspNetCore.RateLimiting;
 using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -88,21 +87,29 @@ builder.Services.AddRateLimiter(options =>
 {
     options.AddPolicy("api-policy", httpContext =>
     {
-        // Применять лимит только для API-запросов
-        if (httpContext.Request.Path.StartsWithSegments("/api"))
+        var path = httpContext.Request.Path.Value ?? "";
+
+        // НЕ применять лимит к update-code-player
+        if (path.Contains("/api/PlayerSession/update-code-player", StringComparison.OrdinalIgnoreCase))
+        {
+            return RateLimitPartition.GetNoLimiter("excluded");
+        }
+
+        // Применять ко всем остальным /api
+        if (path.StartsWith("/api", StringComparison.OrdinalIgnoreCase))
         {
             return RateLimitPartition.GetFixedWindowLimiter(
                 partitionKey: httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown",
                 factory: _ => new FixedWindowRateLimiterOptions
                 {
-                    PermitLimit = 12,                  // максимум 12 запросов
-                    Window = TimeSpan.FromSeconds(3), // за 3 секунд
+                    PermitLimit = 12,
+                    Window = TimeSpan.FromSeconds(3),
+                    QueueLimit = 0,
                     QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
-                    QueueLimit = 0
                 });
         }
 
-        return RateLimitPartition.GetNoLimiter(httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown");
+        return RateLimitPartition.GetNoLimiter("other");
     });
 
     options.RejectionStatusCode = 429;
@@ -114,6 +121,7 @@ builder.Services.AddRateLimiter(options =>
             cancellationToken: token);
     };
 });
+
 
 
 //------ DATABASE ------

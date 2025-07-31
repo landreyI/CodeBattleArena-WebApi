@@ -17,10 +17,10 @@ export function CreateTask() {
             )}
 
             <div className="glow-box">
-                <div className="md:w-[50vw] sm:w-[100vw] mx-auto">
+                <div className="md:w-[50vw] sm:w-full mx-auto">
                     <div className="flex items-center justify-between mb-6">
                         <h1 className="text-4xl font-bold text-green-400 font-mono">
-                            Create Item
+                            Create Task
                         </h1>
                     </div>
                     <TaskForm submitLabel="Created" onClose={handleMessageSaccess}></TaskForm>

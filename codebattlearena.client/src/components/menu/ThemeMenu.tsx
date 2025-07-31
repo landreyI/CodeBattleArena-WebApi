@@ -1,5 +1,4 @@
 import { BubblesColors, BasicColor, useTheme } from "@/contexts/ThemeContext";
-import { Button } from "@/components/ui/button";
 import { Sun, Moon, SunMoon, CheckCircle, XCircle } from "lucide-react";
 import {
     DropdownMenu,

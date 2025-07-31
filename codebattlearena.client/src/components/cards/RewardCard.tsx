@@ -12,7 +12,7 @@ interface Props {
 export function RewardCard({ reward, children, className }: Props) {
     return (
         <>
-            <Card className={`border rounded-2xl shadow-md w-full ${className}`}>
+            <Card className={`border shadow-md w-full ${className}`}>
                 <CardContent className="p-4">
                     <div className="grid gap-4 text-sm">
                         {reward?.item && (

@@ -20,7 +20,7 @@ export function RewardsList({ rewards, renderItemAddon, cardWrapperClassName, cl
             className={`grid gap-3 ${className} ${columns}`}
         >
             {rewards.map((reward) => (
-                <div key={reward.idReward} className="flex flex-col gap-2 p-3 border rounded-xl">
+                <div key={reward.idReward} className="flex flex-col gap-2 p-3 border rounded-2xl">
                     <RewardCard
                         reward={reward}
                         className={cardWrapperClassName}

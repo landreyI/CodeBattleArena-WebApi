@@ -16,6 +16,7 @@ import { Input } from "../ui/input";
 import { Switch } from "../ui/switch";
 import { Label } from "../ui/label";
 import LoadingScreen from "../common/LoadingScreen";
+import { getStateColor } from "@/untils/helpers";
 
 interface Props {
     filter: SessionFilters;
@@ -119,7 +120,7 @@ export function SessionFilter({ filter, onChange, handleSearch }: Props) {
                         <SelectContent>
                             <SelectItem value="all">All states</SelectItem>
                             {Object.values(SessionState).map((state) => (
-                                <SelectItem key={state} value={state}>
+                                <SelectItem key={state} value={state} className={`${getStateColor(state)} mt-1`}>
                                     {state}
                                 </SelectItem>
                             ))}

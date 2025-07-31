@@ -11,6 +11,7 @@ import { usePopularityTaskProgramming } from "@/hooks/statistics/usePopularityTa
 import { usePercentageCompletionByDifficulty } from "@/hooks/statistics/usePercentageCompletionByDifficulty"
 import { Card, CardHeader } from "@/components/ui/card"
 import { RadarChartCard } from "@/components/common/RadarChartCard"
+import ErrorMessage from "@/components/common/ErrorMessage"
 
 const chartConfig = {
     sessions: { label: "Sessions", color: "var(--color-blue)" },
@@ -26,14 +27,13 @@ export function StatisticsPage() {
     const { statistics: percentageStatistics, loading: percentageStatisticsLoad, error: percentageStatisticsError } = usePercentageCompletionByDifficulty();
 
     const error = langStatisticsError || avgTimeStatisticsError || taskStatisticsError || percentageStatisticsError;
+    if (error) return <ErrorMessage error={error} />;
 
     return (
         <>
-            {error && <InlineNotification message={error.message} className="bg-red" />}
-
-            <div className="flex flex-col gap-6 p-0 justify-center h-full">
-                <div className="flex flex-wrap gap-6 justify-center w-full">
-                    <div className="w-[90vw] md:w-[60vw] min-h-[320px]">
+            <div className="flex flex-col p-0 justify-center h-full w-full gap-4">
+                <div className="flex flex-wrap justify-center w-full gap-4">
+                    <div className="w-[90vw] md:w-[68%] min-h-[320px]">
                         {!langStatisticsLoad && langStatistics ? (
                             <BarChartCard
                                 title="Most Popular Languages"
@@ -47,7 +47,7 @@ export function StatisticsPage() {
                         )}
                     </div>
 
-                    <div className="w-[90vw] md:w-[25vw] min-h-[320px]">
+                    <div className="w-[90vw] md:w-[30%] min-h-[320px]">
                         {!avgTimeStatisticsLoad && avgTimeStatistics ? (
                             <RadarChartCard
                                 title="Avg. Task Completion Time"
@@ -63,11 +63,11 @@ export function StatisticsPage() {
                 </div>
 
 
-                <div className="h-fit">
+                <div className="flex flex-wrap justify-center h-fit w-full">
                     {!taskStatisticsLoad && taskStatistics ? (
-                        <Card className="p-4 rounded-xl ">
+                        <Card className="p-4 w-[99%]">
                             <CardHeader className="text-md font-semibold">Completion Rate by Difficulty</CardHeader>
-                            <div className="flex flex-wrap gap-6 justify-between">
+                            <div className="flex flex-wrap gap-4 justify-between">
                                 {percentageStatistics.map((percentageStatistic, index) => (
                                     <RadialChart
                                         key={index}
@@ -90,8 +90,8 @@ export function StatisticsPage() {
                     )}
                 </div>
 
-                <div className="flex flex-wrap gap-6 justify-center h-auto">
-                    <div className="w-[90vw] md:w-[25vw] min-h-[320px]">
+                <div className="flex flex-wrap justify-center h-auto gap-4">
+                    <div className="w-[90vw] md:w-[30%] min-h-[320px]">
                         {!avgTimeStatisticsLoad && avgTimeStatistics ? (
                             <BarChartCard
                                 title="Avg. Task Completion Time"
@@ -105,7 +105,7 @@ export function StatisticsPage() {
                         )}
                     </div>
 
-                    <div className="w-[90vw] md:w-[60vw] min-h-[320px]">
+                    <div className="w-[90vw] md:w-[68%] min-h-[320px]">
                         {!taskStatisticsLoad && taskStatistics ? (
                             <BarChartCard
                                 title="Top 5 Programming Tasks"

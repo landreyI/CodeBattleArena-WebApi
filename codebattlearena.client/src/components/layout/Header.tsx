@@ -16,7 +16,6 @@ export function Header() {
     const { user, logout } = useAuth();
     const [showRegistration, setShowRegistration] = useState(false);
     const [showAuthorization, setShowAuthorization] = useState(false);
-    const [showAddTask, setShowAddTask] = useState(false);
 
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const navigate = useNavigate();
@@ -31,8 +30,8 @@ export function Header() {
 
     return (
         <>
-            <header className="header z-1">
-                <nav className="max-w-screen-xl mx-auto flex justify-between items-center">
+            <header className="header">
+                <nav className="w-full mx-auto flex flex-wrap justify-between items-center">
                     <div className="flex items-center gap-3">
                         <button className="md:hidden" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
                             {isMobileMenuOpen ? <X /> : <Menu />}
@@ -50,23 +49,25 @@ export function Header() {
                             <NavLink href="/statistics/info-statistics" label="Statistics" />
                         </div>
                     </div>
+                    <div className="flex items-center justify-end ml-auto">
+                        {isAuthenticated && (
+                            <div className="flex items-center gap-3 justify-end ml-auto">
+                                <div className="flex flex-wrap ml-3"><Coins className="w-5 h-5 text-yellow shrink-0" /> {user?.coin ?? 0}</div>
+                                <div className="flex flex-wrap mr-3"><Star className="w-5 h-5 text-purple shrink-0" /> {user?.experience ?? 0}</div>
+                            </div>
+                        )}
 
-                    {isAuthenticated && (
-                        <div className="flex items-center gap-3 justify-end ml-auto mr-3">
-                            <Coins className="w-5 h-5 text-yellow shrink-0" /> {user?.coin ?? 0}
-                            <Star className="w-5 h-5 text-purple shrink-0" /> {user?.experience ?? 0}
-                        </div>
-                    )}
+                        {!isAuthenticated ? (
+                            <div className="flex flex-wrap items-center gap-3 justify-end mr-3">
+                                <button onClick={() => setShowAuthorization(true)} className="text-primary nav-link">Sign In</button>
+                                <button onClick={() => setShowRegistration(true)} className="text-primary nav-link">Sign Up</button>
+                            </div>
+                        ) : (
+                            <UserMenu user={user} handleLogout={handleLogout} classNameBtn="mr-2 hover:text-primary transition-colors duration-300"></UserMenu>
+                        )}
 
-                    {!isAuthenticated ? (
-                        <div className="flex items-center gap-3 justify-end ml-auto mr-3">
-                            <button onClick={() => setShowAuthorization(true)} className="text-primary nav-link">Sign In</button>
-                            <button onClick={() => setShowRegistration(true)} className="text-primary nav-link">Sign Up</button>
-                        </div>
-                    ) : (
-                        <UserMenu user={user} handleLogout={handleLogout} className="mr-2"></UserMenu>
-                    )}
-                    <ThemeMenu />
+                        <ThemeMenu />
+                    </div>
                 </nav>
 
                 {/* Mobile menu */}

@@ -31,7 +31,7 @@ export function ChatSheet({ trigger, messages, title = "Group Chat" }: ChatSheet
             <SheetContent
                 side="right"
                 onInteractOutside={(e) => e.preventDefault()}
-                className="md:h-[calc(100vh-40px)] md:my-5 md:mr-5 w-full rounded-3xl sm:w-[100vw] border border-2 bg-[var(--color-header-bg)]"
+                className="md:h-[calc(100vh-40px)] md:my-5 md:mr-5 w-full rounded-2xl sm:w-[100vw] border border-2 bg-[var(--color-header-bg)]"
             >
                 <SheetHeader>
                     <SheetTitle className="font-semibold text-lg">{title}</SheetTitle>

@@ -1,9 +1,10 @@
+import { Link } from "react-router-dom";
 
 export function InfoPage() {
     return (
         <div className="glow-box">
             <div className="max-w-4xl mx-auto text-center">
-                <h1 className="text-5xl font-bold text-primary mb-8 transform transition duration-300 hover:scale-105">
+                <h1 className="text-5xl font-bold text-primary mb-8">
                     Welcome to Code Battle Arena!
                 </h1>
 
@@ -29,7 +30,7 @@ export function InfoPage() {
                     Are you up for the challenge?
                 </p>
 
-                <div className="bg-gradient-to-r bg-primary p-6 rounded-lg shadow-lg transform transition duration-300 hover:scale-105">
+                <div className="bg-gradient-to-r bg-primary p-6 rounded-lg shadow-lg text-black transform transition duration-300 hover:scale-105">
                     <p className="text-lg font-bold mb-4 text-center">Key Features:</p>
                     <ul className="list-disc pl-8 text-left text-lg">
                         <li>Compete in time-based coding challenges</li>
@@ -43,9 +44,9 @@ export function InfoPage() {
                     Join now and start coding with friends or compete with other talented coders around the world!
                 </p>
 
-                <a href="/session/create-session" className="inline-block mt-8 px-6 py-3 bg-primary btn-animation">
+                <Link to="/session/create-session" className="mt-8 px-6 py-3 bg-primary text-black btn-animation">
                     Get Started
-                </a>
+                </Link>
             </div>
         </div>
     );

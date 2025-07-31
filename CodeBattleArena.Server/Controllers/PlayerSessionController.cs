@@ -13,11 +13,13 @@ using CodeBattleArena.Server.Untils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace CodeBattleArena.Server.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [EnableRateLimiting("api-policy")]
     public class PlayerSessionController : Controller
     {
         private readonly SessionService _sessionService;
@@ -176,6 +178,7 @@ namespace CodeBattleArena.Server.Controllers
 
 
         [HttpGet("update-code-player")]
+        [EnableRateLimiting("none")]
         public async Task<IActionResult> UpdateCodePlayer(int? sessionId, string? code, CancellationToken cancellationToken)
         {
             await _sessionNotificationService.NotifyUpdateCodePlayerAsync(sessionId.Value, code);

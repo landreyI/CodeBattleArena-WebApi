@@ -41,11 +41,13 @@ export function SettingMenu({ setShowEdit, handleDelet, actionsProp }: Props) {
 
             {/* модалка подтверждения */}
             <AlertDialog open={showConfirm} onOpenChange={setShowConfirm}>
-                <AlertDialogContent className="w-[90vw] md:w-fit">
-                    <AlertDialogHeader>
-                        <AlertDialogTitle>Are you sure you want to delete?</AlertDialogTitle>
+                <AlertDialogContent className="w-[90vw] md:w-fit border border-2 p-0 rounded-3xl">
+                    <AlertDialogHeader className="bg-primary p-3 rounded-t-3xl border-b-2">
+                        <AlertDialogTitle>
+                            <span className="text-background">Are you sure you want to delete?</span>
+                        </AlertDialogTitle>
                     </AlertDialogHeader>
-                    <AlertDialogFooter>
+                    <AlertDialogFooter className="p-5">
                         <AlertDialogCancel className="btn-animation">Cancel</AlertDialogCancel>
                         <AlertDialogAction
                             className="btn-animation"

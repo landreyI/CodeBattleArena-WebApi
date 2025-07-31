@@ -26,7 +26,7 @@ export function QuestResetTimer({ completedAt, repeatAfterDays, className }: Pro
     return (
         <div
             className={cn(
-                "flex items-center w-fit gap-2 text-sm text-muted-foreground rounded-lg bg-muted p-1",
+                "flex items-center w-fit gap-2 text-sm text-muted-foreground rounded-2xl bg-muted p-1",
                 className
             )}
         >

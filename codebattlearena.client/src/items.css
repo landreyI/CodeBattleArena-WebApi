@@ -68,7 +68,7 @@
     align-items: center;
     position: relative;
     border: none;
-    border-radius: 16px;
+    border-radius: var(--radius-2xl);
     background: transparent;
     z-index: 0;
 }
@@ -77,7 +77,7 @@
         content: '';
         position: absolute;
         inset: 0;
-        border-radius: 16px;
+        border-radius: var(--radius-2xl);
         background: linear-gradient(var(--angle), var(--gradient-colors));
         animation: 8s rotate linear infinite;
         z-index: -1;
@@ -96,7 +96,7 @@
     align-items: center;
     position: relative;
     border: none;
-    border-radius: 16px;
+    border-radius: var(--radius-2xl);
     background: transparent;
     z-index: 0;
     --stripe-opacity-before: 1;
@@ -169,7 +169,7 @@
     justify-content: center;
     align-items: center;
     position: relative;
-    border-radius: 16px;
+    border-radius: var(--radius-2xl);
     z-index: 0;
     padding: 4px;
     background: linear-gradient(white, white) padding-box, conic-gradient(from var(--angle), transparent 0deg, var(--border-color) 30deg, transparent 60deg) border-box;

@@ -158,7 +158,7 @@ export function SessionActiveMenu() {
                 />
             )}
 
-            <div className="w-full p-4 header" style={{ zIndex: 1 }}>
+            <div className="p-4 header mt-1!" style={{ zIndex: 1 }}>
                 <div className="flex flex-col md:flex-row md:justify-between gap-3 items-start md:items-center w-full">
                     {/* Left Block */}
                     <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">

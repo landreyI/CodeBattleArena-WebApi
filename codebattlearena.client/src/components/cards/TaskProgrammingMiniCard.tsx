@@ -13,7 +13,7 @@ interface Props {
 export function TaskProgrammingMiniCard({ task, className, children }: Props) {
     return (
         <Link to={`/task/info-task/${task.idTaskProgramming}`} title="View Task" >
-            <Card className={`border rounded-2xl ${className}`}>
+            <Card className={`border ${className}`}>
                 <CardContent className="px-6 flex items-center gap-2">
                     <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                         <div className="space-y-1 text-sm">

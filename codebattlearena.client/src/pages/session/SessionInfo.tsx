@@ -194,7 +194,7 @@ export function SessionInfo() {
                                         memory: bestResult.memory ?? undefined,
                                         compileOutput: undefined
                                     }}
-                                    className="rounded-2xl bg-primary text-black"
+                                    className="bg-primary text-black"
                                 />
                             </div>
                         </div>

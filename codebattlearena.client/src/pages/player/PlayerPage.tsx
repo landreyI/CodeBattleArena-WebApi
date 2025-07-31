@@ -144,7 +144,7 @@ export function PlayerPage() {
                 <InlineNotification message={notification} className="bg-blue" />
             )}
 
-            <BackgroundItem item={player.activeBackground ?? undefined} className="w-full min-h-[95vh] rounded-xl p-3">
+            <BackgroundItem item={player.activeBackground ?? undefined} className="w-full min-h-[95vh] rounded-2xl p-3">
                 <div className="w-full md:w-[65vw] mx-auto p-3 rounded-xl space-y-3">
                     {/* Верхний блок: карточка + меню + статистика */}
                     <div className="grid grid-cols-1 md:grid-cols-[1fr_15vw] gap-3">

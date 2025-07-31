@@ -10,7 +10,7 @@ interface Props {
 
 export function ItemCard({ item, className }: Props) {
     return (
-        <Card className={`border rounded-2xl shadow-md w-full ${className}`}>
+        <Card className={`border shadow-md w-full ${className}`}>
             <CardContent className="p-6 space-y-6">
                 <div className="text-2xl font-bold font-mono flex items-center gap-2">
                     <span>{item.name || "Unnamed Item"}</span>

@@ -1,7 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { fetchGetSession } from "@/services/session";
 import { Session } from "@/models/dbModels";
-import { StandardError } from "@/untils/errorHandler";
 import { useAsyncTask } from "../useAsyncTask";
 export function useSession(sessionId: number | undefined) {
     const [session, setSession] = useState<Session | null>(null);
@@ -10,7 +9,7 @@ export function useSession(sessionId: number | undefined) {
 
     const loadSession = useCallback(async () => {
         if (!sessionId) {
-            setError(new StandardError("Session ID not specified"));
+
             return;
         }
 

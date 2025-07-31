@@ -328,7 +328,7 @@ export function QuestForm({ taskPlay, onClose, onUpdate, submitLabel }: Props) {
                                     {form.watch("taskPlayParams").map((param, index) => (
                                         <div
                                             key={index}
-                                            className="flex flex-col justify-between items-center md:flex-row gap-4 bg-muted p-2 rounded-md"
+                                            className="flex flex-col justify-between items-center md:flex-row gap-4 bg-muted p-2 rounded-xl"
                                         >
                                             <FormField
                                                 control={form.control}

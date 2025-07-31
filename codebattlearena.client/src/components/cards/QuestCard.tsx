@@ -10,7 +10,7 @@ interface Props {
 
 export function QuestCard({ taskPlay, className }: Props) {
     return (
-        <Card className={`border rounded-2xl p-0 ${className}`}>
+        <Card className={`border p-0 ${className}`}>
             <CardContent className="p-4 flex flex-col gap-3">
                 {/* Название задания и повторяемость */}
                 <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">

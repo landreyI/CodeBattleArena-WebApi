@@ -88,9 +88,9 @@ export function parseEnumParam<T extends Record<string, string>>(
 export const getStateColor = (state: string) => {
     switch (state) {
         case SessionState.Public:
-            return "bg-green";
+            return "bg-green text-black";
         case SessionState.Private:
-            return "bg-red";
+            return "bg-red text-black";
         default:
             return "bg-gray";
     }
@@ -116,11 +116,11 @@ export const getRoleColor = (role: string): string => {
 export const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
         case Difficulty.Easy:
-            return "bg-green";
+            return "bg-green text-black";
         case Difficulty.Medium:
-            return "bg-yellow";
+            return "bg-yellow text-black";
         case Difficulty.Hard:
-            return "bg-red";
+            return "bg-red text-black";
         default:
             return "bg-gray";
     }

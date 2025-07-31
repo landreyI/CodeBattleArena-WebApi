@@ -24,6 +24,7 @@ import InputPassword from "../common/InputPassword";
 import { useCreateSession } from "@/hooks/session/useCreateSession";
 import { useUpdateSession } from "@/hooks/session/useUpdateSession";
 import { useActiveSession } from "@/contexts/ActiveSessionContext";
+import { getStateColor } from "@/untils/helpers";
 
 
 // Определяем схему валидации формы
@@ -232,7 +233,7 @@ export function SessionForm({ session, onClose, onUpdate, submitLabel }: Props) 
                                     </SelectTrigger>
                                     <SelectContent>
                                         {Object.values(SessionState).map((stateValue) => (
-                                            <SelectItem key={stateValue} value={stateValue}>
+                                            <SelectItem key={stateValue} value={stateValue} className={`${getStateColor(stateValue)} mt-1`}>
                                                 {stateValue}
                                             </SelectItem>
                                         ))}

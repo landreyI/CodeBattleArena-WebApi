@@ -6,6 +6,7 @@ using CodeBattleArena.Server.Helpers;
 using CodeBattleArena.Server.Infrastructure.Attributes;
 using CodeBattleArena.Server.Models;
 using CodeBattleArena.Server.Services.DBServices;
+using CodeBattleArena.Server.Services.DBServices.IDBServices;
 using CodeBattleArena.Server.Untils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -18,11 +19,11 @@ namespace CodeBattleArena.Server.Controllers
     [Route("api/[controller]")]
     public class PlayerController : Controller
     {
-        private readonly PlayerService _playerService;
-        private readonly PlayerSessionService _playerSessionService;
+        private readonly IPlayerService _playerService;
+        private readonly IPlayerSessionService _playerSessionService;
         private readonly UserManager<Player> _userManager;
         private readonly IMapper _mapper;
-        public PlayerController(UserManager<Player> userManager, PlayerService playerService, IMapper mapper, PlayerSessionService playerSessionService)
+        public PlayerController(UserManager<Player> userManager, IPlayerService playerService, IMapper mapper, IPlayerSessionService playerSessionService)
         {
             _userManager = userManager;
             _playerService = playerService;

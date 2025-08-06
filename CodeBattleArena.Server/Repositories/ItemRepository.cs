@@ -34,9 +34,10 @@ namespace CodeBattleArena.Server.Repositories
             if (item != null)
                 _context.Items.Remove(item);
         }
-        public void UpdateItem(Item item)
+        public Task UpdateItem(Item item)
         {
             _context.Items.Update(item);
+            return Task.CompletedTask;
         }
     }
 }

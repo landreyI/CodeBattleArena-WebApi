@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using CodeBattleArena.Server.DTO.ModelsDTO;
+using CodeBattleArena.Server.Services.DBServices.IDBServices;
 
 namespace CodeBattleArena.Server.Controllers
 {
@@ -18,14 +19,14 @@ namespace CodeBattleArena.Server.Controllers
     [Route("api/[controller]")]
     public class SessionController : Controller
     {
-        private readonly SessionService _sessionService;
-        private readonly PlayerService _playerService;
-        private readonly PlayerSessionService _playerSessionService;
+        private readonly ISessionService _sessionService;
+        private readonly IPlayerService _playerService;
+        private readonly IPlayerSessionService _playerSessionService;
         private readonly UserManager<Player> _userManager;
         private readonly ISessionNotificationService _sessionNotificationService;
         private readonly IMapper _mapper;
-        public SessionController(SessionService sessionService, UserManager<Player> userManager,
-            IMapper mapper, PlayerSessionService playerSessionService, PlayerService playerService,
+        public SessionController(ISessionService sessionService, UserManager<Player> userManager,
+            IMapper mapper, IPlayerSessionService playerSessionService, IPlayerService playerService,
             ISessionNotificationService sessionNotificationService)
         {
             _sessionService = sessionService;

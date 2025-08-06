@@ -31,5 +31,10 @@ namespace CodeBattleArena.Server.Filters
 
             return query;
         }
+
+        public bool IsEmpty()
+        {
+            return !SessionState.HasValue && !MaxPeople.HasValue && !IdLang.HasValue && !IsStart.HasValue && !IsFinish.HasValue;
+        }
     }
 }

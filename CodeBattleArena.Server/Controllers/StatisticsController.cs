@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using CodeBattleArena.Server.Models;
 using CodeBattleArena.Server.Services.DBServices;
+using CodeBattleArena.Server.Services.DBServices.IDBServices;
 using CodeBattleArena.Server.Untils;
 using Microsoft.AspNetCore.Mvc;
 using System.Numerics;
@@ -12,10 +13,10 @@ namespace CodeBattleArena.Server.Controllers
     [Route("api/[controller]")]
     public class StatisticsController : Controller
     {
-        private readonly StatisticsService _statisticsService;
+        private readonly IStatisticsService _statisticsService;
         private readonly IMapper _mapper;
 
-        public StatisticsController(StatisticsService statisticsService, IMapper mapper) 
+        public StatisticsController(IStatisticsService statisticsService, IMapper mapper) 
         {
             _statisticsService = statisticsService;
             _mapper = mapper;

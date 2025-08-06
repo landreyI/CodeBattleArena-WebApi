@@ -5,6 +5,7 @@ using CodeBattleArena.Server.Filters;
 using CodeBattleArena.Server.Infrastructure.Attributes;
 using CodeBattleArena.Server.Models;
 using CodeBattleArena.Server.Services.DBServices;
+using CodeBattleArena.Server.Services.DBServices.IDBServices;
 using CodeBattleArena.Server.Specifications.ItemSpec;
 using CodeBattleArena.Server.Untils;
 using Microsoft.AspNetCore.Authorization;
@@ -17,10 +18,10 @@ namespace CodeBattleArena.Server.Controllers
     [Route("api/[controller]")]
     public class ItemController : Controller
     {
-        private readonly ItemService _itemService;
+        private readonly IItemService _itemService;
         private readonly UserManager<Player> _userManager;
         private readonly IMapper _mapper;
-        public ItemController(ItemService itemService, IMapper mapper, UserManager<Player> userManager)
+        public ItemController(IItemService itemService, IMapper mapper, UserManager<Player> userManager)
         {
             _itemService = itemService;
             _mapper = mapper;

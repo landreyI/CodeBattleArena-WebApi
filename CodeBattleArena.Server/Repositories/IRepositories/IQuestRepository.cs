@@ -14,17 +14,17 @@ namespace CodeBattleArena.Server.Repositories.IRepositories
 
         Task AddTaskPlayAsync(TaskPlay taskPlay, CancellationToken cancellationToken);
         Task DeleteTaskPlayAsync(int id, CancellationToken cancellationToken);
-        void UpdateTaskPlay(TaskPlay taskPlay);
+        Task UpdateTaskPlay(TaskPlay taskPlay);
 
         Task AddPlayerTaskPlayAsync(PlayerTaskPlay playerTaskPlay, CancellationToken cancellationToken);
         Task AddPlayerTaskPlaysAsync(List<PlayerTaskPlay> playerTaskPlays, CancellationToken cancellationToken);
         Task DeletePlayerTaskPlayAsync(int id, CancellationToken cancellationToken);
-        void UpdatePlayerTaskPlay(PlayerTaskPlay playerTaskPlay);
-        void UpdatePlayerTaskPlays(List<PlayerTaskPlay> playerTaskPlays);
+        Task UpdatePlayerTaskPlay(PlayerTaskPlay playerTaskPlay);
+        Task UpdatePlayerTaskPlays(List<PlayerTaskPlay> playerTaskPlays);
 
         Task AddRewardAsync(Reward reward, CancellationToken cancellationToken);
         Task DeleteRewardAsync(int id, CancellationToken cancellationToken);
-        void DeleteRewards(List<TaskPlayReward> taskPlayRewards);
-        void UpdateReward(Reward reward);
+        Task DeleteRewards(List<TaskPlayReward> taskPlayRewards);
+        Task UpdateReward(Reward reward);
     }
 }

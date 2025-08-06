@@ -3,17 +3,19 @@ using CodeBattleArena.Server.DTO.ModelsDTO;
 using CodeBattleArena.Server.Filters;
 using CodeBattleArena.Server.IRepositories;
 using CodeBattleArena.Server.Models;
+using CodeBattleArena.Server.Services.DBServices.IDBServices;
 using CodeBattleArena.Server.Untils;
 
 
 namespace CodeBattleArena.Server.Services.DBServices
 {
-    public class TaskService
+    public class TaskService : ITaskService
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly ILogger<SessionService> _logger;
+        private readonly ILogger<TaskService> _logger;
         private readonly IMapper _mapper;
-        public TaskService(IUnitOfWork unitOfWork, ILogger<SessionService> logger, IMapper mapper)
+
+        public TaskService(IUnitOfWork unitOfWork, ILogger<TaskService> logger, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _logger = logger;
@@ -48,9 +50,8 @@ namespace CodeBattleArena.Server.Services.DBServices
 
             return Result.Success<TaskProgramming, ErrorResponse>(taskProgramming);
         }
-
         public async Task<Result<Unit, ErrorResponse>> UpdateTaskProgrammingAsync
-     (TaskProgrammingDto dto, CancellationToken ct, bool commit = true)
+            (TaskProgrammingDto dto, CancellationToken ct, bool commit = true)
         {
             var task = await GetTaskProgrammingAsync(dto.IdTaskProgramming.Value, ct);
             if (task == null)
@@ -177,6 +178,7 @@ namespace CodeBattleArena.Server.Services.DBServices
                 });
             }
         }
+
         public async Task<List<InputData>> GetInputDataListAsync(CancellationToken cancellationToken)
         {
             return await _unitOfWork.TaskRepository.GetInputDataListAsync(cancellationToken);
@@ -198,7 +200,7 @@ namespace CodeBattleArena.Server.Services.DBServices
         {
             try
             {
-                _unitOfWork.TaskRepository.UpdateTaskProgrammingAsync(taskProgramming);
+                await _unitOfWork.TaskRepository.UpdateTaskProgrammingAsync(taskProgramming);
                 if (commit)
                     await _unitOfWork.CommitAsync(cancellationToken);
 

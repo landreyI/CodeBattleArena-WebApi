@@ -137,9 +137,10 @@ namespace CodeBattleArena.Server.Repositories
             return expiredSessions.Select(s => s.IdSession).ToList();
         }
 
-        public void UpdateSession(Session session)
+        public Task UpdateSession(Session session)
         {
             _context.Sessions.Update(session);
+            return Task.CompletedTask;
         }
     }
 }

@@ -3,12 +3,13 @@ using CodeBattleArena.Server.DTO.ModelsDTO;
 using CodeBattleArena.Server.Helpers;
 using CodeBattleArena.Server.IRepositories;
 using CodeBattleArena.Server.Models;
+using CodeBattleArena.Server.Services.DBServices.IDBServices;
 using CodeBattleArena.Server.Untils;
 
 
 namespace CodeBattleArena.Server.Services.DBServices
 {
-    public class LeagueService
+    public class LeagueService : ILeagueService
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly ILogger<LeagueService> _logger;
@@ -97,7 +98,7 @@ namespace CodeBattleArena.Server.Services.DBServices
         {
             try
             {
-                _unitOfWork.LeagueRepository.UpdateLeague(league);
+                await _unitOfWork.LeagueRepository.UpdateLeague(league);
                 if (commit)
                     await _unitOfWork.CommitAsync(cancellationToken);
 

@@ -63,17 +63,20 @@ namespace CodeBattleArena.Server.Repositories
         {
             return await _context.InputData.FirstOrDefaultAsync(i => i.IdInputData == id);
         }
-        public void UpdateTaskProgrammingAsync(TaskProgramming taskProgramming)
+        public Task UpdateTaskProgrammingAsync(TaskProgramming taskProgramming)
         {
             _context.TasksProgramming.Update(taskProgramming);
+            return Task.CompletedTask;
         }
-        public void UpdateTaskInputDataAsync(TaskInputData taskInputData)
+        public Task UpdateTaskInputDataAsync(TaskInputData taskInputData)
         {
             _context.TaskInputData.Update(taskInputData);
+            return Task.CompletedTask;
         }
-        public void UpdateInputDataAsync(InputData inputData)
+        public Task UpdateInputDataAsync(InputData inputData)
         {
             _context.InputData.Update(inputData);
+            return Task.CompletedTask;
         }
         public async Task DeleteTaskInputDataAsync(int idTaskProgramming, int idInputData, CancellationToken cancellationToken)
         {
@@ -88,9 +91,10 @@ namespace CodeBattleArena.Server.Repositories
                 .FirstOrDefaultAsync(t => t.IdTaskProgramming == id, cancellationToken);
             if(taskProgramming != null) _context.TasksProgramming.Remove(taskProgramming);
         }
-        public void DeleteListTaskInputDatas(List<TaskInputData> taskInputDatas)
+        public Task DeleteListTaskInputDatas(List<TaskInputData> taskInputDatas)
         {
             _context.TaskInputData.RemoveRange(taskInputDatas);
+            return Task.CompletedTask;
         }
     }
 }

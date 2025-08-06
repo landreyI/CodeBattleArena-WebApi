@@ -22,7 +22,7 @@ namespace CodeBattleArena.Server.IRepositories
         Task<List<Session>> GetListSessionAsync(ISpecification<Session> spec, CancellationToken cancellationToken);
         Task<List<int>> DeleteExpiredSessionsAsync(DateTime dateTime, CancellationToken cancellationToken);
         Task<List<int>> FinishExpiredSessionsAsync(DateTime dateTime, CancellationToken cancellationToken);
-        void UpdateSession(Session session);
+        Task UpdateSession(Session session);
 
     }
 }

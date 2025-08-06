@@ -4,6 +4,7 @@ using CodeBattleArena.Server.Enums;
 using CodeBattleArena.Server.Helpers;
 using CodeBattleArena.Server.IRepositories;
 using CodeBattleArena.Server.Models;
+using CodeBattleArena.Server.Services.DBServices.IDBServices;
 using CodeBattleArena.Server.Specifications;
 using CodeBattleArena.Server.Specifications.ItemSpec;
 using CodeBattleArena.Server.Specifications.QuestSpec;
@@ -14,15 +15,15 @@ using System.Threading;
 
 namespace CodeBattleArena.Server.Services.DBServices
 {
-    public class QuestService
+    public class QuestService : IQuestService
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly ILogger<QuestService> _logger;
         private readonly IMapper _mapper;
-        private readonly PlayerService _playerService;
-        private readonly ItemService _itemService;
+        private readonly IPlayerService _playerService;
+        private readonly IItemService _itemService;
         public QuestService(IUnitOfWork unitOfWork, ILogger<QuestService> logger, IMapper mapper,
-            PlayerService playerService, ItemService itemService)
+            IPlayerService playerService, IItemService itemService)
         {
             _unitOfWork = unitOfWork;
             _logger = logger;
@@ -207,7 +208,7 @@ namespace CodeBattleArena.Server.Services.DBServices
         public async Task<Result<Unit, ErrorResponse>> EnsurePlayerTaskPlayExistsForType(
             string idPlayer, TaskType taskType, CancellationToken cancellationToken)
         {
-            var tasksPlays = await GetListTaskPlayAsync(new TaskPlaySpec(taskType: taskType), cancellationToken);
+            var tasksPlays = await GetListTaskPlayAsync(new TaskPlayByParamKeySpec(taskType: taskType), cancellationToken);
 
             if (!tasksPlays.Any())
             {
@@ -293,7 +294,7 @@ namespace CodeBattleArena.Server.Services.DBServices
         {
             try
             {
-                _unitOfWork.QuestRepository.UpdateTaskPlay(taskPlay);
+                await _unitOfWork.QuestRepository.UpdateTaskPlay(taskPlay);
                 if (commit)
                     await _unitOfWork.CommitAsync(cancellationToken);
 
@@ -374,7 +375,7 @@ namespace CodeBattleArena.Server.Services.DBServices
         {
             try
             {
-                _unitOfWork.QuestRepository.UpdatePlayerTaskPlay(playerTaskPlay);
+                await _unitOfWork.QuestRepository.UpdatePlayerTaskPlay(playerTaskPlay);
                 if (commit)
                     await _unitOfWork.CommitAsync(cancellationToken);
 
@@ -394,7 +395,7 @@ namespace CodeBattleArena.Server.Services.DBServices
         {
             try
             {
-                _unitOfWork.QuestRepository.UpdatePlayerTaskPlays(playerTaskPlays);
+                await _unitOfWork.QuestRepository.UpdatePlayerTaskPlays(playerTaskPlays);
                 if (commit)
                     await _unitOfWork.CommitAsync(cancellationToken);
 
@@ -455,7 +456,7 @@ namespace CodeBattleArena.Server.Services.DBServices
         {
             try
             {
-                _unitOfWork.QuestRepository.UpdateReward(reward);
+                await _unitOfWork.QuestRepository.UpdateReward(reward);
                 if (commit)
                     await _unitOfWork.CommitAsync(cancellationToken);
 

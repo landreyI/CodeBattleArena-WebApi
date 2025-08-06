@@ -2,7 +2,7 @@
 using CodeBattleArena.Server.Helpers;
 using CodeBattleArena.Server.Models;
 using CodeBattleArena.Server.QuestSystem.Interfaces;
-using CodeBattleArena.Server.Services.DBServices;
+using CodeBattleArena.Server.Services.DBServices.IDBServices;
 using CodeBattleArena.Server.Specifications;
 using CodeBattleArena.Server.Specifications.QuestSpec;
 
@@ -10,8 +10,8 @@ namespace CodeBattleArena.Server.QuestSystem.Handlers
 {
     public class MatchPlayedQuestHandler : IQuestTriggerHandler
     {
-        private readonly QuestService _questService;
-        public MatchPlayedQuestHandler(QuestService questService)
+        private readonly IQuestService _questService;
+        public MatchPlayedQuestHandler(IQuestService questService)
         {
             _questService = questService;
         }

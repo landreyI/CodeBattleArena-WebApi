@@ -3,7 +3,7 @@ using System.Linq.Expressions;
 
 namespace CodeBattleArena.Server.Specifications
 {
-    public interface ISpecification<T>
+    public interface ISpecification<T> 
     {
         Expression<Func<T, bool>> Criteria { get; }
         List<Expression<Func<T, object>>> Includes { get; }
@@ -12,6 +12,7 @@ namespace CodeBattleArena.Server.Specifications
         int? Take { get; }
         int? Skip { get; }
         IFilter<T>? Filter { get; }
+        string? GetCacheKey();
     }
     public interface IProjectableSpecification<T, TResult> : ISpecification<T>
     {

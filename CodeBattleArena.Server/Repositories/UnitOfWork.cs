@@ -23,22 +23,26 @@ namespace CodeBattleArena.Server.Repositories
         private readonly Lazy<IQuestRepository> _questRepository;
         private readonly Lazy<IStatisticsRepository> _statisticsRepository;
 
-        public UnitOfWork(AppDBContext context, UserManager<Player> userManager)
+        public UnitOfWork(AppDBContext context, UserManager<Player> userManager,
+            Lazy<ISessionRepository> sessionRepository, Lazy<IPlayerRepository> playerRepository, Lazy<IPlayerSessionRepository> playerSessionRepository,
+            Lazy<ITaskRepository> taskRepository, Lazy<IFriendRepository> friendRepository, Lazy<IChatRepository> chatRepository,
+            Lazy<ILangProgrammingRepository> langProgrammingRepository, Lazy<ILeagueRepository> leagueRepository, Lazy<IItemRepository> itemRepository,
+            Lazy<IPlayerItemRepository> playerItemRepository, Lazy<IQuestRepository> questRepository, Lazy<IStatisticsRepository> statisticsRepository)
         {
             _context = context;
             _userManager = userManager;
-            _sessionRepository = new Lazy<ISessionRepository>(() => new SessionRepository(_context));
-            _playerRepository = new Lazy<IPlayerRepository>(() => new PlayerRepository(_context, _userManager));
-            _playerSessionRepository = new Lazy<IPlayerSessionRepository>(() => new PlayerSessionRepository(_context));
-            _taskRepository = new Lazy<ITaskRepository>(() => new TaskRepository(_context));
-            _friendRepository = new Lazy<IFriendRepository>(() => new FriendRepository(_context));
-            _chatRepository = new Lazy<IChatRepository>(() => new ChatRepository(_context));
-            _langProgrammingRepository = new Lazy<ILangProgrammingRepository>(() => new LangProgrammingRepository(_context));
-            _leagueRepository = new Lazy<ILeagueRepository>(() => new LeagueRepository(_context));
-            _itemRepository = new Lazy<IItemRepository>(() => new ItemRepository(_context));
-            _playerItemRepository = new Lazy<IPlayerItemRepository>(() => new PlayerItemRepository(_context));
-            _questRepository = new Lazy<IQuestRepository>(() => new QuestRepository(_context));
-            _statisticsRepository = new Lazy<IStatisticsRepository>(() => new StatisticsRepository(_context));
+            _sessionRepository = sessionRepository;
+            _playerRepository = playerRepository;
+            _playerSessionRepository = playerSessionRepository;
+            _taskRepository = taskRepository;
+            _friendRepository = friendRepository;
+            _chatRepository = chatRepository;
+            _langProgrammingRepository = langProgrammingRepository;
+            _leagueRepository = leagueRepository;
+            _itemRepository = itemRepository;
+            _playerItemRepository = playerItemRepository;
+            _questRepository = questRepository;
+            _statisticsRepository = statisticsRepository;
         }
 
         public ISessionRepository SessionRepository => _sessionRepository.Value;

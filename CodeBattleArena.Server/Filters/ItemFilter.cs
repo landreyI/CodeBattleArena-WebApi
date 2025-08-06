@@ -1,5 +1,6 @@
 ﻿using CodeBattleArena.Server.Enums;
 using CodeBattleArena.Server.Models;
+using System.Runtime.CompilerServices;
 
 namespace CodeBattleArena.Server.Filters
 {
@@ -26,6 +27,10 @@ namespace CodeBattleArena.Server.Filters
                 query = query.OrderByDescending(x => x.PriceCoin);
 
             return query;
+        }
+        public bool IsEmpty()
+        {
+            return !Type.HasValue && string.IsNullOrEmpty(Name) && !Coin.HasValue && !IsCoinDescending;
         }
     }
 }

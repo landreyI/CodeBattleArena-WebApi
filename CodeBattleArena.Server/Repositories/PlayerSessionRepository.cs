@@ -32,9 +32,10 @@ namespace CodeBattleArena.Server.Repositories
             query = SpecificationEvaluator.GetQuery(query, spec);
             return await query.ToListAsync(cancellationToken);
         }
-        public void UpdatePlayerSession(PlayerSession playerSession)
+        public Task UpdatePlayerSession(PlayerSession playerSession)
         {
             _context.PlayersSession.Update(playerSession);
+            return Task.CompletedTask;
         }
         public async Task FinishTaskAsync(int idSession, string idPlayer, CancellationToken cancellationToken)
         {

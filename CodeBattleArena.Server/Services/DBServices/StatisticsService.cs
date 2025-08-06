@@ -1,11 +1,12 @@
 ﻿using AutoMapper;
 using CodeBattleArena.Server.DTO;
 using CodeBattleArena.Server.IRepositories;
+using CodeBattleArena.Server.Services.DBServices.IDBServices;
 using CodeBattleArena.Server.Specifications.SessionSpec;
 
 namespace CodeBattleArena.Server.Services.DBServices
 {
-    public class StatisticsService
+    public class StatisticsService : IStatisticsService
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly ILogger<StatisticsService> _logger;

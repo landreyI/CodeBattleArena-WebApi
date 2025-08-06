@@ -13,11 +13,11 @@ namespace CodeBattleArena.Server.IRepositories
         Task<List<TaskProgramming>> GetTaskProgrammingListAsync(IFilter<TaskProgramming>? filter, CancellationToken cancellationToken);
         Task<TaskProgramming> GetTaskProgrammingAsync(int id, CancellationToken cancellationToken);
         Task<InputData> GetInputDataById(int id);
-        void UpdateTaskProgrammingAsync(TaskProgramming taskProgramming);
-        void UpdateTaskInputDataAsync(TaskInputData taskInputData);
-        void UpdateInputDataAsync(InputData inputData);
+        Task UpdateTaskProgrammingAsync(TaskProgramming taskProgramming);
+        Task UpdateTaskInputDataAsync(TaskInputData taskInputData);
+        Task UpdateInputDataAsync(InputData inputData);
         Task DeleteTaskInputDataAsync(int idTaskProgramming, int idInputData, CancellationToken cancellationToken);
         Task DeleteTaskProgrammingAsync(int id, CancellationToken cancellationToken);
-        void DeleteListTaskInputDatas(List<TaskInputData> taskInputDatas);
+        Task DeleteListTaskInputDatas(List<TaskInputData> taskInputDatas);
     }
 }

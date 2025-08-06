@@ -1,17 +1,18 @@
 ﻿using CodeBattleArena.Server.IRepositories;
 using CodeBattleArena.Server.Models;
+using CodeBattleArena.Server.Services.DBServices.IDBServices;
 using CodeBattleArena.Server.Untils;
 using Microsoft.EntityFrameworkCore;
 using static Azure.Core.HttpHeader;
 
 namespace CodeBattleArena.Server.Services.DBServices
 {
-    public class FriendService
+    public class FriendService : IFriendService
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly ILogger<SessionService> _logger;
+        private readonly ILogger<FriendService> _logger;
 
-        public FriendService(IUnitOfWork unitOfWork, ILogger<SessionService> logger)
+        public FriendService(IUnitOfWork unitOfWork, ILogger<FriendService> logger)
         {
             _unitOfWork = unitOfWork;
             _logger = logger;

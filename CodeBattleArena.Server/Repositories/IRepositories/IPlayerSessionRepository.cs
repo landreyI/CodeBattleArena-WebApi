@@ -9,7 +9,7 @@ namespace CodeBattleArena.Server.IRepositories
         Task<PlayerSession> GetPlayerSessionAsync(ISpecification<PlayerSession> spec, CancellationToken cancellationToken);
         Task<List<PlayerSession>> GetListPlayerSessionByIdAsync(ISpecification<PlayerSession> spec, CancellationToken cancellationToken);
 
-        void UpdatePlayerSession(PlayerSession playerSession);
+        Task UpdatePlayerSession(PlayerSession playerSession);
         Task FinishTaskAsync(int idSession, string idPlayer, CancellationToken cancellationToken);
         Task DelPlayerSessionAsync(int idSession, string idPlayer, CancellationToken cancellationToken);
     }

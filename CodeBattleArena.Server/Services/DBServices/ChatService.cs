@@ -1,16 +1,15 @@
 ﻿using CodeBattleArena.Server.IRepositories;
 using CodeBattleArena.Server.Models;
-using Microsoft.EntityFrameworkCore;
-using static Azure.Core.HttpHeader;
+using CodeBattleArena.Server.Services.DBServices.IDBServices;
 
 namespace CodeBattleArena.Server.Services.DBServices
 {
-    public class ChatService
+    public class ChatService : IChatService
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly ILogger<SessionService> _logger;
+        private readonly ILogger<ChatService> _logger;
 
-        public ChatService(IUnitOfWork unitOfWork, ILogger<SessionService> logger)
+        public ChatService(IUnitOfWork unitOfWork, ILogger<ChatService> logger)
         {
             _unitOfWork = unitOfWork;
             _logger = logger;

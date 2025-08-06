@@ -1,4 +1,5 @@
 ﻿using CodeBattleArena.Server.Services.DBServices;
+using CodeBattleArena.Server.Services.DBServices.IDBServices;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 
@@ -8,8 +9,8 @@ namespace CodeBattleArena.Server.Controllers
     [Route("api/[controller]")]
     public class LangProgrammingController : Controller
     {
-        private readonly LangProgrammingService _langProgrammingService;
-        public LangProgrammingController(LangProgrammingService langProgramming) 
+        private readonly ILangProgrammingService _langProgrammingService;
+        public LangProgrammingController(ILangProgrammingService langProgramming) 
         {
             _langProgrammingService = langProgramming;
         }

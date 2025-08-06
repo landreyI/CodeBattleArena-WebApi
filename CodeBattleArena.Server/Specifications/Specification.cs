@@ -1,5 +1,7 @@
 ﻿using CodeBattleArena.Server.Filters;
+using CodeBattleArena.Server.Models;
 using System.Linq.Expressions;
+using System.Security.Cryptography;
 
 namespace CodeBattleArena.Server.Specifications
 {
@@ -21,7 +23,10 @@ namespace CodeBattleArena.Server.Specifications
         public void ApplyFilter(IFilter<T> filter) => Filter = filter;
 
 
-
+        public virtual string? GetCacheKey()
+        {
+            return null;
+        }
 
         public static Specification<T> Combine(params Specification<T>[] specifications)
         {

@@ -7,6 +7,7 @@ using CodeBattleArena.Server.IRepositories;
 using CodeBattleArena.Server.Models;
 using CodeBattleArena.Server.QuestSystem;
 using CodeBattleArena.Server.QuestSystem.Dispatcher;
+using CodeBattleArena.Server.Services.DBServices.IDBServices;
 using CodeBattleArena.Server.Services.Notifications.INotifications;
 using CodeBattleArena.Server.Specifications;
 using CodeBattleArena.Server.Specifications.PlayerSessionSpec;
@@ -20,16 +21,16 @@ using static Azure.Core.HttpHeader;
 
 namespace CodeBattleArena.Server.Services.DBServices
 {
-    public class SessionService
+    public class SessionService : ISessionService
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly ILogger<SessionService> _logger;
         private readonly IMapper _mapper;
-        private readonly PlayerService _playerService;
+        private readonly IPlayerService _playerService;
         private readonly ISessionNotificationService _sessionNotificationService;
         private readonly GameEventDispatcher _gameEventDispatcher;
-        public SessionService(IUnitOfWork unitOfWork, ILogger<SessionService> logger, IMapper mapper, 
-            PlayerService playerService, ISessionNotificationService sessionNotificationService, 
+        public SessionService(IUnitOfWork unitOfWork, ILogger<SessionService> logger, IMapper mapper,
+            IPlayerService playerService, ISessionNotificationService sessionNotificationService, 
             GameEventDispatcher gameEventDispatcher)
         {
             _unitOfWork = unitOfWork;
@@ -255,7 +256,6 @@ namespace CodeBattleArena.Server.Services.DBServices
 
             return Result.Success<bool, ErrorResponse>(isEditSession);
         }
-
         public async Task<Result<Session, ErrorResponse>> CreateSessionAsync
             (string userId, SessionDto dto, CancellationToken ct)
         {
@@ -505,7 +505,7 @@ namespace CodeBattleArena.Server.Services.DBServices
         {
             try
             {
-                _unitOfWork.SessionRepository.DelTaskToSession(idSession, ct);
+                await _unitOfWork.SessionRepository.DelTaskToSession(idSession, ct);
                 if (commit)
                     await _unitOfWork.CommitAsync(ct);
                 return Result.Success<Unit, ErrorResponse>(Unit.Value);
@@ -602,7 +602,7 @@ namespace CodeBattleArena.Server.Services.DBServices
         {
             try
             {
-                _unitOfWork.SessionRepository.UpdateSession(session);
+                await _unitOfWork.SessionRepository.UpdateSession(session);
                 if (commit)
                     await _unitOfWork.CommitAsync(ct);
                 return Result.Success<Unit, ErrorResponse>(Unit.Value);

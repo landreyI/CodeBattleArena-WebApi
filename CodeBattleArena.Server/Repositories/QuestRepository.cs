@@ -71,9 +71,10 @@ namespace CodeBattleArena.Server.Repositories
             if (taskPlay != null) 
                 _context.TasksPlay.Remove(taskPlay);
         }
-        public void UpdateTaskPlay(TaskPlay taskPlay)
+        public Task UpdateTaskPlay(TaskPlay taskPlay)
         {
             _context.TasksPlay.Update(taskPlay);
+            return Task.CompletedTask;
         }
         public async Task AddPlayerTaskPlayAsync(PlayerTaskPlay playerTaskPlay, CancellationToken cancellationToken)
         {
@@ -89,13 +90,15 @@ namespace CodeBattleArena.Server.Repositories
             if (playerTaskPlay != null)
                 _context.PlayerTaskPlays.Remove(playerTaskPlay);
         }
-        public async void UpdatePlayerTaskPlay(PlayerTaskPlay playerTaskPlay)
+        public Task UpdatePlayerTaskPlay(PlayerTaskPlay playerTaskPlay)
         {
             _context.PlayerTaskPlays.Update(playerTaskPlay);
+            return Task.CompletedTask;
         }
-        public void UpdatePlayerTaskPlays(List<PlayerTaskPlay> playerTaskPlays)
+        public Task UpdatePlayerTaskPlays(List<PlayerTaskPlay> playerTaskPlays)
         {
             _context.PlayerTaskPlays.UpdateRange(playerTaskPlays);
+            return Task.CompletedTask;
         }
         public async Task AddRewardAsync(Reward reward, CancellationToken cancellationToken)
         {
@@ -107,13 +110,15 @@ namespace CodeBattleArena.Server.Repositories
             if (reward != null)
                 _context.Rewards.Remove(reward);
         }
-        public void DeleteRewards(List<TaskPlayReward> taskPlayRewards)
+        public Task DeleteRewards(List<TaskPlayReward> taskPlayRewards)
         {
             _context.TaskPlayRewards.RemoveRange(taskPlayRewards);
+            return Task.CompletedTask;
         }
-        public void UpdateReward(Reward reward)
+        public Task UpdateReward(Reward reward)
         {
             _context.Rewards.Update(reward);
+            return Task.CompletedTask;
         }
     }
 }

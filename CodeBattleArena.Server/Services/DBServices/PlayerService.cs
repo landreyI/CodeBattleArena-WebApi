@@ -5,19 +5,20 @@ using CodeBattleArena.Server.Filters;
 using CodeBattleArena.Server.Helpers;
 using CodeBattleArena.Server.IRepositories;
 using CodeBattleArena.Server.Models;
+using CodeBattleArena.Server.Services.DBServices.IDBServices;
 using CodeBattleArena.Server.Untils;
 using Microsoft.AspNetCore.Identity;
 using System.Threading;
 
 namespace CodeBattleArena.Server.Services.DBServices
 {
-    public class PlayerService
+    public class PlayerService : IPlayerService
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly ILogger<SessionService> _logger;
+        private readonly ILogger<PlayerService> _logger;
         private readonly UserManager<Player> _userManager;
         private readonly IMapper _mapper;
-        public PlayerService(IUnitOfWork unitOfWork, ILogger<SessionService> logger, 
+        public PlayerService(IUnitOfWork unitOfWork, ILogger<PlayerService> logger, 
             UserManager<Player> userManager, IMapper mapper)
         {
             _unitOfWork = unitOfWork;

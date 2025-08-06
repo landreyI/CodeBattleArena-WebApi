@@ -18,6 +18,11 @@ using CodeBattleArena.Server.QuestSystem;
 using CodeBattleArena.Server.QuestSystem.Dispatcher;
 using CodeBattleArena.Server.Untils;
 using System.Threading.RateLimiting;
+using StackExchange.Redis;
+using CodeBattleArena.Server.Services.Cache;
+using CodeBattleArena.Server.Services.DBServices.IDBServices;
+using CodeBattleArena.Server.Services.Cache.DecorateDBService;
+using CodeBattleArena.Server.Repositories.IRepositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -141,19 +146,39 @@ builder.Services.AddIdentity<Player, IdentityRole>()
     .AddEntityFrameworkStores<AppDBContext>()
     .AddDefaultTokenProviders();
 
-builder.Services.AddScoped<PlayerService>();
-builder.Services.AddScoped<ChatService>();
-builder.Services.AddScoped<SessionService>();
-builder.Services.AddScoped<FriendService>();
-builder.Services.AddScoped<PlayerSessionService>();
-builder.Services.AddScoped<TaskService>();
-builder.Services.AddScoped<LangProgrammingService>();
-builder.Services.AddScoped<LeagueService>();
-builder.Services.AddScoped<ItemService>();
-builder.Services.AddScoped<QuestService>();
-builder.Services.AddScoped<StatisticsService>();
+builder.Services.AddScoped<IPlayerRepository, PlayerRepository>();
+builder.Services.AddScoped<IChatRepository, ChatRepository>();
+builder.Services.AddScoped<ISessionRepository, SessionRepository>();
+builder.Services.AddScoped<IFriendRepository, FriendRepository>();
+builder.Services.AddScoped<IPlayerSessionRepository, PlayerSessionRepository>();
+builder.Services.AddScoped<ITaskRepository, TaskRepository>();
+builder.Services.AddScoped<ILangProgrammingRepository, LangProgrammingRepository>();
+builder.Services.AddScoped<ILeagueRepository, LeagueRepository>();
+builder.Services.AddScoped<IItemRepository, ItemRepository>();
+builder.Services.AddScoped<IQuestRepository, QuestRepository>();
+builder.Services.AddScoped<IStatisticsRepository, StatisticsRepository>();
+builder.Services.AddScoped<IPlayerItemRepository, PlayerItemRepository>();
+
+builder.Services.AddScoped(typeof(Lazy<>), typeof(LazyResolver<>));
+
+builder.Services.AddScoped<IPlayerService, PlayerService>();
+builder.Services.AddScoped<IChatService, ChatService>();
+builder.Services.AddScoped<ISessionService, SessionService>();
+builder.Services.AddScoped<IFriendService, FriendService>();
+builder.Services.AddScoped<IPlayerSessionService, PlayerSessionService>();
+builder.Services.AddScoped<ITaskService, TaskService>();
+builder.Services.AddScoped<ILangProgrammingService, LangProgrammingService>();
+builder.Services.AddScoped<ILeagueService, LeagueService>();
+builder.Services.AddScoped<IItemService, ItemService>();
+builder.Services.AddScoped<IQuestService, QuestService>();
+builder.Services.AddScoped<IStatisticsService, StatisticsService>();
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+builder.Services.Decorate<ITaskRepository, CachedTaskRepository>();
+builder.Services.Decorate<ILangProgrammingRepository, CachedLangProgrammingRepository>();
+builder.Services.Decorate<IItemRepository, CachedItemRepository>();
+builder.Services.Decorate<IQuestRepository, CachedQuestRepository>();
 
 builder.Services.AddHostedService<SessionObserverService>();
 builder.Services.AddHostedService<QuestObserverService>();
@@ -169,13 +194,20 @@ builder.Services.AddScoped<IPlayerNotificationService, PlayerNotificationService
 
 builder.Services.AddHttpClient<Judge0Client>();
 
+//------ REDIS ------
+//var redisConfig = builder.Configuration.GetConnectionString("Redis");
+//builder.Services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(redisConfig));
+builder.Services.AddMemoryCache();
+builder.Services.AddScoped<ICacheService, CacheService>();
+
+
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
 {
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
-    string[] roles = Enum.GetNames(typeof(Role));
+    string[] roles = Enum.GetNames(typeof(CodeBattleArena.Server.Enums.Role));
 
     foreach (var role in roles)
     {

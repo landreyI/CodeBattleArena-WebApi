@@ -45,11 +45,12 @@ namespace CodeBattleArena.Server.Repositories
                 _context.PlayerItems.Remove(playerItem);
         }
 
-        public void DeletePlayerItems(int idItem, CancellationToken cancellationToken)
+        public Task DeletePlayerItems(int idItem, CancellationToken cancellationToken)
         {
             var playerItems = _context.PlayerItems.Where(pi => pi.IdItem == idItem);
             if(playerItems != null)
                 _context.PlayerItems.RemoveRange(playerItems);
+            return Task.CompletedTask;
         }
     }
 }

@@ -3,6 +3,7 @@ using CodeBattleArena.Server.DTO;
 using CodeBattleArena.Server.Filters;
 using CodeBattleArena.Server.IRepositories;
 using CodeBattleArena.Server.Models;
+using CodeBattleArena.Server.Services.DBServices.IDBServices;
 using CodeBattleArena.Server.Specifications;
 using CodeBattleArena.Server.Specifications.ItemSpec;
 using CodeBattleArena.Server.Untils;
@@ -11,13 +12,13 @@ using static Azure.Core.HttpHeader;
 
 namespace CodeBattleArena.Server.Services.DBServices
 {
-    public class ItemService
+    public class ItemService : IItemService
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly PlayerService _playerService;
+        private readonly IPlayerService _playerService;
         private readonly ILogger<ItemService> _logger;
         private readonly IMapper _mapper;
-        public ItemService(IUnitOfWork unitOfWork, ILogger<ItemService> logger, IMapper mapper, PlayerService playerService)
+        public ItemService(IUnitOfWork unitOfWork, ILogger<ItemService> logger, IMapper mapper, IPlayerService playerService)
         {
             _unitOfWork = unitOfWork;
             _logger = logger;
@@ -151,7 +152,7 @@ namespace CodeBattleArena.Server.Services.DBServices
         {
             try
             {
-                _unitOfWork.ItemRepository.UpdateItem(item);
+                await _unitOfWork.ItemRepository.UpdateItem(item);
                 if (commit)
                     await _unitOfWork.CommitAsync(cancellationToken);
 
@@ -227,7 +228,7 @@ namespace CodeBattleArena.Server.Services.DBServices
         {
             try
             {
-                _unitOfWork.PlayerItemRepository.DeletePlayerItems(idItem, cancellationToken);
+                await _unitOfWork.PlayerItemRepository.DeletePlayerItems(idItem, cancellationToken);
                 if (commit)
                     await _unitOfWork.CommitAsync(cancellationToken);
 

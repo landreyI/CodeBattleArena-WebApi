@@ -4,6 +4,7 @@ using CodeBattleArena.Server.Helpers;
 using CodeBattleArena.Server.Infrastructure.Attributes;
 using CodeBattleArena.Server.Models;
 using CodeBattleArena.Server.Services.DBServices;
+using CodeBattleArena.Server.Services.DBServices.IDBServices;
 using CodeBattleArena.Server.Specifications;
 using CodeBattleArena.Server.Specifications.QuestSpec;
 using CodeBattleArena.Server.Specifications.SessionSpec;
@@ -17,9 +18,9 @@ namespace CodeBattleArena.Server.Controllers
     [Route("api/[controller]")]
     public class QuestController : Controller
     {
-        private readonly QuestService _questService;
+        private readonly IQuestService _questService;
         private readonly IMapper _mapper;
-        public QuestController(IMapper mapper, QuestService questService)
+        public QuestController(IMapper mapper, IQuestService questService)
         {
             _mapper = mapper;
             _questService = questService;

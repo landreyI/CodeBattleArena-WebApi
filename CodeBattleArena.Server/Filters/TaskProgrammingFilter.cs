@@ -18,5 +18,10 @@ namespace CodeBattleArena.Server.Filters
 
             return query;
         }
+
+        public bool IsEmpty()
+        {
+            return !IdLang.HasValue && !Difficulty.HasValue;
+        }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using CodeBattleArena.Server.Services.DBServices;
+using CodeBattleArena.Server.Services.DBServices.IDBServices;
 
 namespace CodeBattleArena.Server.Services
 {
@@ -19,7 +20,7 @@ namespace CodeBattleArena.Server.Services
                 interval: TimeSpan.FromMinutes(30),
                 action: async (scope, ct) =>
                 {
-                    var sessionService = scope.ServiceProvider.GetRequiredService<SessionService>();
+                    var sessionService = scope.ServiceProvider.GetRequiredService<ISessionService>();
                     await sessionService.DeleteExpiredSessionsInDbAsync(DateTime.UtcNow, ct);
                 },
                 stoppingToken
@@ -29,7 +30,7 @@ namespace CodeBattleArena.Server.Services
                 interval: TimeSpan.FromMinutes(1),
                 action: async (scope, ct) =>
                 {
-                    var sessionService = scope.ServiceProvider.GetRequiredService<SessionService>();
+                    var sessionService = scope.ServiceProvider.GetRequiredService<ISessionService>();
                     await sessionService.FinishExpiredSessionsInDbAsync(DateTime.UtcNow, ct);
                 },
                 stoppingToken

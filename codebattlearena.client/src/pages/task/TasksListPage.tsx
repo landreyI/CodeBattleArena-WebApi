@@ -20,7 +20,7 @@ export function TasksListPage() {
     const queryParams = new URLSearchParams(location.search);
 
     const idLang = queryParams.get('idLang') ? Number(queryParams.get('idLang')) : undefined;
-    const difficulty = parseEnumParam(queryParams.get('difficulty'), Difficulty, Difficulty.Easy);
+    const difficulty = queryParams.get('difficulty') ? parseEnumParam(queryParams.get('difficulty'), Difficulty, Difficulty.Easy) : undefined;
 
     const filterReceived: TaskProgrammingFilters = {
         idLang,

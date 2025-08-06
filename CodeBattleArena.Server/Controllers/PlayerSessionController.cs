@@ -4,6 +4,7 @@ using CodeBattleArena.Server.Enums;
 using CodeBattleArena.Server.Helpers;
 using CodeBattleArena.Server.Models;
 using CodeBattleArena.Server.Services.DBServices;
+using CodeBattleArena.Server.Services.DBServices.IDBServices;
 using CodeBattleArena.Server.Services.Judge0;
 using CodeBattleArena.Server.Services.Notifications.INotifications;
 using CodeBattleArena.Server.Specifications;
@@ -22,17 +23,17 @@ namespace CodeBattleArena.Server.Controllers
     [EnableRateLimiting("api-policy")]
     public class PlayerSessionController : Controller
     {
-        private readonly SessionService _sessionService;
-        private readonly PlayerService _playerService;
-        private readonly PlayerSessionService _playerSessionService;
+        private readonly ISessionService _sessionService;
+        private readonly IPlayerService _playerService;
+        private readonly IPlayerSessionService _playerSessionService;
         private readonly UserManager<Player> _userManager;
-        private readonly TaskService _taskService;
+        private readonly ITaskService _taskService;
         private readonly Judge0Client _judge0Client;
         private readonly ISessionNotificationService _sessionNotificationService;
         private readonly IMapper _mapper;
-        public PlayerSessionController(SessionService sessionService, UserManager<Player> userManager,
-            IMapper mapper, PlayerSessionService playerSessionService, PlayerService playerService,
-            TaskService taskService, ISessionNotificationService sessionNotificationService, Judge0Client judge0Client)
+        public PlayerSessionController(ISessionService sessionService, UserManager<Player> userManager,
+            IMapper mapper, IPlayerSessionService playerSessionService, IPlayerService playerService,
+            ITaskService taskService, ISessionNotificationService sessionNotificationService, Judge0Client judge0Client)
         {
             _sessionService = sessionService;
             _userManager = userManager;

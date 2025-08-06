@@ -47,9 +47,10 @@ namespace CodeBattleArena.Server.Repositories
             var league = await _context.Leagues.FindAsync(id, cancellationToken);
             if(league != null) _context.Leagues.Remove(league);
         }
-        public void UpdateLeague(League league)
+        public Task UpdateLeague(League league)
         {
             _context.Leagues.Update(league);
+            return Task.CompletedTask;
         }
     }
 }

@@ -3,6 +3,7 @@ using CodeBattleArena.Server.DTO.ModelsDTO;
 using CodeBattleArena.Server.Helpers;
 using CodeBattleArena.Server.Models;
 using CodeBattleArena.Server.Services.DBServices;
+using CodeBattleArena.Server.Services.DBServices.IDBServices;
 using CodeBattleArena.Server.Services.Notifications.INotifications;
 using CodeBattleArena.Server.Untils;
 using Google.Apis.Gmail.v1.Data;
@@ -16,12 +17,12 @@ namespace CodeBattleArena.Server.Controllers
     [ApiController]
     public class FriendController : ControllerBase
     {
-        private readonly FriendService _friendService;
+        private readonly IFriendService _friendService;
         private readonly UserManager<Player> _userManager;
         private readonly IMapper _mapper;
         private readonly IPlayerNotificationService _playerNotificationService;
 
-        public FriendController(UserManager<Player> userManager, FriendService friendService, 
+        public FriendController(UserManager<Player> userManager, IFriendService friendService, 
             IMapper mapper, IPlayerNotificationService playerNotificationService)
         {
             _userManager = userManager;

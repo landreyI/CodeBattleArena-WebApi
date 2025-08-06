@@ -3,6 +3,7 @@ using CodeBattleArena.Server.DTO.ModelsDTO;
 using CodeBattleArena.Server.Helpers;
 using CodeBattleArena.Server.IRepositories;
 using CodeBattleArena.Server.Models;
+using CodeBattleArena.Server.Services.DBServices.IDBServices;
 using CodeBattleArena.Server.Services.Judge0;
 using CodeBattleArena.Server.Services.Notifications.INotifications;
 using CodeBattleArena.Server.Specifications;
@@ -13,17 +14,17 @@ using System.Threading;
 
 namespace CodeBattleArena.Server.Services.DBServices
 {
-    public class PlayerSessionService
+    public class PlayerSessionService : IPlayerSessionService
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly ILogger<SessionService> _logger;
-        private readonly SessionService _sessionService;
-        private readonly PlayerService _playerService;
+        private readonly ILogger<PlayerSessionService> _logger;
+        private readonly ISessionService _sessionService;
+        private readonly IPlayerService _playerService;
         private readonly IMapper _mapper;
         private readonly IPlayerNotificationService _playerNotificationService;
 
-        public PlayerSessionService(IUnitOfWork unitOfWork, ILogger<SessionService> logger, 
-            SessionService sessionService, PlayerService playerService, IMapper mapper,
+        public PlayerSessionService(IUnitOfWork unitOfWork, ILogger<PlayerSessionService> logger,
+            ISessionService sessionService, IPlayerService playerService, IMapper mapper,
             IPlayerNotificationService playerNotificationService)
         {
             _unitOfWork = unitOfWork;
@@ -228,7 +229,7 @@ namespace CodeBattleArena.Server.Services.DBServices
         {
             try
             {
-                _unitOfWork.PlayerSessionRepository.UpdatePlayerSession(playerSession);
+                await _unitOfWork.PlayerSessionRepository.UpdatePlayerSession(playerSession);
                 if (commit)
                     await _unitOfWork.CommitAsync(ct);
 

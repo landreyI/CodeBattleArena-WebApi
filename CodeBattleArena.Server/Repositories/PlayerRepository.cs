@@ -3,7 +3,6 @@ using CodeBattleArena.Server.DTO;
 using CodeBattleArena.Server.Filters;
 using CodeBattleArena.Server.IRepositories;
 using CodeBattleArena.Server.Models;
-using Google.Apis.Gmail.v1.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 

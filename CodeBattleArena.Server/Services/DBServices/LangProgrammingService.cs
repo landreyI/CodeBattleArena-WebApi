@@ -1,15 +1,16 @@
 ﻿using CodeBattleArena.Server.IRepositories;
 using CodeBattleArena.Server.Models;
+using CodeBattleArena.Server.Services.DBServices.IDBServices;
 using Microsoft.EntityFrameworkCore;
 using System.Threading;
 
 namespace CodeBattleArena.Server.Services.DBServices
 {
-    public class LangProgrammingService
+    public class LangProgrammingService : ILangProgrammingService
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly ILogger<SessionService> _logger;
-        public LangProgrammingService(IUnitOfWork unitOfWork, ILogger<SessionService> logger)
+        private readonly ILogger<LangProgrammingService> _logger;
+        public LangProgrammingService(IUnitOfWork unitOfWork, ILogger<LangProgrammingService> logger)
         {
             _unitOfWork = unitOfWork;
             _logger = logger;

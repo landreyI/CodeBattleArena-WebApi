@@ -10,6 +10,6 @@ namespace CodeBattleArena.Server.Repositories.IRepositories
         Task AddPlayerItemAsync(PlayerItem playerItem, CancellationToken cancellationToken);
         Task AddPlayersItemsAsync(List<PlayerItem> playersItems, CancellationToken cancellationToken);
         Task DeletePlayerItemAsync(int idItem, string idPlayer, CancellationToken cancellationToken);
-        void DeletePlayerItems(int idItem, CancellationToken cancellationToken);
+        Task DeletePlayerItems(int idItem, CancellationToken cancellationToken);
     }
 }

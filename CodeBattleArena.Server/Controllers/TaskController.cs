@@ -2,14 +2,11 @@
 using CodeBattleArena.Server.DTO.ModelsDTO;
 using CodeBattleArena.Server.Filters;
 using CodeBattleArena.Server.Infrastructure.Attributes;
-using CodeBattleArena.Server.Models;
-using CodeBattleArena.Server.Services.DBServices;
+using CodeBattleArena.Server.Services.DBServices.IDBServices;
 using CodeBattleArena.Server.Services.Notifications.INotifications;
 using CodeBattleArena.Server.Untils;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace CodeBattleArena.Server.Controllers
 {
@@ -17,12 +14,12 @@ namespace CodeBattleArena.Server.Controllers
     [Route("api/[controller]")]
     public class TaskController : Controller
     {
-        private readonly TaskService _taskService;
-        private readonly LangProgrammingService _langProgrammingService;
+        private readonly ITaskService _taskService;
+        private readonly ILangProgrammingService _langProgrammingService;
         private readonly IMapper _mapper;
         private readonly ITaskNotificationService _taskNotificationService;
-        public TaskController(TaskService taskService, IMapper mapper, ITaskNotificationService taskNotificationService, 
-            LangProgrammingService langProgrammingService)
+        public TaskController(ITaskService taskService, IMapper mapper, ITaskNotificationService taskNotificationService,
+            ILangProgrammingService langProgrammingService)
         {
             _taskService = taskService;
             _mapper = mapper;

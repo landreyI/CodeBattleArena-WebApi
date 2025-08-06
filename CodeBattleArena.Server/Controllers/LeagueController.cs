@@ -3,6 +3,7 @@ using CodeBattleArena.Server.DTO.ModelsDTO;
 using CodeBattleArena.Server.Infrastructure.Attributes;
 using CodeBattleArena.Server.Models;
 using CodeBattleArena.Server.Services.DBServices;
+using CodeBattleArena.Server.Services.DBServices.IDBServices;
 using CodeBattleArena.Server.Untils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -13,9 +14,9 @@ namespace CodeBattleArena.Server.Controllers
     [Route("api/[controller]")]
     public class LeagueController : Controller
     {
-        private readonly LeagueService _leagueService;
+        private readonly ILeagueService _leagueService;
         private readonly IMapper _mapper;
-        public LeagueController(LeagueService league, IMapper mapper)
+        public LeagueController(ILeagueService league, IMapper mapper)
         {
             _leagueService = league;
             _mapper = mapper;

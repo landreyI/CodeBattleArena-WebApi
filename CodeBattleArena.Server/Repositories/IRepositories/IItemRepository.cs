@@ -9,6 +9,6 @@ namespace CodeBattleArena.Server.Repositories.IRepositories
         Task<List<Item>> GetItemsAsync(IFilter<Item>? filter, CancellationToken cancellationToken);
         Task AddItemAsync(Item item, CancellationToken cancellationToken);
         Task DeleteItemAsync(int id, CancellationToken cancellationToken);
-        void UpdateItem(Item item);
+        Task UpdateItem(Item item);
     }
 }

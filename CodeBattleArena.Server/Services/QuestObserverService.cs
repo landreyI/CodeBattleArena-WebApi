@@ -1,4 +1,5 @@
 ﻿using CodeBattleArena.Server.Services.DBServices;
+using CodeBattleArena.Server.Services.DBServices.IDBServices;
 
 namespace CodeBattleArena.Server.Services
 {
@@ -19,7 +20,7 @@ namespace CodeBattleArena.Server.Services
                 interval: TimeSpan.FromMinutes(10),
                 action: async (scope, ct) =>
                 {
-                    var questService = scope.ServiceProvider.GetRequiredService<QuestService>();
+                    var questService = scope.ServiceProvider.GetRequiredService<IQuestService>();
                     await questService.UpdateOrResetTaskProgress(ct);
                 },
                 stoppingToken

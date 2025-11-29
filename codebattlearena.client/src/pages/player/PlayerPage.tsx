@@ -228,6 +228,9 @@ export function PlayerPage() {
                             <Link to={`/item/list-items`} className="nav-link">
                                 Shop Items
                             </Link>
+                            <Link to={`/task/my-tasks/${playerId}`} className="nav-link">
+                                My Tasks
+                            </Link>
                             <Link to={`/friend/list-friends`} className="nav-link">
                                 Friends
                             </Link>

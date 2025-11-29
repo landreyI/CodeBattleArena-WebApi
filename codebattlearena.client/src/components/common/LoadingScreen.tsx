@@ -1,5 +1,4 @@
-﻿import { TerminalSquare } from "lucide-react"; // иконка терминала
-import React from "react";
+﻿import { TerminalSquare } from "lucide-react";
 
 export default function LoadingScreen() {
     return (

@@ -48,13 +48,16 @@ namespace CodeBattleArena.Server.Repositories
             if (filter != null)
                 query = filter.ApplyTo(query);
 
-            return await query.Include(s => s.LangProgramming)
+            return await query
+                .Include(p => p.Player)
+                .Include(s => s.LangProgramming)
                 .ToListAsync(cancellationToken);
         }
         public async Task<TaskProgramming> GetTaskProgrammingAsync(int id, CancellationToken cancellationToken)
         {
             return await _context.TasksProgramming
                 .Include(l => l.LangProgramming)
+                .Include(p => p.Player)
                 .Include(t => t.TaskInputData)
                 .ThenInclude(i => i.InputData)
                 .FirstOrDefaultAsync(t => t.IdTaskProgramming == id, cancellationToken);

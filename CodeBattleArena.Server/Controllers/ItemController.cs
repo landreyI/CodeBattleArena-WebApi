@@ -2,9 +2,7 @@
 using CodeBattleArena.Server.DTO.ModelsDTO;
 using CodeBattleArena.Server.Enums;
 using CodeBattleArena.Server.Filters;
-using CodeBattleArena.Server.Infrastructure.Attributes;
 using CodeBattleArena.Server.Models;
-using CodeBattleArena.Server.Services.DBServices;
 using CodeBattleArena.Server.Services.DBServices.IDBServices;
 using CodeBattleArena.Server.Specifications.ItemSpec;
 using CodeBattleArena.Server.Untils;
@@ -69,69 +67,6 @@ namespace CodeBattleArena.Server.Controllers
         }
 
         [Authorize]
-        [RequireEditRole]
-        [HttpPost("create-item")]
-        public async Task<IActionResult> CreateItem([FromBody] ItemDto itemDto, CancellationToken cancellationToken)
-        {
-            if (!ModelState.IsValid)
-            {
-                var errors = ModelState
-                    .Where(e => e.Value.Errors.Count > 0)
-                    .ToDictionary(
-                        kvp => kvp.Key,
-                        kvp => kvp.Value.Errors.Select(e => e.ErrorMessage).ToArray()
-                    );
-
-                return UnprocessableEntity(errors);
-            }
-
-            var item = _mapper.Map<Item>(itemDto);
-            var resultCreate = await _itemService.AddItemAsync(item, cancellationToken);
-            if (!resultCreate.IsSuccess)
-                return UnprocessableEntity(resultCreate.Failure);
-
-            return Ok(item.IdItem);
-        }
-
-        [Authorize]
-        [RequireEditRole]
-        [HttpDelete("delete-item")]
-        public async Task<IActionResult> DeleteItem(int? id, CancellationToken cancellationToken)
-        {
-            if (id == null) return BadRequest(new ErrorResponse { Error = "Item ID not specified." });
-
-            var resultDeleting = await _itemService.DeleteItemAsync(id.Value, cancellationToken);
-            if (!resultDeleting.IsSuccess)
-                return UnprocessableEntity(resultDeleting.Failure);
-
-            return Ok(true);
-        }
-
-        [Authorize]
-        [RequireEditRole]
-        [HttpPut("edit-item")]
-        public async Task<IActionResult> EditItem([FromBody] ItemDto itemDto, CancellationToken cancellationToken)
-        {
-            if (!ModelState.IsValid)
-            {
-                var errors = ModelState
-                    .Where(e => e.Value.Errors.Count > 0)
-                    .ToDictionary(
-                        kvp => kvp.Key,
-                        kvp => kvp.Value.Errors.Select(e => e.ErrorMessage).ToArray()
-                    );
-
-                return UnprocessableEntity(errors);
-            }
-
-            var resultUpdate = await _itemService.UpdateItem(_mapper.Map<Item>(itemDto), cancellationToken);
-            if (!resultUpdate.IsSuccess)
-                return UnprocessableEntity(resultUpdate.Failure);
-
-            return Ok(true);
-        }
-
-        [Authorize]
         [HttpPost("buy-item")]
         public async Task<IActionResult> BuyItem([FromBody] PlayerItemDto playerItemDto, CancellationToken cancellationToken)
         {
@@ -150,21 +85,6 @@ namespace CodeBattleArena.Server.Controllers
             var resultBuy = await _itemService.BuyItemAsync(authUserId, _mapper.Map<PlayerItem>(playerItemDto), cancellationToken);
             if (!resultBuy.IsSuccess)
                 return UnprocessableEntity(resultBuy.Failure);
-
-            return Ok(true);
-        }
-
-        [Authorize]
-        [RequireEditRole]
-        [HttpDelete("delete-player-item")]
-        public async Task<IActionResult> DeletePlayerItem(string? idPlayer, int? idItem, CancellationToken cancellationToken)
-        {
-            if (string.IsNullOrEmpty(idPlayer)) return BadRequest(new ErrorResponse { Error = "Player ID not specified." });
-            if (idItem == null) return BadRequest(new ErrorResponse { Error = "Item ID not specified." });
-
-            var resultDeleting = await _itemService.DeletePlayerItemAsync(idItem.Value, idPlayer, cancellationToken);
-            if (!resultDeleting.IsSuccess)
-                return UnprocessableEntity(resultDeleting.Failure);
 
             return Ok(true);
         }

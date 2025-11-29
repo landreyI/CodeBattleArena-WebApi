@@ -28,22 +28,14 @@ export function MessageComponent({ message, isUser }: MessageProps) {
             )}
             <div
                 className={cn(
-                    "rounded-lg px-4 py-2",
+                    "rounded-xl px-4 py-2",
                     isUser
                         ? "bg-primary text-primary-foreground"
                         : "bg-blue text-primary-foreground"
                 )}
             >
-                <p className="whitespace-pre-wrap break-words overflow-auto max-w-60">
+                <p className="whitespace-pre-wrap font-bold break-words overflow-auto max-w-60">
                     {message?.messageText}
-                </p>
-                <p className="text-xs mt-1 opacity-70">
-                    {new Date(message?.sentDateTime ?? new Date()).toLocaleString(undefined, {
-                        day: "2-digit",
-                        hour: "2-digit",
-                        minute: "2-digit",
-                        hour12: false,
-                    })}
                 </p>
             </div>
             {isUser && (

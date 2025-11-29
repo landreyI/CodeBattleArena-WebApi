@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using CodeBattleArena.Server.DTO.ModelsDTO;
 using CodeBattleArena.Server.Filters;
+using CodeBattleArena.Server.Helpers;
 using CodeBattleArena.Server.IRepositories;
 using CodeBattleArena.Server.Models;
 using CodeBattleArena.Server.Services.DBServices.IDBServices;
@@ -23,8 +24,13 @@ namespace CodeBattleArena.Server.Services.DBServices
         }
 
         public async Task<Result<TaskProgramming, ErrorResponse>> CreateTaskProgrammingAsync
-            (TaskProgrammingDto dto, CancellationToken ct, bool commit = true)
+            (TaskProgrammingDto dto, string userId, CancellationToken ct, bool commit = true)
         {
+            var checkResult = ValidationHelper.CheckUserId<bool>(userId);
+            if (!checkResult.IsSuccess)
+                return Result.Failure<TaskProgramming, ErrorResponse>(checkResult.Failure);
+
+            dto.IdPlayer = userId;
             TaskProgramming taskProgramming = new TaskProgramming();
             _mapper.Map(dto, taskProgramming);
 

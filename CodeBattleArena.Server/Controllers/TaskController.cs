@@ -1,11 +1,16 @@
 ﻿using AutoMapper;
+using CodeBattleArena.Server.DTO;
 using CodeBattleArena.Server.DTO.ModelsDTO;
+using CodeBattleArena.Server.Enums;
 using CodeBattleArena.Server.Filters;
-using CodeBattleArena.Server.Infrastructure.Attributes;
+using CodeBattleArena.Server.Models;
+using CodeBattleArena.Server.Services.DBServices;
 using CodeBattleArena.Server.Services.DBServices.IDBServices;
 using CodeBattleArena.Server.Services.Notifications.INotifications;
+using CodeBattleArena.Server.Specifications.ItemSpec;
 using CodeBattleArena.Server.Untils;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CodeBattleArena.Server.Controllers
@@ -15,16 +20,21 @@ namespace CodeBattleArena.Server.Controllers
     public class TaskController : Controller
     {
         private readonly ITaskService _taskService;
+        private readonly IAIService _aiService;
         private readonly ILangProgrammingService _langProgrammingService;
-        private readonly IMapper _mapper;
         private readonly ITaskNotificationService _taskNotificationService;
-        public TaskController(ITaskService taskService, IMapper mapper, ITaskNotificationService taskNotificationService,
-            ILangProgrammingService langProgrammingService)
+        private readonly IMapper _mapper;
+        private readonly UserManager<Player> _userManager;
+        public TaskController(ITaskService taskService, IMapper mapper, IAIService aiService, 
+            ILangProgrammingService langProgrammingService, ITaskNotificationService taskNotificationService,
+            UserManager<Player> userManager)
         {
             _taskService = taskService;
             _mapper = mapper;
-            _taskNotificationService = taskNotificationService;
+            _aiService = aiService;
             _langProgrammingService = langProgrammingService;
+            _taskNotificationService = taskNotificationService;
+            _userManager = userManager;
         }
 
         [HttpGet("info-task-programming")]
@@ -58,27 +68,20 @@ namespace CodeBattleArena.Server.Controllers
             return Ok(dtos);
         }
 
-        [Authorize]
-        [RequireEditRole]
-        [HttpDelete("delete-task-programming")]
-        public async Task<IActionResult> DeleteTask(int? id, CancellationToken cancellationToken)
+        [HttpGet("list-player-tasks")]
+        public async Task<IActionResult> GetPlayerTasks(string? idPlayer, CancellationToken cancellationToken)
         {
-            if (id == null) return BadRequest(new ErrorResponse { Error = "Task ID not specified." });
+            if (string.IsNullOrEmpty(idPlayer)) return BadRequest(new ErrorResponse { Error = "Player ID not specified." });
 
-            var result = await _taskService.DeleteTaskProgrammingInDbAsync(id.Value, cancellationToken);
-            if (!result.IsSuccess)
-                return UnprocessableEntity(result.Failure);
+            var listPlayerTasks = await _taskService.GetTaskProgrammingListAsync
+                (new TaskProgrammingFilter { IdPlayer = idPlayer }, cancellationToken);
 
-            await _taskNotificationService.NotifyTaskDeletedGroupAsync(id.Value);
-            await _taskNotificationService.NotifyTaskDeletedAllAsync(id.Value);
-
-            return Ok(true);
+            return Ok(_mapper.Map<List<TaskProgrammingDto>>(listPlayerTasks));
         }
 
         [Authorize]
-        [RequireEditRole]
-        [HttpPost("create-task-programming")]
-        public async Task<IActionResult> CreateTask([FromBody] TaskProgrammingDto taskProgrammingDto, CancellationToken cancellationToken)
+        [HttpPost("generate-ai-task-programming")]
+        public async Task<IActionResult> GenerateAITaskProgramming([FromBody] RequestGeneratingAITaskDto dto, CancellationToken cancellationToken)
         {
             if (!ModelState.IsValid)
             {
@@ -92,7 +95,8 @@ namespace CodeBattleArena.Server.Controllers
                 return UnprocessableEntity(errors);
             }
 
-            var createResult = await _taskService.CreateTaskProgrammingAsync(taskProgrammingDto, cancellationToken);
+            var currentUserId = _userManager.GetUserId(User);
+            var createResult = await _aiService.GenerateAITaskProgrammingAsync(dto, currentUserId, cancellationToken);
             if (!createResult.IsSuccess)
                 return UnprocessableEntity(createResult.Failure);
 
@@ -105,34 +109,7 @@ namespace CodeBattleArena.Server.Controllers
 
             await _taskNotificationService.NotifyTaskAddAsync(dtoTask);
 
-            return Ok(task.IdTaskProgramming);
-        }
-
-        [Authorize]
-        [RequireEditRole]
-        [HttpPut("edit-task-programming")]
-        public async Task<IActionResult> EditTask([FromBody] TaskProgrammingDto taskProgrammingDto, CancellationToken cancellationToken)
-        {
-            if (!ModelState.IsValid)
-            {
-                var errors = ModelState
-                    .Where(e => e.Value.Errors.Count > 0)
-                    .ToDictionary(
-                        kvp => kvp.Key,
-                        kvp => kvp.Value.Errors.Select(e => e.ErrorMessage).ToArray()
-                    );
-
-                return UnprocessableEntity(errors);
-            }
-
-            var resultUpdate = await _taskService.UpdateTaskProgrammingAsync(taskProgrammingDto, cancellationToken);
-            if (!resultUpdate.IsSuccess)
-                return UnprocessableEntity(resultUpdate.Failure);
-
-            await _taskNotificationService.NotifyTaskUpdatedGroupAsync(taskProgrammingDto);
-            await _taskNotificationService.NotifyTaskUpdatedAllAsync(taskProgrammingDto);
-
-            return Ok(true);
+            return Ok(dtoTask);
         }
     }
 }

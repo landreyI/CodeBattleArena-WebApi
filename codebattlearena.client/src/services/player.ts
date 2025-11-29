@@ -30,7 +30,7 @@ export const fetchSelectRoles = async (
     config?: { signal?: AbortSignal }
 ): Promise<boolean> => {
     const response = await api.put(
-        `/Player/select-roles`,
+        `/Admin/select-roles`,
         { idPlayer, roles },
         { signal: config?.signal } 
     );

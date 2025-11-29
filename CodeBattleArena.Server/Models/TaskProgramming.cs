@@ -17,6 +17,12 @@ namespace CodeBattleArena.Server.Models
         public string TextTask { get; set; }
         public string Preparation { get; set; }
         public string VerificationCode { get; set; }
+        public bool IsGeneratedAI { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+        public string IdPlayer { get; set; }
+        public virtual Player? Player { get; set; }
+
         public virtual ICollection<TaskInputData>? TaskInputData { get; set; }
         public virtual ICollection<Session>? Sessions { get; set; }
     }

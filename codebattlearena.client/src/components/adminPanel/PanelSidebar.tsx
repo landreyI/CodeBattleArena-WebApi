@@ -19,6 +19,7 @@ export const itemsStaff: MenuAction[] = [
 
 export const itemsEdit: MenuAction[] = [
     { label: "Create Task", href: "/task/create-task", shortcut: "+⌘T" },
+    { label: "Generate Task", href: "/task/ai-generate-task/null", shortcut: "+⌘AI" },
     { label: "Create League", href: "/league/create-league", shortcut: "+⌘L" },
     { label: "Create Item", href: "/item/create-item", shortcut: "+⌘I" },
     { label: "Create Reward", href: "/quest/create-reward", shortcut: "+⌘R" },

@@ -89,7 +89,7 @@ export const fetchCreateTaskPlay = async (
     config?: { signal?: AbortSignal }
 ): Promise<any> => {
     const response = await api.post(`
-        Quest/create-task-play`,
+        AdminQuest/create-task-play`,
         { taskPlay, idRewards },
         { signal: config?.signal }
     );
@@ -100,7 +100,7 @@ export const fetchDeleteTaskPlay = async (
     id: number,
     config?: { signal?: AbortSignal }
 ): Promise<boolean> => {
-    const response = await api.delete(`Quest/delete-task-play`, {
+    const response = await api.delete(`AdminQuest/delete-task-play`, {
         params: { id },
         signal: config?.signal,
     });
@@ -113,7 +113,7 @@ export const fetchUpdateTaskPlay = async (
     config?: { signal?: AbortSignal }
 ): Promise<boolean> => {
     const response = await api.put(
-        `Quest/edit-task-play`,
+        `AdminQuest/edit-task-play`,
         { taskPlay, idRewards },
         { signal: config?.signal }
     );
@@ -124,7 +124,7 @@ export const fetchCreateReward = async (
     reward: Reward,
     config?: { signal?: AbortSignal }
 ): Promise<any> => {
-    const response = await api.post(`Quest/create-reward`, reward, {
+    const response = await api.post(`AdminQuest/create-reward`, reward, {
         signal: config?.signal,
     });
     return response.data;
@@ -134,7 +134,7 @@ export const fetchDeleteReward = async (
     id: number,
     config?: { signal?: AbortSignal }
 ): Promise<boolean> => {
-    const response = await api.delete(`Quest/delete-reward`, {
+    const response = await api.delete(`AdminQuest/delete-reward`, {
         params: { id },
         signal: config?.signal,
     });
@@ -145,7 +145,7 @@ export const fetchUpdateReward = async (
     reward: Reward,
     config?: { signal?: AbortSignal }
 ): Promise<boolean> => {
-    const response = await api.put(`Quest/edit-reward`, reward, {
+    const response = await api.put(`AdminQuest/edit-reward`, reward, {
         signal: config?.signal,
     });
     return response.data;

@@ -12,7 +12,6 @@ namespace CodeBattleArena.Server.DTO.ModelsDTO
         public PlayerDto? Sender { get; set; }
 
         public string MessageText { get; set; }
-        public DateTime SentDateTime { get; set; }
 
     }
 }

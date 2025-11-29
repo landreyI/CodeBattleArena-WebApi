@@ -1,4 +1,4 @@
-import { useNavigate, useParams } from "react-router-dom";
+﻿import { href, useNavigate, useParams } from "react-router-dom";
 import { useTask } from "@/hooks/task/useTask";
 import EmptyState from "@/components/common/EmptyState";
 import ErrorMessage from "@/components/common/ErrorMessage";
@@ -17,6 +17,7 @@ import { useSelectTaskForSession } from "@/hooks/session/useSelectTaskForSession
 import { useTaskEventsHub } from "@/hooks/hubs/task/useTaskEventsHub";
 import EditModal from "@/components/modals/EditModal";
 import TaskForm from "@/components/forms/TaskForm";
+import { MenuAction } from "@/components/menu/GenericDropdownMenu";
 
 export function TaskInfo() {
     const { taskId } = useParams<{ taskId: string }>();
@@ -51,6 +52,19 @@ export function TaskInfo() {
             navigate(`/session/info-session/${activeSession?.idSession}`);
     };
 
+    const actions: MenuAction[] = [
+        ...(task?.idTaskProgramming
+            ? [
+                {
+                    label: "Change AI",
+                    shortcut: "⌘AI",
+                    href: `/task/ai-generate-task/${task?.idTaskProgramming}`,
+                },
+            ]
+            : []),
+    ];
+
+
     if (taskLoad) return <LoadingScreen />
     if (taskError) return <ErrorMessage error={taskError} />;
     if (!task) return <EmptyState message="Task not found" />;
@@ -83,6 +97,7 @@ export function TaskInfo() {
                             <SettingMenu
                                 setShowEdit={setShowEditTask}
                                 handleDelet={handleDeletTask}
+                                actionsProp={actions}
                             />
                         )}
                     </div>

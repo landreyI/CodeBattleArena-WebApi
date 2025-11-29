@@ -83,6 +83,11 @@ namespace CodeBattleArena.Server.Data
                 .WithMany(u => u.TasksProgramming)
                 .HasForeignKey(s => s.LangProgrammingId);
 
+            modelBuilder.Entity<TaskProgramming>()
+                .HasOne(s => s.Player)
+                .WithMany(u => u.TaskProgrammings)
+                .HasForeignKey(s => s.IdPlayer);
+
 
             modelBuilder.Entity<TaskInputData>()
                 .HasKey(ti => new { ti.IdTaskProgramming, ti.IdInputDataTask });

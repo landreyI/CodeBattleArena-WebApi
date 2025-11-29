@@ -5,13 +5,13 @@ namespace CodeBattleArena.Server.Helpers
 {
     public static class CodeCheckBuilder
     {
-        public static Judge0SubmissionRequest Build(CodeRequest codeRequest, TaskProgramming task, List<TaskInputData> inputDataList)
+        public static Judge0SubmissionRequest Build(string codeRequest, TaskProgramming task, List<TaskInputData> inputDataList)
         {
             var stdinList = inputDataList.Select(i => i.InputData.Data).ToList();
             var expectedOutputList = inputDataList.Select(i => i.Answer).ToList();
 
-            var code = CombineCodeParts(codeRequest.Code, task.VerificationCode);
-            var stdin = string.Join(" ", stdinList);
+            var code = CombineCodeParts(codeRequest, task.VerificationCode);
+            var stdin = string.Join("|", stdinList);
             var expectedOutput = string.Join(" ", expectedOutputList);
 
             return new Judge0SubmissionRequest

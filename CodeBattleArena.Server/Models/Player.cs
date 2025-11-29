@@ -24,6 +24,7 @@ namespace CodeBattleArena.Server.Models
         public virtual ICollection<Chat>? ChatsAsUser1 { get; set; }
         public virtual ICollection<Chat>? ChatsAsUser2 { get; set; }
         public virtual ICollection<Message>? Messages { get; set; }
+        public virtual ICollection<TaskProgramming>? TaskProgrammings { get; set; }
 
         public int? ActiveBackgroundId { get; set; }
         public Item? ActiveBackground { get; set; }

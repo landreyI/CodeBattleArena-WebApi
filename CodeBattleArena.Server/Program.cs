@@ -23,6 +23,8 @@ using CodeBattleArena.Server.Services.Cache;
 using CodeBattleArena.Server.Services.DBServices.IDBServices;
 using CodeBattleArena.Server.Services.Cache.DecorateDBService;
 using CodeBattleArena.Server.Repositories.IRepositories;
+using CodeBattleArena.Server.Services.Gateways.IGateways;
+using CodeBattleArena.Server.Services.Gateways;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -172,6 +174,7 @@ builder.Services.AddScoped<ILeagueService, LeagueService>();
 builder.Services.AddScoped<IItemService, ItemService>();
 builder.Services.AddScoped<IQuestService, QuestService>();
 builder.Services.AddScoped<IStatisticsService, StatisticsService>();
+builder.Services.AddScoped<IAIService, AIService>();
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
@@ -179,6 +182,12 @@ builder.Services.Decorate<ITaskRepository, CachedTaskRepository>();
 builder.Services.Decorate<ILangProgrammingRepository, CachedLangProgrammingRepository>();
 builder.Services.Decorate<IItemRepository, CachedItemRepository>();
 builder.Services.Decorate<IQuestRepository, CachedQuestRepository>();
+
+builder.Services.AddScoped<IAIGenerationGateway, AIGenerationGateway>();
+builder.Services.AddHttpClient("AIApiClient", client =>
+{
+    client.BaseAddress = new Uri(builder.Configuration["AI:Url"]);
+});
 
 builder.Services.AddHostedService<SessionObserverService>();
 builder.Services.AddHostedService<QuestObserverService>();

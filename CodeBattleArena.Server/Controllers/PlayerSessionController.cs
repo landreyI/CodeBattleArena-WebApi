@@ -201,7 +201,6 @@ namespace CodeBattleArena.Server.Controllers
                 IdSender = currentUser.Id,
                 Sender = _mapper.Map<PlayerDto>(currentUser),
                 MessageText = message,
-                SentDateTime = DateTime.UtcNow,
             };
 
             await _sessionNotificationService.NotifySendMessageSessionAsync(activeSession.IdSession, messageDto);
@@ -222,7 +221,7 @@ namespace CodeBattleArena.Server.Controllers
                 activeSession.TaskId!.Value,
                 cancellationToken);
 
-            var payload = CodeCheckBuilder.Build(codeRequest, activeSession.TaskProgramming, inputDataList);
+            var payload = CodeCheckBuilder.Build(codeRequest.Code, activeSession.TaskProgramming, inputDataList);
 
             var result = await _judge0Client.CheckAsync(
                 payload.source_code,

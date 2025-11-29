@@ -71,6 +71,14 @@ export const routes = [
         path: "/task/create-task",
         element: lazy(() => import("@/pages/task/CreateTask")),
     },
+    {
+        path: "/task/my-tasks/:playerId",
+        element: lazy(() => import("@/pages/task/PlayerTasksPage")),
+    },
+    {
+        path: "/task/ai-generate-task/:taskId",
+        element: lazy(() => import("@/pages/task/AIGenerateTask")),
+    },
 
     // Лиги
     {

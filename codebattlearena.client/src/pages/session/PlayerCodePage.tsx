@@ -26,6 +26,7 @@ import CodeVerificationResult from "@/components/cards/CodeVerificationResult";
 import { useFinishTaskPlayer } from "@/hooks/playerSession/useFinishTaskPlayer";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
 import { useSession } from "@/hooks/session/useSession";
+import ScreenBlocker from "../../components/common/ScreenBlocker";
 
 export function PlayerCodePage() {
     const [searchParams] = useSearchParams();
@@ -145,6 +146,7 @@ export function PlayerCodePage() {
     return (
         <>
             {errorNotifi && <InlineNotification message={errorNotifi.message} className="bg-red" />}
+            <ScreenBlocker open={checkLoad} />
 
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-4">
                 {playerSession.finishTask && (

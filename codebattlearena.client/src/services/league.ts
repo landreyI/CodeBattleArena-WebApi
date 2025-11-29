@@ -47,7 +47,7 @@ export const fetchCreateLeague = async (
     league: League,
     config?: { signal?: AbortSignal }
 ): Promise<boolean> => {
-    const response = await api.post(`League/create-league`, league, {
+    const response = await api.post(`AdminLeague/create-league`, league, {
         signal: config?.signal,
     });
     return response.data;
@@ -57,7 +57,7 @@ export const fetchEditLeague = async (
     league: League,
     config?: { signal?: AbortSignal }
 ): Promise<boolean> => {
-    const response = await api.put(`League/edit-league`, league, {
+    const response = await api.put(`AdminLeague/edit-league`, league, {
         signal: config?.signal,
     });
     return response.data;
@@ -67,7 +67,7 @@ export const fetchDeleteLeague = async (
     id: number,
     config?: { signal?: AbortSignal }
 ): Promise<boolean> => {
-    const response = await api.delete(`League/delete-league`, {
+    const response = await api.delete(`AdminLeague/delete-league`, {
         params: { id },
         signal: config?.signal,
     });

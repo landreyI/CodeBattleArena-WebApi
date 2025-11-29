@@ -8,7 +8,7 @@ namespace CodeBattleArena.Server.Services.DBServices.IDBServices
 {
     public interface ITaskService
     {
-        Task<Result<TaskProgramming, ErrorResponse>> CreateTaskProgrammingAsync(TaskProgrammingDto dto, CancellationToken ct, bool commit = true);
+        Task<Result<TaskProgramming, ErrorResponse>> CreateTaskProgrammingAsync(TaskProgrammingDto dto, string palyerId, CancellationToken ct, bool commit = true);
         Task<Result<Unit, ErrorResponse>> UpdateTaskProgrammingAsync(TaskProgrammingDto dto, CancellationToken ct, bool commit = true);
         Task<Result<Unit, ErrorResponse>> AddTaskProgrammingInDbAsync(TaskProgramming taskProgramming, CancellationToken cancellationToken, bool commit = true);
         Task<Result<Unit, ErrorResponse>> AddInputDataInDbAsync(string data, CancellationToken cancellationToken, bool commit = true);

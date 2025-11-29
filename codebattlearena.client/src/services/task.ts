@@ -1,6 +1,7 @@
 import { api } from "../api/axios";
 import { InputData, TaskProgramming } from "@/models/dbModels";
 import { TaskProgrammingFilters } from "../models/filters";
+import { GenerateAITaskProgramming } from "../models/models";
 
 export const fetchGetTask = async (
     id: number,
@@ -38,7 +39,7 @@ export const fetchCreateTask = async (
     task: TaskProgramming,
     config?: { signal?: AbortSignal }
 ): Promise<any> => {
-    const response = await api.post(`Task/create-task-programming`, task, {
+    const response = await api.post(`AdminTask/create-task-programming`, task, {
         signal: config?.signal,
     });
     return response.data;
@@ -48,7 +49,7 @@ export const fetchDeleteTask = async (
     id: number,
     config?: { signal?: AbortSignal }
 ): Promise<boolean> => {
-    const response = await api.delete(`Task/delete-task-programming`, {
+    const response = await api.delete(`AdminTask/delete-task-programming`, {
         params: { id },
         signal: config?.signal,
     });
@@ -59,7 +60,30 @@ export const fetchUpdateTask = async (
     task: TaskProgramming,
     config?: { signal?: AbortSignal }
 ): Promise<boolean> => {
-    const response = await api.put(`Task/edit-task-programming`, task, {
+    const response = await api.put(`AdminTask/edit-task-programming`, task, {
+        signal: config?.signal,
+    });
+    return response.data;
+};
+
+export const fetchGetPlayerTasks = async (
+    idPlayer?: string,
+    config?: { signal?: AbortSignal }
+): Promise<TaskProgramming[]> => {
+    const response = await api.get(`Task/list-player-tasks`, {
+        params: {
+            idPlayer,
+        },
+        signal: config?.signal,
+    });
+    return response.data;
+};
+
+export const fetchGenerateAITask = async (
+    task: GenerateAITaskProgramming,
+    config?: { signal?: AbortSignal }
+): Promise<any> => {
+    const response = await api.post(`Task/generate-ai-task-programming`, task, {
         signal: config?.signal,
     });
     return response.data;

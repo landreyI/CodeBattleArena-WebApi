@@ -43,7 +43,7 @@ export const fetchCreateItem = async (
     item: Item,
     config?: { signal?: AbortSignal }
 ): Promise<{ idItem: number }> => {
-    const response = await api.post(`Item/create-item`, item, {
+    const response = await api.post(`AdminItem/create-item`, item, {
         signal: config?.signal,
     });
     return response.data;
@@ -63,7 +63,7 @@ export const fetchUpdateItem = async (
     item: Item,
     config?: { signal?: AbortSignal }
 ): Promise<boolean> => {
-    const response = await api.put(`Item/edit-item`, item, {
+    const response = await api.put(`AdminItem/edit-item`, item, {
         signal: config?.signal,
     });
     return response.data;
@@ -73,7 +73,7 @@ export const fetchDeleteItem = async (
     id: number,
     config?: { signal?: AbortSignal }
 ): Promise<boolean> => {
-    const response = await api.delete(`Item/delete-item`, {
+    const response = await api.delete(`AdminItem/delete-item`, {
         params: { id },
         signal: config?.signal,
     });

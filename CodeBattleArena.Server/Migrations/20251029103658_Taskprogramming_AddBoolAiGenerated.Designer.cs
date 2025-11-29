@@ -4,6 +4,7 @@ using CodeBattleArena.Server.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CodeBattleArena.Server.Migrations
 {
     [DbContext(typeof(AppDBContext))]
-    partial class AppDBContextModelSnapshot : ModelSnapshot
+    [Migration("20251029103658_Taskprogramming_AddBoolAiGenerated")]
+    partial class Taskprogramming_AddBoolAiGenerated
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -506,7 +509,8 @@ namespace CodeBattleArena.Server.Migrations
 
                     b.Property<string>("Answer")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.HasKey("IdTaskProgramming", "IdInputDataTask");
 
@@ -610,14 +614,7 @@ namespace CodeBattleArena.Server.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdTaskProgramming"));
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("Difficulty")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("IdPlayer")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -631,9 +628,6 @@ namespace CodeBattleArena.Server.Migrations
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("PlayerId")
-                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Preparation")
                         .IsRequired()
@@ -650,8 +644,6 @@ namespace CodeBattleArena.Server.Migrations
                     b.HasKey("IdTaskProgramming");
 
                     b.HasIndex("LangProgrammingId");
-
-                    b.HasIndex("PlayerId");
 
                     b.ToTable("TasksProgramming");
                 });
@@ -1023,13 +1015,7 @@ namespace CodeBattleArena.Server.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("CodeBattleArena.Server.Models.Player", "Player")
-                        .WithMany("TaskProgrammings")
-                        .HasForeignKey("PlayerId");
-
                     b.Navigation("LangProgramming");
-
-                    b.Navigation("Player");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -1122,8 +1108,6 @@ namespace CodeBattleArena.Server.Migrations
                     b.Navigation("PlayerSessions");
 
                     b.Navigation("PlayerTaskPlays");
-
-                    b.Navigation("TaskProgrammings");
                 });
 
             modelBuilder.Entity("CodeBattleArena.Server.Models.Session", b =>

@@ -5,11 +5,15 @@ namespace CodeBattleArena.Server.Filters
 {
     public class TaskProgrammingFilter : IFilter<TaskProgramming>
     {
+        public string? IdPlayer { get; set; }
         public int? IdLang { get; set; }
         public Difficulty? Difficulty { get; set; }
 
         public IQueryable<TaskProgramming> ApplyTo(IQueryable<TaskProgramming> query)
         {
+            if (!string.IsNullOrEmpty(IdPlayer))
+                query = query.Where(x => x.IdPlayer == IdPlayer);
+
             if (Difficulty.HasValue)
                 query = query.Where(x => x.Difficulty == Difficulty.Value);
 

@@ -24,6 +24,9 @@ namespace CodeBattleArena.Server.DTO.ModelsDTO
 
         [Required(ErrorMessage = "VerificationCode is required.")]
         public string VerificationCode { get; set; }
+        public bool IsGeneratedAI { get; set; }
+        public string? IdPlayer { get; set; }
+        public PlayerDto? Player { get; set; }
 
         public List<TaskInputDataDto>? TaskInputData { get; set; }
     }

@@ -74,6 +74,11 @@ export interface TaskProgramming {
     preparation: string;
     verificationCode: string;
 
+    isGeneratedAI: boolean;
+
+    idPlayer?: string | null;
+    player?: Player | null;
+
     taskInputData: TaskInputData[] | null;
 }
 
@@ -131,7 +136,6 @@ export interface Message {
     idSender: string | null;
     sender: Player | null;
     messageText: string;
-    sentDateTime: Date;
 }
 
 export interface Item {

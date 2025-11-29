@@ -56,23 +56,6 @@ namespace CodeBattleArena.Server.Controllers
         }
 
         [Authorize]
-        [RequireEditRole]
-        [HttpPut("select-roles")]
-        public async Task<IActionResult> SelectRoles([FromBody] SelectRolesRequest selectRolesRequest, CancellationToken cancellationToken)
-        {
-            if (string.IsNullOrEmpty(selectRolesRequest.IdPlayer)) 
-                return BadRequest(new ErrorResponse { Error = "Player ID not specified." });
-            if (selectRolesRequest.Roles == null || selectRolesRequest.Roles.Length == 0) 
-                return BadRequest(new ErrorResponse { Error = "Roles not specified." });
-            
-            var resultSelect = await _playerService.SelectRolesAsync(selectRolesRequest.IdPlayer, selectRolesRequest.Roles, cancellationToken);
-            if (!resultSelect.IsSuccess)
-                return UnprocessableEntity(resultSelect.Failure);
-
-            return Ok(true);
-        }
-
-        [Authorize]
         [HttpPut("edit-player")]
         public async Task<IActionResult> EditPlayer([FromBody] PlayerDto playerDto, CancellationToken cancellationToken)
         {

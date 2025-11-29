@@ -228,6 +228,13 @@ export function SessionInfo() {
                                     {session.taskProgramming ? "Change task" : "Select task"}
                                 </Button>
 
+                                <Button
+                                    className="btn-primary btn-animation flex items-center justify-center"
+                                    onClick={() => navigate(`/task/ai-generate-task/null`)}
+                                >
+                                    Generate task
+                                </Button>
+
                                 {session.taskProgramming && (
                                     <Button
                                         className="btn-green btn-animation flex items-center justify-center"
